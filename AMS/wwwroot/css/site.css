@@ -1,0 +1,16 @@
+.links{
+    text-decoration: none;
+    cursor: pointer;
+}
+.sitebgcolor,
+.sitebgcolor:hover {
+  background-color: black !important;
+  color: white !important;
+}
+
+.siteoutlinebtn,
+.siteoutlinebtn:hover {
+  border: 1px solid black;
+  border-radius: 5px;
+  color: black !important;
+}
