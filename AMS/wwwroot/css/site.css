@@ -1,7 +1,8 @@
-.links{
-    text-decoration: none;
-    cursor: pointer;
+.links {
+  text-decoration: none;
+  cursor: pointer;
 }
+
 .sitebgcolor,
 .sitebgcolor:hover {
   background-color: black !important;
@@ -13,4 +14,70 @@
   border: 1px solid black;
   border-radius: 5px;
   color: black !important;
+}
+
+.main-div {
+  transition: 0.75s;
+}
+
+@media (min-width:992px) {
+  .main-margin {
+    margin-left: 250px;
+  }
+}
+
+
+/* sidebar css */
+.sidebar {
+  transition: 0.75s;
+  width: 250px;
+}
+
+.sidebar ul li:hover {
+  background-color: #e9ecef;
+  border-radius: 10px;
+}
+
+.sidebar ul,
+.sidebar ul li a {
+  padding-left: 2px;
+  text-decoration: none;
+  color: black;
+}
+
+.sidebar ul li a {
+  margin: 10px;
+  display: flex;
+  gap: 5px;
+  padding-top: 5px;
+  align-items: center;
+}
+
+.sidebar ul .activesidebar,
+.sidebar ul .activesidebar:hover {
+  background-color: #94c8fc;
+  border-radius: 10px;
+
+  a {
+    color: white !important;
+  }
+}
+
+.sidebar ul li a i {
+  font-size: 20px;
+  width: 30px;
+}
+
+.hidden {
+  transform: translateX(-100%);
+}
+
+.visible {
+  transform: translateX(0);
+}
+
+/* change password */
+.passwordEyeIcon {
+  right: 10px;
+  transform: translateY(-160%);
 }

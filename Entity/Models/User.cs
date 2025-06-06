@@ -5,9 +5,9 @@ namespace Entity.Models;
 
 public partial class User
 {
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
-    public int Roleid { get; set; }
+    public int RoleId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -15,27 +15,29 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public int? Managerid { get; set; }
+    public int? ManagerId { get; set; }
 
     public string? Department { get; set; }
 
-    public bool Isdeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-    public int Createdby { get; set; }
+    public int CreatedBy { get; set; }
 
-    public int? Updatedby { get; set; }
+    public int? UpdatedBy { get; set; }
 
-    public virtual ICollection<Attendance> AttendanceApprovedbyNavigations { get; } = new List<Attendance>();
+    public string? UserImageUrl { get; set; }
+
+    public virtual ICollection<Attendance> AttendanceApprovedByNavigations { get; } = new List<Attendance>();
 
     public virtual ICollection<Attendance> AttendanceUsers { get; } = new List<Attendance>();
 
     public virtual ICollection<User> InverseManager { get; } = new List<User>();
 
-    public virtual ICollection<Leave> LeaveApprovedbyNavigations { get; } = new List<Leave>();
+    public virtual ICollection<Leave> LeaveApprovedByNavigations { get; } = new List<Leave>();
 
     public virtual ICollection<Leave> LeaveUsers { get; } = new List<Leave>();
 

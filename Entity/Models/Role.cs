@@ -5,9 +5,9 @@ namespace Entity.Models;
 
 public partial class Role
 {
-    public int Roleid { get; set; }
+    public int RoleId { get; set; }
 
-    public string Rolename { get; set; } = null!;
+    public string RoleName { get; set; } = null!;
 
     public virtual ICollection<User> Users { get; } = new List<User>();
 }

@@ -13,16 +13,16 @@ namespace BLL.Service;
 
 public class HomeService : IHomeService
 {
-    private readonly IUserRepository _Userrepository;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _config;
-    public HomeService(IUserRepository Userrepository, IConfiguration config)
+    public HomeService(IUserRepository userRepository, IConfiguration config)
     {
-        _Userrepository = Userrepository;
+        _userRepository = userRepository;
         _config = config;
     }
-    public async Task<User?> AuthenticateUser(string email, string password)
+    public async Task<User?> AuthenticateUserAsync(string email, string password)
     {
-        User? user = await _Userrepository.GetAsync(x => x.Email.ToLower() == email.ToLower());
+        User? user = await _userRepository.GetAsync(x => x.Email.ToLower() == email.ToLower(),x=>x.Role);
         if (user != null)
         {
             if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
@@ -37,8 +37,8 @@ public class HomeService : IHomeService
         var claims = new List<Claim>
         {
             new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.NameIdentifier, user.Userid.ToString()),
-            new(ClaimTypes.Role, user.Roleid.ToString()),
+            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new(ClaimTypes.Role, user.Role.RoleName)
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

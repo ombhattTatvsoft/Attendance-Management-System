@@ -5,9 +5,9 @@ namespace Entity.Models;
 
 public partial class Log
 {
-    public int Logid { get; set; }
+    public int LogId { get; set; }
 
-    public string Logmessage { get; set; } = null!;
+    public string LogMessage { get; set; } = null!;
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? CreatedAt { get; set; }
 }

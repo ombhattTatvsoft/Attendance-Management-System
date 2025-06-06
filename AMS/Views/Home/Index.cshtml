@@ -1,32 +1,33 @@
-﻿@model Entity.ViewModels.UserLoginView;
+﻿@model Entity.ViewModels.UserLoginVM;
 @{
     ViewData["Title"] = "Login Page";
 }
-<div style="background-image: url('images/pexels-lum3n-44775-399161.jpg');background-size: cover; background-position: center;">
-    <div class="container d-flex align-items-center justify-content-center vh-100">
-    <div class="w-50 d-flex flex-column align-items-center justify-content-center p-3 card bg-white rounded-4">
-            <h4 class="mb-2 mt-4">Login</h4>
-            <div class="col-10 mb-4">
-                <h5>Welcome,</h5>
-                <form asp-controller="Home" asp-action="Index" method="post">
-                    <div class="form-floating mb-3">
-                        <input asp-for="Email" type="email" class="form-control" placeholder="">
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                        <label>Email</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input asp-for="Password" type="password" class="form-control" placeholder="">
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                        <label>Password</label>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn sitebgcolor">Login</button>
-                    </div>
-                </form>
-            </div>
+<div class="container-fluid d-flex align-items-center justify-content-center vh-100">
+    <div class="d-flex col-xxl-4 col-xl-6 col-md-8 col-11 flex-column align-items-center justify-content-center card bg-white rounded-4">
+        <h4 class="mb-2 mt-4">Login</h4>
+        <div class="col-10 mb-4">
+            <h5>Welcome,</h5>
+            <form asp-controller="Home" asp-action="Index" method="post">
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" type="email" class="form-control" placeholder="">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <label>Email</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <label>Password</label>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="links" asp-controller="Home" asp-action="ForgotPassword">Forgot Password</a>
+                    <button type="submit" class="btn sitebgcolor">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-</div>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

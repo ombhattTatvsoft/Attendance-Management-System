@@ -31,168 +31,181 @@ public partial class AMSContext : DbContext
     {
         modelBuilder.Entity<Attendance>(entity =>
         {
-            entity.HasKey(e => e.Attendanceid).HasName("attendances_pkey");
+            entity.HasKey(e => e.AttendanceId).HasName("attendances_pkey");
 
             entity.ToTable("attendances");
 
-            entity.Property(e => e.Attendanceid).HasColumnName("attendanceid");
-            entity.Property(e => e.Approvedby).HasColumnName("approvedby");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.AttendanceId)
+                .HasDefaultValueSql("nextval('attendances_attendanceid_seq'::regclass)")
+                .HasColumnName("attendance_id");
+            entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.Intime).HasColumnName("intime");
-            entity.Property(e => e.Isapproved).HasColumnName("isapproved");
-            entity.Property(e => e.Outtime).HasColumnName("outtime");
+            entity.Property(e => e.InTime).HasColumnName("in_time");
+            entity.Property(e => e.IsApproved).HasColumnName("is_approved");
+            entity.Property(e => e.OutTime).HasColumnName("out_time");
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.Updatedat)
+            entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedat");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UserId).HasColumnName("user)id");
 
-            entity.HasOne(d => d.ApprovedbyNavigation).WithMany(p => p.AttendanceApprovedbyNavigations)
-                .HasForeignKey(d => d.Approvedby)
+            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.AttendanceApprovedByNavigations)
+                .HasForeignKey(d => d.ApprovedBy)
                 .HasConstraintName("attendances_approvedby_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.AttendanceUsers)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("attendances_userid_fkey");
         });
 
         modelBuilder.Entity<Holiday>(entity =>
         {
-            entity.HasKey(e => e.Holidayid).HasName("holiday_pkey");
+            entity.HasKey(e => e.HolidayId).HasName("holiday_pkey");
 
             entity.ToTable("holiday");
 
-            entity.Property(e => e.Holidayid).HasColumnName("holidayid");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.HolidayId)
+                .HasDefaultValueSql("nextval('holiday_holidayid_seq'::regclass)")
+                .HasColumnName("holiday_id");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Holidaydate).HasColumnName("holidaydate");
-            entity.Property(e => e.Holidayname)
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.HolidayDate).HasColumnName("holiday_date");
+            entity.Property(e => e.HolidayName)
                 .HasMaxLength(100)
-                .HasColumnName("holidayname");
-            entity.Property(e => e.Isdeleted).HasColumnName("isdeleted");
-            entity.Property(e => e.Updatedat)
+                .HasColumnName("holiday_name");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedat");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
         });
 
         modelBuilder.Entity<Leave>(entity =>
         {
-            entity.HasKey(e => e.Leaveid).HasName("leaves_pkey");
+            entity.HasKey(e => e.LeaveId).HasName("leaves_pkey");
 
             entity.ToTable("leaves");
 
-            entity.Property(e => e.Leaveid).HasColumnName("leaveid");
-            entity.Property(e => e.Approvedby).HasColumnName("approvedby");
+            entity.Property(e => e.LeaveId)
+                .HasDefaultValueSql("nextval('leaves_leaveid_seq'::regclass)")
+                .HasColumnName("leave_id");
+            entity.Property(e => e.ApprovedBy).HasColumnName("approved_by");
             entity.Property(e => e.Comment)
                 .HasMaxLength(500)
                 .HasColumnName("comment");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
-            entity.Property(e => e.Fromdate).HasColumnName("fromdate");
-            entity.Property(e => e.Isapproved).HasColumnName("isapproved");
-            entity.Property(e => e.Isdeleted).HasColumnName("isdeleted");
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.FromDate).HasColumnName("from_date");
+            entity.Property(e => e.IsApproved).HasColumnName("is_approved");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.Reason)
                 .HasMaxLength(500)
                 .HasColumnName("reason");
-            entity.Property(e => e.Todate).HasColumnName("todate");
-            entity.Property(e => e.Updatedat)
+            entity.Property(e => e.ToDate).HasColumnName("to_date");
+            entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedat");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.ApprovedbyNavigation).WithMany(p => p.LeaveApprovedbyNavigations)
-                .HasForeignKey(d => d.Approvedby)
+            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.LeaveApprovedByNavigations)
+                .HasForeignKey(d => d.ApprovedBy)
                 .HasConstraintName("leaves_approvedby_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.LeaveUsers)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("leaves_userid_fkey");
         });
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => e.Logid).HasName("logs_pkey");
+            entity.HasKey(e => e.LogId).HasName("logs_pkey");
 
             entity.ToTable("logs");
 
-            entity.Property(e => e.Logid).HasColumnName("logid");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.LogId)
+                .HasDefaultValueSql("nextval('logs_logid_seq'::regclass)")
+                .HasColumnName("log_id");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Logmessage)
+                .HasColumnName("created_at");
+            entity.Property(e => e.LogMessage)
                 .HasMaxLength(1000)
-                .HasColumnName("logmessage");
+                .HasColumnName("log_message");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Roleid).HasName("roles_pkey");
+            entity.HasKey(e => e.RoleId).HasName("roles_pkey");
 
             entity.ToTable("roles");
 
-            entity.HasIndex(e => e.Rolename, "roles_rolename_key").IsUnique();
+            entity.HasIndex(e => e.RoleName, "roles_rolename_key").IsUnique();
 
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Rolename).HasColumnName("rolename");
+            entity.Property(e => e.RoleId)
+                .HasDefaultValueSql("nextval('roles_roleid_seq'::regclass)")
+                .HasColumnName("role_id");
+            entity.Property(e => e.RoleName).HasColumnName("role_name");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Userid).HasName("users_pkey");
+            entity.HasKey(e => e.UserId).HasName("users_pkey");
 
             entity.ToTable("users");
 
             entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
 
-            entity.Property(e => e.Userid).HasColumnName("userid");
-            entity.Property(e => e.Createdat)
+            entity.Property(e => e.UserId)
+                .HasDefaultValueSql("nextval('users_userid_seq'::regclass)")
+                .HasColumnName("user_id");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("createdat");
-            entity.Property(e => e.Createdby).HasColumnName("createdby");
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.Department)
                 .HasMaxLength(50)
                 .HasColumnName("department");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .HasColumnName("email");
-            entity.Property(e => e.Isdeleted).HasColumnName("isdeleted");
-            entity.Property(e => e.Managerid).HasColumnName("managerid");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
             entity.Property(e => e.Password)
                 .HasMaxLength(500)
                 .HasColumnName("password");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Updatedat)
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("updatedat");
-            entity.Property(e => e.Updatedby).HasColumnName("updatedby");
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.UserImageUrl).HasColumnName("user_image_url");
 
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
-                .HasForeignKey(d => d.Managerid)
+                .HasForeignKey(d => d.ManagerId)
                 .HasConstraintName("users_managerid_fkey");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.Roleid)
+                .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("users_roleid_fkey");
         });

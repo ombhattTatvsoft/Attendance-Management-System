@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entity.ViewModels;
 
-public class UserLoginView
+public class UserLoginVM
 {
     [MaxLength(50),EmailAddress,Required(ErrorMessage="Email is Required")]
     public string Email { get; set; } = null!;

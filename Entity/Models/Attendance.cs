@@ -5,31 +5,31 @@ namespace Entity.Models;
 
 public partial class Attendance
 {
-    public int Attendanceid { get; set; }
+    public int AttendanceId { get; set; }
 
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
     public DateOnly Date { get; set; }
 
-    public TimeOnly? Intime { get; set; }
+    public TimeOnly? InTime { get; set; }
 
-    public TimeOnly? Outtime { get; set; }
+    public TimeOnly? OutTime { get; set; }
 
     public string Status { get; set; } = null!;
 
-    public bool? Isapproved { get; set; }
+    public bool? IsApproved { get; set; }
 
-    public int? Approvedby { get; set; }
+    public int? ApprovedBy { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-    public int Createdby { get; set; }
+    public int CreatedBy { get; set; }
 
-    public int? Updatedby { get; set; }
+    public int? UpdatedBy { get; set; }
 
-    public virtual User? ApprovedbyNavigation { get; set; }
+    public virtual User? ApprovedByNavigation { get; set; }
 
     public virtual User User { get; set; } = null!;
 }

@@ -15,21 +15,35 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _context = context;
         _dbSet = _context.Set<T>();
     }
-    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,params Expression<Func<T, object>>[]? includes)
     {
         IQueryable<T> query = _dbSet;
         if (filter != null)
         {
             query = query.Where(filter);
         }
+        if(includes!=null && includes.Length > 0)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
         return await query.ToListAsync();
     }
-    public async Task<T?> GetAsync(Expression<Func<T, bool>>? filter=null)
+    public async Task<T?> GetAsync(Expression<Func<T, bool>>? filter=null,params Expression<Func<T, object>>[]? includes)
     {
         IQueryable<T> query = _dbSet;
         if (filter != null)
         {
             query = query.Where(filter);
+        }
+        if(includes!=null && includes.Length > 0)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
         }
         return await query.FirstOrDefaultAsync();
     }

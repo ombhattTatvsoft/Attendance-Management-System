@@ -5,19 +5,19 @@ namespace Entity.Models;
 
 public partial class Holiday
 {
-    public int Holidayid { get; set; }
+    public int HolidayId { get; set; }
 
-    public string Holidayname { get; set; } = null!;
+    public string HolidayName { get; set; } = null!;
 
-    public DateOnly Holidaydate { get; set; }
+    public DateOnly HolidayDate { get; set; }
 
-    public bool Isdeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-    public int Createdby { get; set; }
+    public int CreatedBy { get; set; }
 
-    public int? Updatedby { get; set; }
+    public int? UpdatedBy { get; set; }
 }

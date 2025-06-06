@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AMSContext>(q => q.UseNpgsql(conn));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

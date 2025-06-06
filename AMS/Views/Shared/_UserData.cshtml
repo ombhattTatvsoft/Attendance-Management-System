@@ -1,0 +1,22 @@
+@model Entity.Models.User;
+<img src="~/images/Default_pfp.svg.png" class="img-fluid rounded-circle dropdown-toggle" id="dropdownMenuButton1"
+    data-bs-toggle="dropdown" aria-expanded="false" alt="" style="height: 50px;width: 50px;">
+<ul class="dropdown-menu dropdown-menu-end me-1 mt-1" aria-labelledby="dropdownMenuButton1">
+    <li>
+        <a class="dropdown-item disabled">
+            <span class="text-dark">@Model.Name</span>
+        </a>
+    </li>
+    <hr class="my-1">
+    <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="MyProfile">
+            <i class="fa-solid fa-user" style="width: 20px;"></i>
+            <span>My Profile</span></a></li>
+    <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="ChangePassword">
+            <i class="fa-solid fa-spinner" style="width: 20px;"></i>
+            <span>Change Password</span></a></li>
+    <li>
+        <a class="links dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#logout">
+            <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i>
+            <span>Logout</span></a>
+    </li>
+</ul>
