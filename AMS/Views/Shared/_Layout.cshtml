@@ -20,7 +20,7 @@
     @inject IHttpContextAccessor HttpContextAccessor;
     @{
         var user = HttpContextAccessor?.HttpContext?.User;
-        var role = user?.FindFirst(ClaimTypes.Role)?.Value;
+        var role = user?.FindFirst(ClaimTypes.Role)?.Value.ToString();
     }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <div class="bg-body-tertiary" style="min-height: 100vh;">
@@ -41,9 +41,12 @@
                         <a asp-controller="Dashboard" asp-action="Index"><i
                                 class="fa-solid fa-table-cells-large"></i><span>Dashboard</span></a>
                     </li>
-                    <li class="sidebaroptions" id="user">
-                        <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
-                    </li>
+                    @if (role == "Admin" || role == "Manager")
+                    {
+                        <li class="sidebaroptions" id="user">
+                            <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
+                        </li>
+                    }
                     <li class="sidebaroptions" id="attendance">
                         <a asp-controller="Attendance" asp-action="Index"><i
                                 class="fa-solid fa-clipboard-user"></i><span>Attendance</span></a>
@@ -52,14 +55,17 @@
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>
                     </li>
-                    <li class="sidebaroptions" id="reportAnalytics">
-                        <a asp-controller="ReportAnalytics" asp-action="Index"><i
-                                class="fa-solid fa-chart-pie"></i><span>Report & Analytics</span></a>
-                    </li>
+                    @if (role == "Admin" || role == "Manager")
+                    {
+                        <li class="sidebaroptions" id="reportAnalytics">
+                            <a asp-controller="ReportAnalytics" asp-action="Index"><i
+                                    class="fa-solid fa-chart-pie"></i><span>Report & Analytics</span></a>
+                        </li>
+                    }
                 </ul>
             </aside>
         }
-        <main role="main" class="main-div main-margin" id="mainBody">
+        <main role="main" class="main-div @(user.Identity.IsAuthenticated?"main-margin":"")" id="mainBody">
             <partial name="_Notification" />
             @RenderBody()
         </main>

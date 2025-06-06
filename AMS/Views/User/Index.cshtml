@@ -1,5 +1,205 @@
-
 @{
-    ViewData["Title"] = "User Page";
+  ViewData["Title"] = "Users Page";
 }
-<p>Welcome to user</p>
+<div class="content">
+  <div class="row mx-sm-5 mx-2 pt-5">
+    <div class="col-md-6 col-sm-4 ps-0">
+      <h3>Users</h3>
+    </div>
+    <div class="col-md-6 col-sm-8 d-flex justify-content-sm-end px-0">
+      <div class="me-2">
+        <input class="border form-control h-100" type="text" placeholder="search" id="customsearch">
+      </div>
+      <a class="btn sitebgcolor" asp-action="UpsertUser"> + Add User</a>
+    </div>
+  </div>
+  <div class="table-responsive bg-white mt-3 mx-sm-5 mx-2 shadow-lg rounded px-2"
+    style="overflow-y: auto;max-height: 422px;scrollbar-width: thin;">
+    <table class="table align-middle table-hover mb-0" id="usertable">
+      <thead class="mt-3 position-sticky top-0" style="z-index: 1;">
+        <tr>
+          <th scope="col" class="text-muted">Name <i class="fa-solid fa-arrow-up-long" onclick="sortasc(0)"></i><i class="fa-solid fa-arrow-down-long" onclick="sortdesc(0)"></i></i></th>
+          <th scope="col" class="text-muted">Email</th>
+          <th scope="col" class="text-muted">Role <i class="fa-solid fa-arrow-up-long" onclick="sortasc(2)"></i><i class="fa-solid fa-arrow-down-long" onclick="sortdesc(3)"></i></th>
+          <th scope="col" class="text-muted">Reports to</th>
+          <th scope="col" class="text-muted">Department</th>
+        </tr>
+      </thead>
+      <tbody id="tabledata">
+      </tbody>
+      <tfoot class="position-sticky bottom-0" style="z-index:1;">
+        <tr>
+          <td colspan="5" style="border-bottom-width: 0px;">
+            <div class="d-flex justify-content-end align-items-center gap-4 me-3">
+              <div class="d-flex justify-content-end align-items-center gap-2">
+                <p>Items per Page:</p>
+                <div class="mb-3">
+                  <select name="pages" id="pages">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                  </select>
+                </div>
+              </div>
+              <p id="customTableInfo"></p>
+              <ul class="pagination">
+                <li class="page-item">
+                  <a class="page-link" id="previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" id="next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<!-- delete alert modal -->
+<div class="modal fade" id="deleteuser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="d-flex justify-content-between p-3">
+        <h5 class="text-body-tertiary" id="exampleModalLabel">Delete Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class=" d-flex flex-column align-items-center">
+        <img src="~/images/toppng.com-warning-icon-2400x2400.png" class="img-fluid makeimgsmall" alt="">
+        <p>Are you sure you want to delete this user?</p>
+      </div>
+      <div class="d-flex justify-content-center gap-2 mb-4">
+        <a id="deleteuserbtn" class="btn sitebgcolor">Yes</a>
+        <a class="btn siteoutlinebtn" data-bs-dismiss="modal">No</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+@section Scripts {
+  <script>
+function sortasc(i) {
+    var table = $('#usertable').DataTable();
+    table.order([i, 'asc']).draw();
+}
+
+function sortdesc(i) {
+    console.log(i);
+    var table = $('#usertable').DataTable();
+    table.order([i, 'desc']).draw();
+}
+
+$(document).ready(function () {
+    var table = $('#usertable').DataTable({
+        "pageLength": 5,
+        "language": {
+            "info": "Showing _START_ - _END_ of _TOTAL_"
+        },
+        "drawCallback": function () {
+            $('#customTableInfo').html($('.dt-container .dt-info').html());
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": "_all" },
+            { "type": "html", "targets": "_all" }
+        ],
+    });
+    $('.dt-container .dt-search').hide();
+    $('.dt-container .dt-length').hide();
+    $('.dt-container .dt-info').hide();
+    $('.dt-container .dt-paging').hide();
+
+    $('#customsearch').on('keyup', function () {
+        table.search(this.value).draw();
+    });
+
+    $('#pages').on('change', function () {
+        table.page.len($(this).val()).draw();
+    });
+
+    $('#previous').on('click', function () {
+        table.page('previous').draw('page');
+    });
+
+    $('#next').on('click', function () {
+        table.page('next').draw('page');
+    });
+});
+</script>
+
+  @* <script>
+    let currentpage = @((ViewData["Currentpage"]?.ToString() != "0") ? ViewData["Currentpage"] : 1);
+    let pagesize = @((ViewData["Pagesize"]?.ToString() != "0") ? ViewData["PageSize"] : 5);
+    let column = "FirstName";
+    let sorttype = "asc";
+    $(document).ready(function () {
+      loadTable();
+      $("#customsearch").on('keyup', function () {
+        loadTable();
+      });
+      $("#pages").on('change', function () {
+        pagesize = $(this).val();
+        loadTable();
+      });
+      $("#previous").click(function () {
+        if (currentpage > 1) {
+          currentpage--;
+          loadTable();
+        }
+      });
+      $("#next").click(function () {
+        if (currentpage < Math.ceil($("#totalrecords").val() / pagesize)) {
+          currentpage++;
+          loadTable();
+        }
+      });
+    });
+    function sortasc(columnname) {
+      sorttype = "asc";
+      column = columnname;
+      loadTable();
+    }
+
+    function sortdesc(columnname) {
+      sorttype = "desc";
+      column = columnname;
+      loadTable();
+    }
+    function loadTable() {
+      $.ajax({
+        url: "/Users/TableData",
+        type: "GET",
+        data: {
+          Search: $("#customsearch").val(),
+          Page: currentpage,
+          PageSize: pagesize,
+          SortType: sorttype,
+          SortColumn: column
+        },
+        success: function (response) {
+          $("#tabledata").html(response);
+          $("#pages").val(pagesize);
+          $(".UserEmail").each(function () {
+            if ($(this)[0].innerText == `@email`) {
+              $(this).siblings().find('a').addClass("disabledlink");
+            }
+          });
+        }
+      })
+    }
+  </script> *@
+
+  <script>
+    function giveid(id) {
+      document.getElementById("deleteuserbtn").href = "/Users/DeleteUser?id=" + id;
+    }
+  </script>
+}

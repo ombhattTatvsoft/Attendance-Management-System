@@ -31,6 +31,7 @@
 .sidebar {
   transition: 0.75s;
   width: 250px;
+  z-index: 5;
 }
 
 .sidebar ul li:hover {
