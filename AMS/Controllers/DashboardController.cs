@@ -11,8 +11,11 @@ namespace AMS.Controllers;
 public class DashboardController : Controller
 {
     private readonly IUserService _userService;
-    public DashboardController(IUserService userService)
+    private readonly IHomeService _homeService;
+
+    public DashboardController(IUserService userService,IHomeService homeService)
     {
+        _homeService = homeService;
         _userService = userService;
     }
     public IActionResult Index()
@@ -40,7 +43,7 @@ public class DashboardController : Controller
             else
             {
                 string email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
-                User? user = await _userService.FindUserByEmailAsync(email);
+                User? user = await _homeService.AuthenticateUserAsync(email, model.CurrentPassword);
                 if (user != null)
                 {
                     await _userService.UpdatePasswordAsync(user, model.NewPassword);

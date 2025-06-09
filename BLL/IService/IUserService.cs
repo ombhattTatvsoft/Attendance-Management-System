@@ -5,11 +5,11 @@ namespace BLL.IService;
 
 public interface IUserService
 {
-    Task<User?> FindUserByEmailAsync(string email);
     Task UpdatePasswordAsync(User user, string newPassword);
+    Task<User?> FindUserByEmailAsync(string email);
     Task<List<User>> GetManagersByDepartment(int departmentId);
-    Task AddUserAsync(UpsertUserVM model);
-    Task UpdateUserAsync(UpsertUserVM model);
+    Task<Response> SaveUserAsync(UpsertUserVM model);
     Task<List<User>> GetAllUsersAsync();
-
+    Task<UpsertUserVM> GetUserAsync(int id);
+    Task<Response> DeleteUserAsync(int id);
 }

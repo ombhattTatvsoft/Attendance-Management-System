@@ -21,6 +21,7 @@ public class UpsertUserVM
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$",
     ErrorMessage = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character")]
     public string Password { get; set; } = null!;
-    public int? ManagerId { get; set; }
+    [Required(ErrorMessage = "Manager is Required")]
+    public int ManagerId { get; set; }
     public int Department { get; set; }
 }

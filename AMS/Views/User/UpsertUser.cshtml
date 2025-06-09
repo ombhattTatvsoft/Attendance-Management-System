@@ -11,8 +11,8 @@
         <div class="col-sm-6 d-flex justify-content-sm-end">
             <a class="btn siteoutlinebtn" asp-action="Index">&lt; Back</a>
         </div>
-        <form asp-action="UpsertUser" method="post"
-            class="container bg-white mt-3 addnewuser shadow-lg rounded" enctype="multipart/form-data">
+        <form asp-action="UpsertUser" method="post" class="container bg-white mt-3 addnewuser shadow-lg rounded"
+            enctype="multipart/form-data">
             <div class="row p-3 mt-2">
                 <input type="hidden" asp-for="UserId" />
                 <div class="col-md-6 mb-3">
@@ -31,8 +31,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class=" form-floating">
-                        <input asp-for="Password" type="password" class="form-control" id="floatingInput"
-                            placeholder="">
+                        <input asp-for="Password" type="password" class="form-control" id="userPassword" placeholder="">
                         <span asp-validation-for="Password" class="text-danger"></span>
                         <label for="floatingInput">Password</label>
                     </div>
@@ -57,7 +56,7 @@
                         <label for="floatingInput">Role</label>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3 d-none">
+                <div class="col-md-6 mb-3">
                     <div class=" form-floating">
                         <select asp-for="ManagerId" class="form-select" id="managerId">
                             <option value="">Select Manager</option>
@@ -77,24 +76,50 @@
 
 @section Scripts {
     <script>
-        $('#department').change(function () {
-        let departmentId = $(this).val();
-        $('#managerId').empty().append(new Option("Select Manager", ""));
-        if (departmentId) {
-          $.ajax({
-            url: "@Url.Action("GetManagers", "User")",
-            type: "GET",
-            data: { departmentId: departmentId },
-            success: function (data) {
-              $.each(data, function (index, item) {
-                $('#managerId').append(new Option(item.name, item.userId));
-              })
+        $("#department").change(function () {
+            if ($(this).val() != "") {
+                $.ajax({
+                    url: "@Url.Action("GetManagers", "User")",
+                    type: "GET",
+                    data: { departmentId: $("#department").val() },
+                    success: function (data) {
+                        $('#managerId').empty().append(new Option("Select Manager", ""));
+                        $.each(data, function (index, item) {
+                            if (item.userId != @Model.UserId)
+                                $('#managerId').append(new Option(item.name, item.userId));
+                        });
+                        if ($("#roleId").val() == "2") {
+                            $('#managerId').append(new Option("Admin", "1"));
+                        }
+                        if (@Model.UserId) {
+                            if (@Model.Department == $("#department").val())
+                                $('#managerId').val(@Model.ManagerId);
+                        } else {
+                            $('#managerId').val("");
+                        }
+
+                    }
+                });
             }
-          })
-        }
-      })
+            else {
+                $('#managerId').empty().append(new Option("Select Manager", ""));
+            }
+        });
+        $("#roleId").change(function () {
+            if ($(this).val() == "2") {
+                $('#managerId').append(new Option("Admin", "1"));
+            }
+            else {
+                $('#managerId option[value="1"]').remove();
+            }
+        });
+        $(document).ready(function () {
+            if (@Model.UserId != 0) {
+                $("#userPassword").prop("disabled", true);
+                $("#department").trigger("change");
+            }
+        });
     </script>
-    <script src="~/js/User.js"></script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

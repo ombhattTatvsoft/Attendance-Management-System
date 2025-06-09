@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AMS.styles.css" asp-append-version="true" />
     @* toastr *@
@@ -41,12 +42,9 @@
                         <a asp-controller="Dashboard" asp-action="Index"><i
                                 class="fa-solid fa-table-cells-large"></i><span>Dashboard</span></a>
                     </li>
-                    @if (role == "Admin" || role == "Manager")
-                    {
-                        <li class="sidebaroptions" id="user">
-                            <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
-                        </li>
-                    }
+                    <li class="sidebaroptions" id="user">
+                        <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
+                    </li>
                     <li class="sidebaroptions" id="attendance">
                         <a asp-controller="Attendance" asp-action="Index"><i
                                 class="fa-solid fa-clipboard-user"></i><span>Attendance</span></a>
@@ -65,7 +63,7 @@
                 </ul>
             </aside>
         }
-        <main role="main" class="main-div @(user.Identity.IsAuthenticated?"main-margin":"")" id="mainBody">
+        <main role="main" class="main-div @(user.Identity.IsAuthenticated ? "main-margin" : "")" id="mainBody">
             <partial name="_Notification" />
             @RenderBody()
         </main>
@@ -103,6 +101,7 @@
             document.getElementById('@ViewData["selected"]').classList.add("activesidebar");
         });
     </script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

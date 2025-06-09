@@ -1,4 +1,5 @@
 using System.Text;
+using BLL;
 using BLL.IService;
 using BLL.Service;
 using DAL.IRepository;
@@ -23,6 +24,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+// add automapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
    .AddJwtBearer(options =>

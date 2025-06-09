@@ -9,13 +9,11 @@ namespace AMS.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly IHomeService _service;
     private readonly IUserService _userService;
 
-    public HomeController(ILogger<HomeController> logger, IHomeService service, IUserService userService)
+    public HomeController(IHomeService service, IUserService userService)
     {
-        _logger = logger;
         _service = service;
         _userService = userService;
     }
