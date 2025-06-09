@@ -7,6 +7,7 @@ using DAL.IRepository;
 using Entity.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Service;
@@ -15,22 +16,32 @@ public class HomeService : IHomeService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _config;
-    public HomeService(IUserRepository userRepository, IConfiguration config)
+    private readonly ILogger<HomeService> _logger;
+    public HomeService(IUserRepository userRepository, IConfiguration config, ILogger<HomeService> logger)
     {
         _userRepository = userRepository;
         _config = config;
+        _logger = logger;
     }
     public async Task<User?> AuthenticateUserAsync(string email, string password)
     {
-        User? user = await _userRepository.GetAsync(x => x.Email.ToLower() == email.ToLower(),x=>x.Role);
-        if (user != null)
+        try
         {
-            if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
+            User? user = await _userRepository.GetAsync(x => x.Email.ToLower() == email.ToLower(), x => x.Role);
+            if (user != null)
             {
-                return user;
+                if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
+                {
+                    return user;
+                }
             }
+            return null;
         }
-        return null;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error authenticating user with email: {Email}", email);
+            return null;
+        }
     }
     public string CreateJwtToken(User user)
     {
