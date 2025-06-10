@@ -76,6 +76,14 @@
 .visible {
   transform: translateX(0);
 }
+@media (max-width:992px) {
+  .visible {
+    transform: translateX(-100%);
+  }
+  .hidden {
+    transform: translateX(0);
+  }
+}
 
 /* change password */
 .passwordEyeIcon {

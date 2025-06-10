@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class UserController : Controller
 {
     private readonly IUserService _userService;
@@ -22,7 +22,6 @@ public class UserController : Controller
         return View(users);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> UpsertUser(int? id)
     {
@@ -35,7 +34,6 @@ public class UserController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> UpsertUser(UpsertUserVM model)
     {
@@ -59,7 +57,6 @@ public class UserController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetManagers(int departmentId)
     {
@@ -71,7 +68,6 @@ public class UserController : Controller
         }));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> DeleteUser(int id)
     {

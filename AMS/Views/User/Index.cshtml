@@ -2,19 +2,15 @@
 @model List<Entity.Models.User>;
 @{
   ViewData["Title"] = "Users Page";
-  string role = User.FindFirst(ClaimTypes.Role)?.Value.ToString();
 }
 <div class="content">
   <div class="row mx-sm-5 mx-2 pt-5">
     <div class="col-md-6 col-sm-4 ps-0">
       <h3>Users</h3>
     </div>
-    @if (role == "Admin")
-    {
-      <div class="col-md-6 col-sm-8 d-flex justify-content-sm-end px-0">
-        <a class="btn sitebgcolor" asp-action="UpsertUser"> + Add User</a>
-      </div>
-    }
+    <div class="col-md-6 col-sm-8 d-flex justify-content-sm-end px-0">
+      <a class="btn sitebgcolor" asp-action="UpsertUser"> + Add User</a>
+    </div>
   </div>
   <div class="table-responsive bg-white mt-3 mx-sm-5 mx-2 shadow-lg rounded px-2">
     <table class="table align-middle table-hover mb-0" id="usertable">
@@ -25,10 +21,7 @@
           <th scope="col" class="text-muted">Role</th>
           <th scope="col" class="text-muted text-nowrap">Reports to</th>
           <th scope="col" class="text-muted">Department</th>
-          @if (role == "Admin")
-          {
-            <th scope="col" class="text-muted">Actions</th>
-          }
+          <th scope="col" class="text-muted">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -40,20 +33,17 @@
             <td class="text-body-secondary">@user.Role.RoleName</td>
             <td class="text-body-secondary">@user.Manager?.Name</td>
             <td class="text-body-secondary">@user.Department</td>
-            @if (role == "Admin")
+            @if (user.RoleId != 3)
             {
-              @if (user.RoleId != 3)
-              {
-                <td class="d-flex gap-2">
-                  <a class="btn sitebgcolor" asp-action="UpsertUser" asp-route-id="@user.UserId">Edit</a>
-                  <button class="btn siteoutlinebtn" data-bs-toggle="modal" data-bs-target="#deleteuser"
-                    onclick="giveid(@user.UserId)">Delete</button>
-                </td>
-              }
-              else
-              {
-                <td class="text-body-secondary">N/A</td>
-              }
+              <td class="d-flex gap-2">
+                <a class="btn sitebgcolor" asp-action="UpsertUser" asp-route-id="@user.UserId">Edit</a>
+                <button class="btn siteoutlinebtn" data-bs-toggle="modal" data-bs-target="#deleteuser"
+                  onclick="giveid(@user.UserId)">Delete</button>
+              </td>
+            }
+            else
+            {
+              <td class="text-body-secondary">N/A</td>
             }
           </tr>
         }
