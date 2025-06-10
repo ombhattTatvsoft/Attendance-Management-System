@@ -37,8 +37,12 @@ public class UserController : Controller
     [HttpPost]
     public async Task<IActionResult> UpsertUser(UpsertUserVM model)
     {
+        if (model.RoleId == 2)
+        {
+            ModelState.Remove("ManagerId");
+        }
         if (model.UserId != 0)
-            ModelState.Remove("Password");
+                ModelState.Remove("Password");
         if (ModelState.IsValid)
         {
             Response response = await _userService.SaveUserAsync(model);
@@ -58,13 +62,14 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetManagers(int departmentId)
+    public async Task<IActionResult> GetManagers(int departmentId,int roleId)
     {
-        List<User> managers = await _userService.GetManagersByDepartment(departmentId);
+        List<User> managers = await _userService.GetManagersByDepartmentAndRole(departmentId,roleId);
         return Json(managers.Select(m => new
         {
             m.UserId,
-            m.Name
+            m.Name,
+            m.Role.RoleName
         }));
     }
 

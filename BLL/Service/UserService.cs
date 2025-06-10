@@ -38,13 +38,21 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating password for user {UserId}", user.UserId);
-            throw new Exception("An error occurred while updating the password", ex);
+            return null;
         }
     }
 
     public async Task<User?> FindUserByEmailAsync(string email)
     {
-        return await _userRepository.GetAsync(u => u.Email.ToLower() == email.ToLower());
+        try
+        {
+            return await _userRepository.GetAsync(u => u.Email.ToLower() == email.ToLower());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error finding user by email: {Email}", email);
+            return null;
+        }
     }
 
     public async Task<Response> SaveUserAsync(UpsertUserVM model)
@@ -52,40 +60,33 @@ public class UserService : IUserService
         try
         {
             User? userWithEmail = await FindUserByEmailAsync(model.Email);
+            User? user = (model.UserId == 0) ? new User() : await _userRepository.GetAsync(u => u.UserId == model.UserId && !u.IsDeleted);
+            if (userWithEmail != null)
+                if (model.UserId == 0 || (model.UserId != 0 && userWithEmail.UserId != model.UserId))
+                    return new Response(false, "Email already exists");
+            if (model.UserId != 0 && user == null)
+                return new Response(false, "User not found");
             if (model.UserId == 0)
             {
-                if (userWithEmail != null)
-                {
-                    return new Response(false, "Email already exists");
-                }
-                else
-                {
-                    model.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(model.Password, 13);
-                    User user = _mapper.Map<User>(model);
-                    user.CreatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-                    await _userRepository.AddAsync(user);
-                    await _userRepository.SaveAsync();
-                    return new Response(true, "User created successfully", user);
-                }
+                user = _mapper.Map<User>(model);
+                user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(model.Password, 13);
+                user.CreatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                await _userRepository.AddAsync(user);
+                return new Response(true, "User created successfully", user);
             }
             else
             {
-                User? existingUser = await _userRepository.GetAsync(u => u.UserId == model.UserId);
-                if (userWithEmail != null && userWithEmail.UserId != model.UserId)
-                {
-                    return new Response(false, "Email already exists");
-                }
-                if (existingUser == null)
-                {
-                    return new Response(false, "User not found");
-                }
-                existingUser = _mapper.Map(model, existingUser);
-                existingUser.UpdatedAt = DateTime.Now;
-                existingUser.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-                _userRepository.Update(existingUser);
-                await _userRepository.SaveAsync();
-                return new Response(true, "User updated successfully", existingUser);
+                model.Password = user.Password;
+                user = _mapper.Map(model, user);
+                user.UpdatedAt = DateTime.Now;
+                user.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                _userRepository.Update(user);
             }
+            await _userRepository.SaveAsync();
+            if (model.UserId == 0)
+                return new Response(true, "User created successfully", user);
+                return new Response(true, "User updated successfully", user);
+            
         }
         catch (Exception ex)
         {
@@ -96,12 +97,27 @@ public class UserService : IUserService
 
     public async Task<List<User>> GetAllUsersAsync()
     {
-        return await _userRepository.GetAllAsync(x => !x.IsDeleted, x => x.Role, x => x.Manager);
+        try
+        {
+            return await _userRepository.GetAllAsync(x => !x.IsDeleted, x => x.Role, x => x.Manager);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all users");
+            return new List<User>();
+        }
     }
 
-    public async Task<List<User>> GetManagersByDepartment(int departmentId)
+    public async Task<List<User>> GetManagersByDepartmentAndRole(int departmentId,int roleId)
     {
-        return await _userRepository.GetAllAsync(u => u.Department == ((Department)departmentId).ToString() && u.Role.RoleName == "Manager" && !u.IsDeleted);
+        try
+        {
+            return await _userRepository.GetAllAsync(u => u.Department == ((Department)departmentId).ToString() && !u.IsDeleted && u.RoleId<roleId,u=>u.Role);
+        }catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving managers for department {DepartmentId}", departmentId);
+            return new List<User>();
+        }
     }
 
     public async Task<UpsertUserVM> GetUserAsync(int id)

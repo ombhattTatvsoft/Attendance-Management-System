@@ -3,52 +3,52 @@
 @{
   ViewData["Title"] = "Users Page";
 }
-<div class="content">
-  <div class="row mx-sm-5 mx-2 pt-5">
-    <div class="col-md-6 col-sm-4 ps-0">
+<div class="content" id="dashboard">
+  <div class="row mx-sm-3 mx-2 pt-2">
+    <div class="col-12 my-2 d-flex justify-content-between align-items-center">
       <h3>Users</h3>
-    </div>
-    <div class="col-md-6 col-sm-8 d-flex justify-content-sm-end px-0">
       <a class="btn sitebgcolor" asp-action="UpsertUser"> + Add User</a>
     </div>
-  </div>
-  <div class="table-responsive bg-white mt-3 mx-sm-5 mx-2 shadow-lg rounded px-2">
-    <table class="table align-middle table-hover mb-0" id="usertable">
-      <thead>
-        <tr>
-          <th scope="col" class="text-muted">Name</th>
-          <th scope="col" class="text-muted">Email</th>
-          <th scope="col" class="text-muted">Role</th>
-          <th scope="col" class="text-muted text-nowrap">Reports to</th>
-          <th scope="col" class="text-muted">Department</th>
-          <th scope="col" class="text-muted">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (User user in Model)
-        {
-          <tr>
-            <td class="text-body-secondary">@user.Name</td>
-            <td class="text-body-secondary">@user.Email</td>
-            <td class="text-body-secondary">@user.Role.RoleName</td>
-            <td class="text-body-secondary">@user.Manager?.Name</td>
-            <td class="text-body-secondary">@user.Department</td>
-            @if (user.RoleId != 3)
+    <div class="col-12">
+      <div class="table-responsive bg-white shadow-lg rounded px-3">
+        <table class="table align-middle table-hover mb-0" id="usertable">
+          <thead>
+            <tr>
+              <th scope="col" class="text-muted">Name</th>
+              <th scope="col" class="text-muted">Email</th>
+              <th scope="col" class="text-muted">Role</th>
+              <th scope="col" class="text-muted text-nowrap">Reports to</th>
+              <th scope="col" class="text-muted">Department</th>
+              <th scope="col" class="text-muted">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (User user in Model)
             {
-              <td class="d-flex gap-2">
-                <a class="btn sitebgcolor" asp-action="UpsertUser" asp-route-id="@user.UserId">Edit</a>
-                <button class="btn siteoutlinebtn" data-bs-toggle="modal" data-bs-target="#deleteuser"
-                  onclick="giveid(@user.UserId)">Delete</button>
-              </td>
+              <tr>
+                <td class="text-body-secondary">@user.Name</td>
+                <td class="text-body-secondary">@user.Email</td>
+                <td class="text-body-secondary">@user.Role.RoleName</td>
+                <td class="text-body-secondary">@user.Manager?.Name</td>
+                <td class="text-body-secondary">@user.Department</td>
+                @if (user.RoleId != 1)
+                {
+                  <td class="d-flex gap-2">
+                    <a class="links" asp-action="UpsertUser" asp-route-id="@user.UserId"><i class="fa-solid fa-pen"></i></a>
+                    <a class="links" data-bs-toggle="modal" data-bs-target="#deleteuser" onclick="giveid(@user.UserId)"><i
+                        class="fa-regular fa-trash-can ms-3"></i></a>
+                  </td>
+                }
+                else
+                {
+                  <td class="text-body-secondary">N/A</td>
+                }
+              </tr>
             }
-            else
-            {
-              <td class="text-body-secondary">N/A</td>
-            }
-          </tr>
-        }
-      </tbody>
-    </table>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 <!-- delete alert modal -->

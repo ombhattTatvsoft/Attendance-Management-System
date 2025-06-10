@@ -18,9 +18,8 @@
 
 <body>
     @using System.Security.Claims;
-    @inject IHttpContextAccessor HttpContextAccessor;
     @{
-        var user = HttpContextAccessor?.HttpContext?.User;
+        var user = User;
         var role = user?.FindFirst(ClaimTypes.Role)?.Value.ToString();
     }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -56,7 +55,7 @@
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>
                     </li>
-                    @if (role == "Admin" || role == "Manager")
+                    @if (role == "Admin" || role == "Senior Manager" || role == "Manager")
                     {
                         <li class="sidebaroptions" id="reportAnalytics">
                             <a asp-controller="ReportAnalytics" asp-action="Index"><i
@@ -104,6 +103,8 @@
             document.getElementById('@ViewData["selected"]').classList.add("activesidebar");
         });
     </script>
+    @* full calendar *@
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

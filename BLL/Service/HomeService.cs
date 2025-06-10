@@ -43,37 +43,53 @@ public class HomeService : IHomeService
             return null;
         }
     }
-    public string CreateJwtToken(User user)
+    public string? CreateJwtToken(User user)
     {
-        var claims = new List<Claim>
+        try
+        {
+            var claims = new List<Claim>
         {
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new(ClaimTypes.Role, user.Role.RoleName)
         };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddDays(7),
-            signingCredentials: credentials);
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error creating JWT token for user: {UserId}", user.UserId);
+            return null;
+        }
+
     }
     public void CreateCookie(User user, HttpContext httpContext, string token)
     {
-        CookieOptions options = new()
+        try
         {
-            Domain = "localhost", // Set the domain for the cookie
-            Expires = DateTime.Now.AddDays(7), // Set expiration date to 7 days from now
-            Path = "/", // Cookie is available within the entire application
-            Secure = false, // Ensure the cookie is only sent over HTTPS
-            HttpOnly = true, // Prevent client-side scripts from accessing the cookie
-            IsEssential = true // Indicates the cookie is essential for the application to function
-        };
-        httpContext.Response.Cookies.Append("JwtAMSToken", token, options);
+            CookieOptions options = new()
+            {
+                Domain = "localhost", // Set the domain for the cookie
+                Expires = DateTime.Now.AddDays(7), // Set expiration date to 7 days from now
+                Path = "/", // Cookie is available within the entire application
+                Secure = false, // Ensure the cookie is only sent over HTTPS
+                HttpOnly = true, // Prevent client-side scripts from accessing the cookie
+                IsEssential = true // Indicates the cookie is essential for the application to function
+            };
+            httpContext.Response.Cookies.Append("JwtAMSToken", token, options);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error creating cookie for user: {UserId}", user.UserId);
+        }
     }
 }

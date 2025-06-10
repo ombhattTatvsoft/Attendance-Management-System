@@ -41,7 +41,12 @@ public class HomeController : Controller
                 TempData["failed"] = "Login Failed, Check Credentials!";
                 return RedirectToAction("Index");
             }
-            string token = _service.CreateJwtToken(userFound);
+            string? token = _service.CreateJwtToken(userFound);
+            if( token == null)
+            {
+                TempData["failed"] = "Login Failed, Please Try Again!";
+                return RedirectToAction("Index");
+            }
             _service.CreateCookie(userFound, HttpContext, token);
             TempData["success"] = "Login Successful";
             return RedirectToAction("Index", "Dashboard");

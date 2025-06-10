@@ -63,7 +63,7 @@ public class DashboardController : Controller
     public async Task<IActionResult> GetUserData()
     {
         string email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
-        User user = await _userService.FindUserByEmailAsync(email);
+        User? user = await _userService.FindUserByEmailAsync(email);
         return PartialView("_UserData", user);
     }
 }

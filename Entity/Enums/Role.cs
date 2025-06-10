@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Entity.Enums;
 
 public enum Role
 {
-    Employee = 1,
-    Manager = 2,
-    Admin = 3
+    Admin = 1,
+    [Display(Name ="Senior Manager")]
+    Senior_Manager = 2,
+    Manager = 3,
+    Employee = 4
 }

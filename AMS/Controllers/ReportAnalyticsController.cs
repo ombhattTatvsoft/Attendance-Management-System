@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers;
 
-[Authorize(Roles = "Admin,Manager")]
+[Authorize(Roles = "Admin,Senior Manager,Manager")]
 public class ReportAnalyticsController : Controller
 {
     public IActionResult Index()

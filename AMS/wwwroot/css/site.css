@@ -1,5 +1,7 @@
-.links {
+.links,
+.links:hover {
   text-decoration: none;
+  color: black;
   cursor: pointer;
 }
 

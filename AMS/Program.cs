@@ -21,8 +21,11 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IHolidayService, HolidayService>();
+
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
 
 // add automapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));

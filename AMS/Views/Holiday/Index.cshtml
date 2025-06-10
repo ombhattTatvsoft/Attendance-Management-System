@@ -1,5 +1,128 @@
-
+@model Entity.ViewModels.HolidayVM;
 @{
-    ViewData["Title"] = "Holiday Page";
+  ViewData["Title"] = "Holiday Page";
 }
-<p>Welcome to Holiday</p>
+<div class="content" id="dashboard">
+  <div class="row mx-sm-3 mx-2 pt-2">
+    <div class="col-12 my-2">
+      <h3 class="sitetxtcolor">Holiday</h3>
+    </div>
+    <div class="col-12" style="max-width: 800px;">
+      <div id="holidayCalendar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="holidayModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="holidayForm" class="w-100">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Holiday</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" asp-for="HolidayId" />
+          <div class=" form-floating mb-3">
+            <input asp-for="HolidayName" type="text" class="form-control" id="floatingInput" placeholder="">
+            <span asp-validation-for="HolidayName" class="text-danger"></span>
+            <label for="floatingInput">Name</label>
+          </div>
+          <div class=" form-floating">
+            <input asp-for="HolidayDate" type="date" class="form-control" id="floatingInput" placeholder="">
+            <span asp-validation-for="HolidayDate" class="text-danger"></span>
+            <label for="floatingInput">Date</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save</button>
+          <button type="button" class="btn btn-danger" id="btnDelete">Delete</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section scripts {
+  <script>
+    $(document).ready(function () {
+      var calendar = new FullCalendar.Calendar(document.getElementById('holidayCalendar'), {
+        initialView: 'dayGridMonth',
+        events: '@Url.Action("GetHolidays", "Holiday")',
+        dateClick: function (info) {
+          resetForm();
+          $('#holidayModal').modal('show');
+          $('input[name="HolidayId"]').val(0);
+          $('input[name="HolidayDate"]').val(info.dateStr);
+        },
+        eventClick: function (info) {
+          $.ajax({
+            url: '@Url.Action("GetHoliday", "Holiday")',
+            type: 'GET',
+            data: { id: info.event.id },
+            success: function (response) {
+              if (response.success) {
+                $('#HolidayId').val(response.data.holidayId);
+                $('input[name="HolidayName"]').val(response.data.holidayName);
+                $('input[name="HolidayDate"]').val(response.data.holidayDate);
+                $('#holidayModal').modal('show');
+              }
+              else {
+                toastr.error(response.message);
+              }
+            },
+          });
+        }
+      });
+      calendar.render();
+
+      $('#holidayForm').on('submit', function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+          url: '@Url.Action("SaveHoliday", "Holiday")',
+          type: 'POST',
+          data: formData,
+          success: function (response) {
+            if (response.success) {
+              toastr.success(response.message);
+              $('#holidayModal').modal('hide');
+              calendar.refetchEvents();
+            } else {
+              toastr.error(response.message);
+            }
+          },
+        });
+      });
+
+      $('#btnDelete').on('click', function () {
+        var holidayId = $('#HolidayId').val();
+        if (holidayId) {
+          $.ajax({
+            url: '@Url.Action("DeleteHoliday", "Holiday")',
+            type: 'POST',
+            data: { id: holidayId },
+            success: function (response) {
+              if (response.success) {
+                toastr.success(response.message);
+                $('#holidayModal').modal('hide');
+                calendar.refetchEvents();
+              } else {
+                toastr.error(response.message);
+              }
+            }
+          });
+        }
+      });
+
+      function resetForm() {
+        $('#holidayForm')[0].reset();
+        $('#btnDelete').hide();
+      }
+    });
+  </script>
+  @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

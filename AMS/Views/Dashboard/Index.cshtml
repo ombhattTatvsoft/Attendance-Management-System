@@ -4,8 +4,11 @@
     var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
 }
 <div class="content" id="dashboard">
-    <div class="row mx-sm-3 mx-2 pt-2 mt-3">
-            <div class="col-xxl-4 col-md-6">
+    <div class="row mx-sm-3 mx-2 pt-2">
+        <div class="col-12 my-2">
+            <h3 class="sitetxtcolor">Dashboard</h3>
+        </div>
+        <div class="col-xxl-4 col-md-6">
                 <div class="card bg-secondary text-white shadow h-100">
                     <div class="p-3 h-100 d-flex flex-column justify-content-between">
                         <p class="fw-bold h4">@(role=="Admin"?"Today's Attendance":"Monthly Leaves")</p>
@@ -16,44 +19,43 @@
                                     <div><p class="mb-0 h6">Absent Employee</p><p class="mb-0">1</p></div>
                                 }
                                 else{
+                                    <div><p class="mb-0 h6">Absent days</p><p class="mb-0">3</p></div>
                                     <div><p class="mb-0 h6">Half days</p><p class="mb-0">3</p></div>
-                                    <div><p class="mb-0 h6">"Absent days"</p><p class="mb-0">3</p></div>
                                     <div><p class="mb-0 h6">Total days</p><p class="mb-0">4.5</p></div>
                                 }
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xxl-4 col-md-6 mt-3 mt-md-0">
-                <div class="card shadow h-100 bg-secondary text-white">
-                    <div class="p-3 h-100 d-flex flex-column justify-content-between">
-                        <p class="fw-bold h4">Public Holidays</p>
-                        <div class="w-100 d-flex justify-content-between">
-                            <div><p class="mb-0 h6">Month</p><p class="mb-0">June</p></div>
-                            <div><p class="mb-0 h6">Holiday</p><p class="mb-0">3</p></div>
-                        </div>
+        </div>
+        <div class="col-xxl-4 col-md-6 mt-3 mt-md-0">
+            <div class="card shadow h-100 bg-secondary text-white">
+                <div class="p-3 h-100 d-flex flex-column justify-content-between">
+                    <p class="fw-bold h4">Public Holidays</p>
+                    <div class="w-100 d-flex justify-content-between">
+                        <div><p class="mb-0 h6">Month</p><p class="mb-0">June</p></div>
+                        <div><p class="mb-0 h6">Holiday</p><p class="mb-0">3</p></div>
                     </div>
                 </div>
             </div>
-            <div class="col-xxl-4 col-md-6 mt-3 mt-xxl-0">
-                <div class="card bg-secondary text-white shadow h-100">
-                    <div class="p-3 h-100 d-flex flex-column justify-content-between">
-                        <p class="fw-bold h4">@(role=="Admin"?"Users":"Present Days")</p>
-                        <div class="w-100 d-flex justify-content-between">
-                            @if(role=="Admin"){
-                                <div><p class="mb-0 h6">Total Users</p><p class="mb-0">14</p></div>
-                                <div><p class="mb-0 h6">Managers</p><p class="mb-0">6</p></div>
-                                <div><p class="mb-0 h6">Employee</p><p class="mb-0">7</p></div>
-                            }
-                            else{
-                                <div><p class="mb-0 h6">Total days</p><p class="mb-0">22</p></div>
-                                <div><p class="mb-0 h6">Leave days</p><p class="mb-0">3</p></div>
-                                <div><p class="mb-0 h6">Present days</p><p class="mb-0">19</p></div>
-                            }
-                        </div>
+        </div>
+        <div class="col-xxl-4 col-md-6 mt-3 mt-xxl-0">
+            <div class="card bg-secondary text-white shadow h-100">
+                <div class="p-3 h-100 d-flex flex-column justify-content-between">
+                    <p class="fw-bold h4">@(role=="Admin"?"Users":"Present Days")</p>
+                    <div class="w-100 d-flex justify-content-between">
+                        @if(role=="Admin"){
+                            <div><p class="mb-0 h6">Total Users</p><p class="mb-0">14</p></div>
+                            <div><p class="mb-0 h6">Managers</p><p class="mb-0">6</p></div>
+                            <div><p class="mb-0 h6">Employee</p><p class="mb-0">7</p></div>
+                        }
+                        else{
+                            <div><p class="mb-0 h6">Total days</p><p class="mb-0">22</p></div>
+                            <div><p class="mb-0 h6">Leave days</p><p class="mb-0">3</p></div>
+                            <div><p class="mb-0 h6">Present days</p><p class="mb-0">19</p></div>
+                        }
                     </div>
                 </div>
             </div>
-
+        </div>
     </div>
 </div>
