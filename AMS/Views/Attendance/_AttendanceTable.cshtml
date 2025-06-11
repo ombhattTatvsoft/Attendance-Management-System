@@ -22,11 +22,10 @@
         <tr>
             @foreach (UserAttendanceVM data in Model.AttendanceRecords)
             {
-                <th class="text-center @(data.IsHoliday?"disabled-attendance":"")">
+                <td class="text-center @(DateTime.Now.Date<data.Date.ToDateTime(TimeOnly.MinValue)?"not-clickable":"") @(data.IsHoliday?"leave-days":"")" onclick="console.log('hello')">
                     <div style="height:25px;"> 
-                        @* @(DateTime.Now.Day) *@
                     </div>
-                </th>
+                </td>
             }
         </tr>
     </tbody>

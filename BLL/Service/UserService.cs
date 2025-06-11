@@ -16,14 +16,12 @@ public class UserService : IUserService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
-    public int UpsertedBy { get;  set; }
     public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _logger = logger;
-        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 
     public Task UpdatePasswordAsync(User user, string newPassword)
@@ -33,7 +31,7 @@ public class UserService : IUserService
             string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 13);
             user.Password = passwordHash;
             user.UpdatedAt = DateTime.Now;
-            user.UpdatedBy = UpsertedBy;
+            user.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             _userRepository.Update(user);
             return _userRepository.SaveAsync();
         }
@@ -72,7 +70,7 @@ public class UserService : IUserService
             {
                 user = _mapper.Map<User>(model);
                 user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(model.Password, 13);
-                user.CreatedBy = UpsertedBy;
+                user.CreatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
                 await _userRepository.AddAsync(user);
                 return new Response(true, "User created successfully", user);
             }
@@ -81,7 +79,7 @@ public class UserService : IUserService
                 model.Password = user.Password;
                 user = _mapper.Map(model, user);
                 user.UpdatedAt = DateTime.Now;
-                user.UpdatedBy = UpsertedBy;
+                user.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
                 _userRepository.Update(user);
             }
             await _userRepository.SaveAsync();

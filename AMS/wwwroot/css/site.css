@@ -103,6 +103,15 @@
 .attendance-table-wrapper{
   overflow-x: auto;
 }
-.disabled-attendance{
+.attendance-table-wrapper table td{
+  cursor:pointer;
+}
+.leave-days{
   background-color: rgb(237, 236, 236) !important;
+  pointer-events: none;
+  cursor:not-allowed;
+}
+.not-clickable{
+  pointer-events: none;
+  cursor:not-allowed;
 }
