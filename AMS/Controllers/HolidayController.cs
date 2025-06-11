@@ -32,6 +32,7 @@ public class HolidayController : Controller
         });
         return Json(data);
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<JsonResult> GetHoliday(int id)
     {
@@ -42,6 +43,7 @@ public class HolidayController : Controller
         }
         return Json(new { success = true, data = holiday });
     }
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<JsonResult> SaveHoliday(HolidayVM model)
     {
@@ -59,6 +61,7 @@ public class HolidayController : Controller
         }
         return Json(new { success = false, message = "Invalid data." });
     }
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<JsonResult> DeleteHoliday(int id)
     {
