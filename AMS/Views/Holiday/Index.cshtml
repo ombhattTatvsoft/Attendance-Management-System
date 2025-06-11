@@ -4,13 +4,13 @@
   ViewData["Title"] = "Holiday Page";
   var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
 }
-<div class="content" id="dashboard">
+<div class="content" id="holiday">
   <div class="row mx-sm-3 mx-2 pt-2">
     <div class="col-12 my-2">
       <h3 class="sitetxtcolor">Holiday</h3>
     </div>
-    <div class="col-12 card py-3" style="max-width: 800px;">
-      <div id="holidayCalendar"></div>
+    <div class="col-12 py-3" style="max-width: 800px;">
+      <div class="card p-3" id="holidayCalendar"></div>
     </div>
   </div>
 </div>

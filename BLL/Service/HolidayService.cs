@@ -15,12 +15,14 @@ public class HolidayService : IHolidayService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
+    public int UpsertedBy { get;  set; }
     public HolidayService(IHolidayRepository repository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<UserService> logger)
     {
         _repository = repository;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _logger = logger;
+        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 
     public async Task<Response> DeleteHolidayAsync(int id)
@@ -57,7 +59,6 @@ public class HolidayService : IHolidayService
         }
     }
 
-
     public async Task<List<Holiday>> GetHolidays()
     {
         try
@@ -79,7 +80,7 @@ public class HolidayService : IHolidayService
             if (model.HolidayId == 0)
             {
                 holiday= _mapper.Map<Holiday>(model);
-                holiday.CreatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                holiday.CreatedBy = UpsertedBy;
                 await _repository.AddAsync(holiday);
             }
             else
@@ -90,7 +91,7 @@ public class HolidayService : IHolidayService
                 }
                 holiday = _mapper.Map(model, holiday);
                 holiday.UpdatedAt = DateTime.Now;
-                holiday.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                holiday.UpdatedBy = UpsertedBy;
                 _repository.Update(holiday);
             }
             await _repository.SaveAsync();

@@ -1,0 +1,34 @@
+@using Entity.ViewModels
+@model Entity.ViewModels.UserMonthlyAttendanceVM;
+<h4>@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h4>
+<div class="attendance-table-wrapper">
+    <table class="table table-bordered">
+    <thead>
+        <tr>
+            @foreach (UserAttendanceVM data in Model.AttendanceRecords)
+            {
+                <th class="text-center">
+                    <div>
+                        @data.Date.Day.ToString("D2")
+                    </div>
+                    <div>
+                        @data.Day[0]
+                    </div>
+                </th>
+            }   
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            @foreach (UserAttendanceVM data in Model.AttendanceRecords)
+            {
+                <th class="text-center @(data.IsHoliday?"disabled-attendance":"")">
+                    <div style="height:25px;"> 
+                        @* @(DateTime.Now.Day) *@
+                    </div>
+                </th>
+            }
+        </tr>
+    </tbody>
+</table>
+</div>

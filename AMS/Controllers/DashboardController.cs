@@ -18,6 +18,7 @@ public class DashboardController : Controller
         _homeService = homeService;
         _userService = userService;
     }
+    [HttpGet]
     public IActionResult Index()
     {
         ViewData["selected"] = "dashboard";
