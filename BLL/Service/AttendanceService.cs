@@ -24,7 +24,7 @@ public class AttendanceService : IAttendanceService
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _logger = logger;
-        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        // UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 
     public async Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year, int? id)
