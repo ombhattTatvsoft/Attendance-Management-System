@@ -92,3 +92,10 @@
   right: 10px;
   transform: translateY(-160%);
 }
+/* calendar page */
+@media (max-width:449px) {
+  .fc-direction-ltr .fc-toolbar > * > :not(:first-child) {
+      margin-left: 0.75em;
+      margin-top: 0.75rem;
+  }
+}
