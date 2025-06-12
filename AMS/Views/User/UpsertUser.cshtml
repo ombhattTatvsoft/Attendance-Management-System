@@ -88,7 +88,6 @@
                         type: "GET",
                         data: { departmentId: $("#department").val(), roleId: $("#roleId").val() },
                         success: function (data) {
-                            console.log(data)
                             $('#managerId').empty().append(new Option("Select Reporting Person", ""));
                             $.each(data, function (index, item) {
                                 if (item.userId != @Model.UserId)

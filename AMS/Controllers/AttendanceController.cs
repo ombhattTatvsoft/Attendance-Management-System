@@ -27,4 +27,9 @@ public class AttendanceController : Controller
             return PartialView("_AttendanceTable", model);
         return Json(new { success = false});
     }
+    // [HttpPost]
+    // public async Task<IActionResult> SaveAttendances([FromBody] UserMonthlyAttendanceVM model)
+    // {
+    //     return Json(new { success = false});
+    // }
 }

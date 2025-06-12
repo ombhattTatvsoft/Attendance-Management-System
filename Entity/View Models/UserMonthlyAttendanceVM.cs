@@ -10,8 +10,8 @@ public class UserMonthlyAttendanceVM
 public class UserAttendanceVM
 {
     public DateOnly Date { get; set; }
-    public string Day { get; set; } = null!;
-    public bool IsHoliday { get; set; }
+    public string? Day { get; set; } = null!;
+    public bool? IsHoliday { get; set; }
     public string? Status { get; set; }
     public bool? IsApproved { get; set; }
 }
