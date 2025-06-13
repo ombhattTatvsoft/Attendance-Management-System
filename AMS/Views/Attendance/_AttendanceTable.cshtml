@@ -1,6 +1,6 @@
 @using Entity.ViewModels
 @model Entity.ViewModels.UserMonthlyAttendanceVM;
-<div class="d-flex justify-content-between align-items-center">
+<div class="d-sm-flex justify-content-between align-items-center">
     <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{
         double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);

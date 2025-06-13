@@ -65,7 +65,6 @@ function getTeamAttendanceTable(){
         });
     });
 }
-
 function resetMyAttendanceTable(id) {
     $("#myMonth").val(currentMonth);
     getMyAttendanceTable(id);
