@@ -102,6 +102,9 @@
 /* attendance */
 .attendance-table-wrapper{
   overflow-x: auto;
+  select{
+    appearance: none;
+  }
 }
 .attendance-table-wrapper table td{
   cursor:pointer;
@@ -114,4 +117,31 @@
 .not-clickable{
   pointer-events: none;
   cursor:not-allowed;
+}
+.absent-day-approved{
+  background-color: rgb(247, 182, 182);
+  color:red;
+}
+.present-day-approved{
+  background-color: rgb(204, 253, 204);
+  color: green;
+}
+.halfpresent-day-approved{
+  background-color: rgb(190, 227, 239);
+  color: rgb(56, 162, 197);
+}
+.today-not-filled{
+  background-color: rgb(253, 253, 188);
+}
+.absent-day{
+  color: red;
+  background-color: white;
+}
+.present-day{
+  color: green;
+  background-color: white;
+}
+.halfpresent-day{
+  color: lightblue;
+  background-color: white;
 }

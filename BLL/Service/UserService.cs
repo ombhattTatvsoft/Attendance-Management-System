@@ -163,4 +163,16 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<User?> GetCurrentUserAsync()
+    {
+        try
+        {
+            return await _userRepository.GetAsync(x => x.UserId == int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value), x => x.InverseManager, x => x.Role);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching the current user");
+            return null;
+        }
+    }
 }

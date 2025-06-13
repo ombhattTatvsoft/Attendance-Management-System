@@ -53,7 +53,7 @@ public partial class AMSContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
-            entity.Property(e => e.UserId).HasColumnName("user)id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.AttendanceApprovedByNavigations)
                 .HasForeignKey(d => d.ApprovedBy)

@@ -4,6 +4,6 @@ namespace BLL.IService;
 
 public interface IAttendanceService
 {
-    Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year,int? id);
-
+    Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year,int userId);
+    Task<Response> SaveAttendances(UserMonthlyAttendanceVM model);
 }

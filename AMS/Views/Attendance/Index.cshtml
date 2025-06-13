@@ -1,36 +1,57 @@
-@model Entity.ViewModels.HolidayVM;
+@using System.Security.Claims
+@model Entity.Models.User;
 @{
     ViewData["Title"] = "Attendance Page";
 }
-<div class="content" id="holiday">
+<div class="content" id="attendance">
     <div class="row mx-sm-3 mx-2 pt-2">
         <div class="col-12 my-2">
             <h3 class="sitetxtcolor">Attendance</h3>
         </div>
-        <div class="col-12">
-            <div class="mb-3 d-flex gap-3">
-                <select class="form-select" id="month" style="width: 150px;">
-                    @for(int i=1;i<13;i++){
-                        <option value="@i">@(new DateTime(2025,i,1).ToString("MMMM"))</option>
-                    }
-                </select>
-                <select class="form-select" id="year" style="width: 150px;">
-                    <option value="2025" selected>2025</option>
-                </select>
-                <button class="btn sitebgcolor" type="button" onclick="getAttendanceTable()">Search</button>
-                <button class="btn siteoutlinebtn" type="button" onclick="ResetAttendanceTable()">Reset</button>
+        @if (Model.Role.RoleName != "Admin")
+        {
+            <div class="col-12">
+                <div class="mb-3 d-flex gap-3">
+                    <select class="form-select" id="month" style="width: 150px;">
+                        @for (int i = 1; i < 13; i++)
+                        {
+                            <option value="@i">@(new DateTime(2025, i, 1).ToString("MMMM"))</option>
+                        }
+                    </select>
+                    <select class="form-select" id="year" style="width: 150px;">
+                        <option value="2025" selected>2025</option>
+                    </select>
+                    <button class="btn sitebgcolor" type="button"
+                        onclick="getAttendanceTable(@Model.UserId)">Search</button>
+                    <button class="btn siteoutlinebtn" type="button"
+                        onclick="ResetAttendanceTable(@Model.UserId)">Reset</button>
+                </div>
             </div>
-        </div>
-        <div class="col-12" id="attendanceTable">
-        </div>
-        <div class="col-12 d-flex justify-content-end">
-            <a class="btn sitebgcolor" onclick="saveAttendance()">Save</a>
-        </div>
+            <div class="col-12 d-flex justify-content-end mb-2">
+                <div class="d-flex">
+                    Present <div style="width: 15px;" class="bg-success-subtle m-1 me-2"></div>
+                    Absent <div style="width: 15px;" class="bg-danger-subtle m-1 me-2"></div>
+                    Half Present <div style="width: 15px;" class="bg-info-subtle m-1 me-2"></div>
+                    Today <div style="width: 15px;" class="bg-warning-subtle m-1 me-2"></div>
+                    Weekend,Holiday <div style="width: 15px;" class="bg-secondary-subtle m-1 me-2"></div>
+                </div>
+            </div>
+            <div class="col-12" id="attendanceTable">
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <a class="btn sitebgcolor" onclick="saveAttendance()">Save</a>
+            </div>
+        }
     </div>
 </div>
 
 @section scripts {
-    <script src="~/js/Attendance.js"></script>
+    <script>
+        let currentUserId =@Model.UserId;
+        let currentRoleId=@Model.RoleId;
+    </script>
+    <script src="~/js/Attendance.js">
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

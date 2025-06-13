@@ -1,6 +1,14 @@
 @using Entity.ViewModels
 @model Entity.ViewModels.UserMonthlyAttendanceVM;
-<h4>@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h4>
+<div class="d-flex justify-content-between align-items-center">
+    <h4>@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h4>
+    @{
+        int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<x.Date.ToDateTime(TimeOnly.MinValue)).Count();
+        double presentDays=Model.AttendanceRecords.Where(x=>x.Status=="Present").Count()+(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);
+        int apsentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count();
+    }
+    <h6>Present <span class="badge bg-success">@presentDays</span> Absent <span class="badge bg-danger">@apsentDays</span> Total <span class="badge bg-secondary">@totalDays</span> days</h6>
+</div>
 <div class="attendance-table-wrapper">
     <table class="table table-bordered">
     <thead>
@@ -22,23 +30,46 @@
         <tr>
             @foreach (UserAttendanceVM data in Model.AttendanceRecords)
             {
-                bool futureDates=DateTime.Now.Date<data.Date.ToDateTime(TimeOnly.MinValue);
-                bool clickable=!futureDates && !data.IsHoliday!.Value;
-                <td class="text-center @(futureDates?"not-clickable":"") @(data.IsHoliday!.Value?"leave-days":"") @(clickable?"clickable":"")" onclick="showAttendanceBox(this)"
-                data-userid="@Model.UserId" data-date="@data.Date.ToString("yyyy-MM-dd")">
-                    <div style="height:25px;"> 
-                        @if((data.Day!="Saturday" && data.Day!="Sunday") && data.IsHoliday!.Value){
-                            <p>H</p>
-                        }
+                bool clickable=DateTime.Now.Date==data.Date.ToDateTime(TimeOnly.MinValue);
+                if(data.IsHoliday!.Value || (data.IsApproved!=null && (bool)data.IsApproved))
+                    clickable=false;
+                bool blockDay=data.IsHoliday!.Value || Model.UserCreatedAt!.Value.Date>data.Date.ToDateTime(TimeOnly.MinValue);
+                bool satOrSun=data.Day=="Saturday" || data.Day=="Sunday";
+                <td class="text-center p-0 @(blockDay?"leave-days":"") @(clickable?"clickable":"not-clickable")"
+                data-userid="@Model.UserId" data-date="@data.Date.ToString("yyyy-MM-dd")" onclick="showDropdown(this)">
+                    <div style="height:41px;"> 
+                            @if(!satOrSun && data.IsHoliday!.Value){
+                                <div class="h-100 d-flex justify-content-center align-items-center">
+                                    <span>H</span>
+                                </div>
+                            }
+                            @if(data.Status==null && !blockDay && DateTime.Now.Date>data.Date.ToDateTime(TimeOnly.MinValue) && !satOrSun){
+                                <div class="h-100 d-flex justify-content-center align-items-center absent-day-approved">         
+                                    <span>A</span>
+                                </div>
+                            }
+                            @if(clickable){
+                                <div class="h-100 d-flex justify-content-center align-items-center">
+                                    <select class="h-100 w-100 text-center @(data.Status==null?"today-not-filled":"")" style="border:none;" asp-for="AttendanceRecords[Model.AttendanceRecords.IndexOf(data)].Status">
+                                        <option class="" value="" hidden></option>
+                                        <option class="present-day" value="Present">P</option>
+                                        <option class="absent-day" value="Absent">A</option>
+                                        <option class="halfpresent-day" value="Half Present">HP</option>
+                                    </select>
+                                </div>
+                            }
+                            else if(data.Status!=null){
+                                <div class="h-100 d-flex justify-content-center align-items-center 
+                                @(data.Status=="Present"?"present-day-approved":"")
+                                @(data.Status=="Absent"?"absent-day-approved":"")
+                                @(data.Status=="Half Present"?"halfpresent-day-approved":"")">
+                                    <span>@string.Concat(data.Status.Split(" ").Select(x=>x[0]))</span>
+                                </div>
+                            }
                     </div>
                 </td>
             }
         </tr>
     </tbody>
 </table>
-</div>
-<div class="attendance-popup d-none" id="attendanceBox">
-    <button class="btn btn-sm btn-success">Present</button>
-    <button class="btn btn-sm btn-danger">Absent</button>
-    <button class="btn btn-sm btn-secondary">Half Present</button>
 </div>
