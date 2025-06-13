@@ -50,14 +50,25 @@
                     @if (role != "Admin")
                     {
                         <li class="sidebaroptions" id="attendanceSelf">
-                            <a asp-controller="Attendance" asp-action="Index" asp-route-id="self"><i
+                            <a asp-controller="Attendance" asp-action="Index"><i
                                     class="fa-solid fa-clipboard-user"></i><span>Attendance(Self)</span></a>
                         </li>
                     }
                     <li class="sidebaroptions" id="attendanceTeam">
-                        <a asp-controller="Attendance" asp-action="Index" asp-route-id="tea"><i
-                                class="fa-solid fa-clipboard-user"></i><span>Attendance@(role!="Admin"?"(Team)":"")</span></a>
+                        <a asp-controller="Attendance" asp-action="Team"><i
+                                class="fa-solid fa-clipboard-user"></i><span>Attendance@(role != "Admin" ? "(Team)" : "")</span></a>
                     </li>
+                    @if (role != "Admin")
+                    {
+                        <li class="sidebaroptions" id="regularizeSelf">
+                            <a asp-controller="Attendance" asp-action="Regularize"><i
+                                    class="fa-solid fa-clipboard-user"></i><span>Regularize(Self)</span></a>
+                        </li>
+                        <li class="sidebaroptions" id="regularizeTeam">
+                            <a asp-controller="Attendance" asp-action="RegularizeTeam"><i
+                                    class="fa-solid fa-clipboard-user"></i><span>Regularize(Team)</span></a>
+                        </li>
+                    }
                     <li class="sidebaroptions" id="holiday">
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>

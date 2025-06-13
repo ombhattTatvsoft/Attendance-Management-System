@@ -17,18 +17,16 @@ public class AttendanceController : Controller
         _userService = userService;
     }
     [HttpGet]
-    public async Task<IActionResult> Index(string id)
+    public async Task<IActionResult> Index()
     {
         ViewData["selected"] = "attendanceSelf";
-        if (id != "self")
-            return RedirectToAction("Team");
         User? user = await _userService.GetCurrentUserAsync();
-        if(user!.Role.RoleName==Entity.Enums.Role.Admin.ToString())
+        if (user!.Role.RoleName == Entity.Enums.Role.Admin.ToString())
             return RedirectToAction("Team");
         return View(user);
     }
     [HttpGet]
-    public async Task<IActionResult> Team(string type)
+    public async Task<IActionResult> Team()
     {
         ViewData["selected"] = "attendanceTeam";
         User? user = await _userService.GetCurrentUserAsync();
@@ -48,5 +46,20 @@ public class AttendanceController : Controller
     {
         Response response = await _service.SaveAttendances(model);
         return Json(response);
+    }
+    [HttpGet]
+    public async Task<IActionResult> Regularize()
+    {
+        ViewData["selected"] = "regularizeSelf";
+        User? user = await _userService.GetCurrentUserAsync();
+        if (user!.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+            return RedirectToAction("RegularizeTeam");
+        return View(user);
+    }
+    [HttpGet]
+    public async Task<IActionResult> RegularizeTeam()
+    {
+        ViewData["selected"] = "regularizeTeam";
+        return View();
     }
 }
