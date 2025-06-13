@@ -47,9 +47,16 @@
                             <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
                         </li>
                     }
-                    <li class="sidebaroptions" id="attendance">
-                        <a asp-controller="Attendance" asp-action="Index"><i
-                                class="fa-solid fa-clipboard-user"></i><span>Attendance</span></a>
+                    @if (role != "Admin")
+                    {
+                        <li class="sidebaroptions" id="attendanceSelf">
+                            <a asp-controller="Attendance" asp-action="Index" asp-route-id="self"><i
+                                    class="fa-solid fa-clipboard-user"></i><span>Attendance(Self)</span></a>
+                        </li>
+                    }
+                    <li class="sidebaroptions" id="attendanceTeam">
+                        <a asp-controller="Attendance" asp-action="Index" asp-route-id="tea"><i
+                                class="fa-solid fa-clipboard-user"></i><span>Attendance@(role!="Admin"?"(Team)":"")</span></a>
                     </li>
                     <li class="sidebaroptions" id="holiday">
                         <a asp-controller="Holiday" asp-action="Index"><i

@@ -106,4 +106,16 @@ public class AttendanceService : IAttendanceService
             return new Response(false, "Attendance is not saved");
         }
     }
+
+    public async Task<List<User>?> GetMyTeam(User user)
+    {
+        if (user.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+        {
+            return await _userRepository.GetAllAsync(x => x.UserId != user.UserId);
+        }
+        else
+        {
+            return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId);
+        }
+    }
 }

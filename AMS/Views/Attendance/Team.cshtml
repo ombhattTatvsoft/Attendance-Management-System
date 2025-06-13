@@ -1,0 +1,60 @@
+@model List<Entity.Models.User>;
+@{
+    ViewData["Title"] = "Attendance Page";
+}
+<div class="content" id="attendance">
+    <div class="row mx-sm-3 mx-2 pt-2">
+        <div class="col-12 my-2">
+            <h3 class="sitetxtcolor">Attendance</h3>
+        </div>
+            <div class="col-12 h5 text-primary">
+                Team
+            </div>
+            <div class="col-12 d-xxl-flex justify-content-between align-items-center">
+                <div class="mb-3 d-flex flex-wrap gap-3">
+                    <select class="form-select" id="teamMonth" style="width: 150px;">
+                        @for (int i = 1; i < 13; i++)
+                        {
+                            <option value="@i">@(new DateTime(2025, i, 1).ToString("MMMM"))</option>
+                        }
+                    </select>
+                    <select class="form-select" id="teamYear" style="width: 150px;">
+                        <option value="2025" selected>2025</option>
+                    </select>
+                    <div class="d-flex gap-3">
+                        <button class="btn sitebgcolor" type="button" onclick="getTeamAttendanceTable()">Search</button>
+                        <button class="btn siteoutlinebtn" type="button" onclick="resetTeamAttendanceTable()">Reset</button>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap">
+                    Present <div style="width: 15px;" class="bg-success-subtle m-1 me-2"></div>
+                    Absent <div style="width: 15px;" class="bg-danger-subtle m-1 me-2"></div>
+                    Half Present <div style="width: 15px;" class="bg-info-subtle m-1 me-2"></div>
+                    Today <div style="width: 15px;" class="bg-warning-subtle m-1 me-2"></div>
+                    Weekend,Holiday <div style="width: 15px;" class="bg-secondary-subtle m-1 me-2"></div>
+                </div>
+            </div>
+            @if (Model.Count > 0)
+            {
+                <div class="col-12" id="teamAttendanceTable">
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <a class="btn sitebgcolor" id="saveTeamAttendanceBtn" onclick="saveTeamAttendance()">Save</a>
+                </div>
+            }
+            else{
+                <p>No employee assigned to you.</p>
+            }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        let teamUsers =@Html.Raw(Json.Serialize(Model.Select(x => new { id = x.UserId, name = x.Name }).OrderBy(x => x.id)));
+    </script>
+    <script src="~/js/TeamAttendance.js">
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

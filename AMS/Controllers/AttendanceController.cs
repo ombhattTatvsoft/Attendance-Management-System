@@ -17,11 +17,23 @@ public class AttendanceController : Controller
         _userService = userService;
     }
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string id)
     {
-        ViewData["selected"] = "attendance";
-        User? user =await _userService.GetCurrentUserAsync();
+        ViewData["selected"] = "attendanceSelf";
+        if (id != "self")
+            return RedirectToAction("Team");
+        User? user = await _userService.GetCurrentUserAsync();
+        if(user!.Role.RoleName==Entity.Enums.Role.Admin.ToString())
+            return RedirectToAction("Team");
         return View(user);
+    }
+    [HttpGet]
+    public async Task<IActionResult> Team(string type)
+    {
+        ViewData["selected"] = "attendanceTeam";
+        User? user = await _userService.GetCurrentUserAsync();
+        List<User>? team = await _service.GetMyTeam(user!);
+        return View(team);
     }
     [HttpGet]
     public async Task<IActionResult> GetAttendanceTable(int month, int year, int userId)
@@ -29,7 +41,7 @@ public class AttendanceController : Controller
         UserMonthlyAttendanceVM? model = await _service.GetUserMonthlyAttendance(month, year, userId);
         if (model != null)
             return PartialView("_AttendanceTable", model);
-        return Json(new { success = false});
+        return Json(new { success = false });
     }
     [HttpPost]
     public async Task<IActionResult> SaveAttendances([FromBody] UserMonthlyAttendanceVM model)

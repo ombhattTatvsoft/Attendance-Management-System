@@ -13,4 +13,5 @@ public interface IUserService
     Task<UpsertUserVM> GetUserAsync(int id);
     Task<Response> DeleteUserAsync(int id);
     Task<User?> GetCurrentUserAsync();
+
 }
