@@ -1,11 +1,12 @@
 @using Entity.ViewModels
 @model Entity.ViewModels.UserMonthlyAttendanceVM;
 <div class="d-flex justify-content-between align-items-center">
-    <h4>@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h4>
+    <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{
-        int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<x.Date.ToDateTime(TimeOnly.MinValue)).Count();
-        double presentDays=Model.AttendanceRecords.Where(x=>x.Status=="Present").Count()+(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);
-        int apsentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count();
+        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);
+        int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue)).Count();
+        double presentDays=Model.AttendanceRecords.Where(x=>x.Status=="Present").Count()+halfPresentDays;
+        double apsentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<=DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count() + halfPresentDays;
     }
     <h6>Present <span class="badge bg-success">@presentDays</span> Absent <span class="badge bg-danger">@apsentDays</span> Total <span class="badge bg-secondary">@totalDays</span> days</h6>
 </div>

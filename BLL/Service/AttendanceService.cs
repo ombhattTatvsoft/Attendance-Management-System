@@ -78,6 +78,11 @@ public class AttendanceService : IAttendanceService
                     exist = false;
                     newAttendance = new();
                 }
+                if (model.UserId != attendance.UserId)
+                {
+                    attendance.IsApproved = true;
+                    newAttendance.ApprovedBy = model.UserId;
+                }
                 if (exist)
                 {
                     newAttendance = _mapper.Map(attendance, newAttendance);

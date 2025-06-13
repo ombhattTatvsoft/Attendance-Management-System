@@ -119,15 +119,15 @@
   cursor:not-allowed;
 }
 .absent-day-approved{
-  background-color: rgb(247, 182, 182);
+  background-color: rgb(252, 223, 223);
   color:red;
 }
 .present-day-approved{
-  background-color: rgb(204, 253, 204);
+  background-color: rgb(217, 253, 217);
   color: green;
 }
 .halfpresent-day-approved{
-  background-color: rgb(190, 227, 239);
+  background-color: rgb(213, 243, 253);
   color: rgb(56, 162, 197);
 }
 .today-not-filled{
