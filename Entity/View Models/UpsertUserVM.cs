@@ -17,10 +17,6 @@ public class UpsertUserVM
     [RegularExpression(@"^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Enter valid Email")]
     public string Email { get; set; } = null!;
 
-    [MaxLength(50), Required(ErrorMessage = "Password is Required")]
-    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$",
-    ErrorMessage = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character")]
-    public string Password { get; set; } = null!;
     [Required(ErrorMessage = "Manager is Required")]
     public int ManagerId { get; set; }
     public int Department { get; set; }

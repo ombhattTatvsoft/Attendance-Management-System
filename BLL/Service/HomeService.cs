@@ -96,7 +96,7 @@ public class HomeService : IHomeService
         }
     }
 
-    public string? PrepareLink(User userFound, HttpContext httpContext)
+    public string? PrepareLink(User userFound, HttpContext httpContext,bool? firstLogin=false)
     {
         try
         {
@@ -104,7 +104,10 @@ public class HomeService : IHomeService
             string verifyUrl = "/Home/resetpassword/" + resetCode;
             string link = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{verifyUrl}";
             userFound.ResetPasswordCode = resetCode;
-            userFound.ResetPasswordCodeExpiryTime = DateTime.Now.AddHours(24);
+            if (firstLogin == true)
+                userFound.FirstLogin = true;
+            else
+                userFound.ResetPasswordCodeExpiryTime = DateTime.Now.AddHours(24);
             _userRepository.Update(userFound);
             _userRepository.SaveAsync();
             return link;
@@ -148,7 +151,7 @@ public class HomeService : IHomeService
         if(user==null)
         return new Response(false,"Invalid Link");
         else{
-            if(user.ResetPasswordCodeExpiryTime==null || DateTime.Now>user.ResetPasswordCodeExpiryTime){
+            if(!user.FirstLogin && (user.ResetPasswordCodeExpiryTime==null || DateTime.Now>user.ResetPasswordCodeExpiryTime)){
                 user.ResetPasswordCode=null;
                 user.ResetPasswordCodeExpiryTime=null;
                 _userRepository.Update(user); 

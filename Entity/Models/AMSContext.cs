@@ -205,6 +205,9 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.ResetPasswordCodeExpiryTime)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("resetpasswordcode_expirytime");
+            entity.Property(e => e.FirstLogin)
+            .HasDefaultValueSql("true")
+            .HasColumnName("first_login");
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
                 .HasForeignKey(d => d.ManagerId)
                 .HasConstraintName("users_managerid_fkey");

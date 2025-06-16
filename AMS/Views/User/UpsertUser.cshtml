@@ -31,13 +31,6 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class=" form-floating">
-                        <input asp-for="Password" type="password" class="form-control" id="userPassword" placeholder="">
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                        <label for="floatingInput">Password</label>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class=" form-floating">
                         <select asp-for="Department" class="form-select" id="department"
                             asp-items="@(Html.GetEnumSelectList<Department>())">
                             <option value="">Select Department</option>

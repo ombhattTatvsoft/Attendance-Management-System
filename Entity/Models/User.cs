@@ -32,7 +32,7 @@ public partial class User
     public string? UserImageUrl { get; set; }
     public string? ResetPasswordCode { get; set; }
     public DateTime? ResetPasswordCodeExpiryTime { get; set; }
-
+    public bool FirstLogin{ get; set; }
     public virtual ICollection<Attendance> AttendanceApprovedByNavigations { get; } = new List<Attendance>();
 
     public virtual ICollection<Attendance> AttendanceUsers { get; } = new List<Attendance>();

@@ -32,6 +32,7 @@ public class UserService : IUserService
             string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 13);
             user.ResetPasswordCode=null;
             user.ResetPasswordCodeExpiryTime=null;
+            user.FirstLogin = false;
             user.Password = passwordHash;
             user.UpdatedAt = DateTime.Now;
             user.UpdatedBy = upsertedby==null?user.UserId:int.Parse(upsertedby.Value);
@@ -72,14 +73,12 @@ public class UserService : IUserService
             if (model.UserId == 0)
             {
                 user = _mapper.Map<User>(model);
-                user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(model.Password, 13);
+                user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(Guid.NewGuid().ToString(), 13);
                 user.CreatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
                 await _userRepository.AddAsync(user);
-                return new Response(true, "User created successfully", user);
             }
             else
             {
-                model.Password = user.Password;
                 user = _mapper.Map(model, user);
                 user.UpdatedAt = DateTime.Now;
                 user.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -89,7 +88,6 @@ public class UserService : IUserService
             if (model.UserId == 0)
                 return new Response(true, "User created successfully", user);
                 return new Response(true, "User updated successfully", user);
-            
         }
         catch (Exception ex)
         {
