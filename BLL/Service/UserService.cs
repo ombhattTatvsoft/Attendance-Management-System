@@ -28,10 +28,13 @@ public class UserService : IUserService
     {
         try
         {
+            var upsertedby = _httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier);
             string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 13);
+            user.ResetPasswordCode=null;
+            user.ResetPasswordCodeExpiryTime=null;
             user.Password = passwordHash;
             user.UpdatedAt = DateTime.Now;
-            user.UpdatedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            user.UpdatedBy = upsertedby==null?user.UserId:int.Parse(upsertedby.Value);
             _userRepository.Update(user);
             return _userRepository.SaveAsync();
         }

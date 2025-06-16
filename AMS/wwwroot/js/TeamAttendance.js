@@ -11,29 +11,42 @@ $(document).ready(function () {
         $(this).removeClass('today-not-filled');
     });
 });
-function getTeamAttendanceTable(){
-    $("#teamAttendanceTable").empty();
-    teamUsers.forEach(element => {
+function getTeamAttendanceTable() {
+    $("#teamAttendanceHeaderRow").empty();
+    $("#teamAttendanceBody").empty();
+ 
+    teamUsers.forEach((element, index) => {
         $.ajax({
             type: "GET",
             url: "/Attendance/GetAttendanceTable",
             data: {
                 month: $("#teamMonth").val(),
                 year: $("#teamYear").val(),
-                userId:element.id
+                userId: element.id
             },
             success: function (data) {
-                if (data.success == false)
-                    toastr.error("Failed loading attendance table")
-                else{
-                    let wrapper=$('<div></div>').html(data);
-                    wrapper.find('.user-title').text(element.name);
-                    $("#teamAttendanceTable").append(wrapper.html()); 
-                    if(!$("#teamAttendanceTable td").hasClass('clickable')){
-                        $("#saveTeamAttendanceBtn").hide()
+                if (data.success === false) {
+                    toastr.error("Failed loading attendance table");
+                } else {
+                    let wrapper = $('<div></div>').html(data);
+ 
+                    if (index === 0) {
+                        let header = wrapper.find("thead > tr").html();
+                        $("#teamAttendanceHeaderRow").html(`<th>Name</th>${header}`);
                     }
-                    else{
-                        $("#saveTeamAttendanceBtn").show()
+ 
+                    let userRow = wrapper.find("tbody > tr").html();
+                    let userName = element.name;
+                    let summaryHtml = wrapper.find("h6").eq(1).html();
+ 
+                    let attendanceRow = `<tr><td><strong>${userName}</strong></td>${userRow}</tr>`;
+                    let summaryRow = `<tr><td colspan="${wrapper.find('thead > tr > th').length + 1}">${summaryHtml}</td></tr>`;
+ 
+                    $("#teamAttendanceBody").append(summaryRow).append(attendanceRow);
+                    if (!wrapper.find('td').hasClass('clickable')) {
+                        $("#saveTeamAttendanceBtn").hide();
+                    } else {
+                        $("#saveTeamAttendanceBtn").show();
                     }
                 }
             }

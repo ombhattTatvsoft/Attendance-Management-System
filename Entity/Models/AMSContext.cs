@@ -199,7 +199,12 @@ public partial class AMSContext : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             entity.Property(e => e.UserImageUrl).HasColumnName("user_image_url");
-
+            entity.Property(e => e.ResetPasswordCode)
+            .HasMaxLength(100)
+            .HasColumnName("ResetPasswordCode");
+            entity.Property(e => e.ResetPasswordCodeExpiryTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("resetpasswordcode_expirytime");
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
                 .HasForeignKey(d => d.ManagerId)
                 .HasConstraintName("users_managerid_fkey");

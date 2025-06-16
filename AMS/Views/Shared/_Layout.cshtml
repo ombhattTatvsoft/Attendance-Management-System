@@ -59,7 +59,7 @@
                                 </li>
                             }
                             <li id="attendanceTeam">
-                                <a asp-controller="Attendance" asp-action="Team">Team</a>
+                                <a asp-controller="Attendance" asp-action="AttendanceTeam">Team</a>
                             </li>
                             <li>
                                 <a href="javascript:void(0);" onclick="toggleSubMenu('regularizeSubMenu')">Regularize</a>
@@ -67,7 +67,7 @@
                                     @if (role != "Admin")
                                     {
                                         <li id="regularizeSelf">
-                                            <a asp-controller="Attendance" asp-action="Regularize">Self</a>
+                                            <a asp-controller="Attendance" asp-action="RegularizeSelf">Self</a>
                                         </li>
                                     }
                                     <li id="regularizeTeam">

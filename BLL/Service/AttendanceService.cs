@@ -118,4 +118,9 @@ public class AttendanceService : IAttendanceService
             return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId);
         }
     }
+
+    public async Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId)
+    {
+        return await _repository.GetAsync(x=>x.Date==date && x.UserId==userId);
+    }
 }

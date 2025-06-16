@@ -1,10 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.IService;
 using DAL.IRepository;
 using Entity.Models;
+using Entity.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -91,5 +94,72 @@ public class HomeService : IHomeService
         {
             _logger.LogError(e, "Error creating cookie for user: {UserId}", user.UserId);
         }
+    }
+
+    public string? PrepareLink(User userFound, HttpContext httpContext)
+    {
+        try
+        {
+            string resetCode = Guid.NewGuid().ToString();
+            string verifyUrl = "/Home/resetpassword/" + resetCode;
+            string link = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{verifyUrl}";
+            userFound.ResetPasswordCode = resetCode;
+            userFound.ResetPasswordCodeExpiryTime = DateTime.Now.AddHours(24);
+            _userRepository.Update(userFound);
+            _userRepository.SaveAsync();
+            return link;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Email reset link preparation failed");
+            return null;
+        }
+    }
+    public Response SendEmail(string email, string body, string subject)
+    {
+        try
+        {
+            using MailMessage mm = new(_config["MailMessageCred:Email"]!, email);
+            mm.Subject = subject;
+            mm.Body = body;
+            mm.IsBodyHtml = true;
+            SmtpClient smtp = new()
+            {
+                Host = _config["MailMessageCred:Host"]!,
+                EnableSsl = true
+            };
+            NetworkCredential NetworkCred = new(_config["MailMessageCred:Email"]!, _config["MailMessageCred:Password"]!);
+            smtp.UseDefaultCredentials = true;
+            smtp.Credentials = NetworkCred;
+            smtp.Port = 587;
+            smtp.Send(mm);
+            return new Response(true, "Email sent successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Email sent failed for {}",subject);
+            return new Response(false, "Email sent failed");
+        }
+    }
+
+    public async Task<Response> CheckResetLinkAsync(string id)
+    {
+        User? user=await _userRepository.GetAsync(x=>x.ResetPasswordCode==id);
+        if(user==null)
+        return new Response(false,"Invalid Link");
+        else{
+            if(user.ResetPasswordCodeExpiryTime==null || DateTime.Now>user.ResetPasswordCodeExpiryTime){
+                user.ResetPasswordCode=null;
+                user.ResetPasswordCodeExpiryTime=null;
+                _userRepository.Update(user); 
+                return new Response(false,"Reset Link Expired.");
+            }
+            return new Response(true);
+        }
+    }
+
+    public async Task<User?> FindUserByResetCodeAsync(string resetCode)
+    {
+        return await _userRepository.GetAsync(x => x.ResetPasswordCode == resetCode);
     }
 }

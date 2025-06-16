@@ -30,6 +30,8 @@ public partial class User
     public int? UpdatedBy { get; set; }
 
     public string? UserImageUrl { get; set; }
+    public string? ResetPasswordCode { get; set; }
+    public DateTime? ResetPasswordCodeExpiryTime { get; set; }
 
     public virtual ICollection<Attendance> AttendanceApprovedByNavigations { get; } = new List<Attendance>();
 
