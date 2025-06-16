@@ -47,28 +47,36 @@
                             <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
                         </li>
                     }
-                    @if (role != "Admin")
-                    {
-                        <li class="sidebaroptions" id="attendanceSelf">
-                            <a asp-controller="Attendance" asp-action="Index"><i
-                                    class="fa-solid fa-clipboard-user"></i><span>Attendance(Self)</span></a>
-                        </li>
-                    }
-                    <li class="sidebaroptions" id="attendanceTeam">
-                        <a asp-controller="Attendance" asp-action="Team"><i
-                                class="fa-solid fa-clipboard-user"></i><span>Attendance@(role != "Admin" ? "(Team)" : "")</span></a>
+                    <li class="sidebaroptions">
+                        <a href="javascript:void(0);" onclick="toggleSubMenu('attendanceSubMenu')">
+                            <i class="fa-solid fa-clipboard-user"></i><span>Attendance</span>
+                        </a>
+                        <ul class="submenu ps-3 d-none" id="attendanceSubMenu">
+                            @if (role != "Admin")
+                            {
+                                <li id="attendanceSelf">
+                                    <a asp-controller="Attendance" asp-action="Index">Self</a>
+                                </li>
+                            }
+                            <li id="attendanceTeam">
+                                <a asp-controller="Attendance" asp-action="Team">Team</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" onclick="toggleSubMenu('regularizeSubMenu')">Regularize</a>
+                                <ul class="submenu ps-3 d-none" id="regularizeSubMenu">
+                                    @if (role != "Admin")
+                                    {
+                                        <li id="regularizeSelf">
+                                            <a asp-controller="Attendance" asp-action="Regularize">Self</a>
+                                        </li>
+                                    }
+                                    <li id="regularizeTeam">
+                                        <a asp-controller="Attendance" asp-action="RegularizeTeam">Team</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </li>
-                    @if (role != "Admin")
-                    {
-                        <li class="sidebaroptions" id="regularizeSelf">
-                            <a asp-controller="Attendance" asp-action="Regularize"><i
-                                    class="fa-solid fa-clipboard-user"></i><span>Regularize(Self)</span></a>
-                        </li>
-                        <li class="sidebaroptions" id="regularizeTeam">
-                            <a asp-controller="Attendance" asp-action="RegularizeTeam"><i
-                                    class="fa-solid fa-clipboard-user"></i><span>Regularize(Team)</span></a>
-                        </li>
-                    }
                     <li class="sidebaroptions" id="holiday">
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>

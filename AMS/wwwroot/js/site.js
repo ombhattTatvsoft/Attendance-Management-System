@@ -20,3 +20,8 @@ function togglePassword(id1,id2){
         eyeicon.classList.remove('fa-eye');
     }
 }
+// toggle attendance sub menu
+function toggleSubMenu(id) {
+    const menu = document.getElementById(id);
+    menu.classList.toggle("d-none");
+}

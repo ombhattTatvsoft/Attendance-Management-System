@@ -43,6 +43,14 @@
             @if (Model.Count > 0)
             {
                 <div class="col-12" id="teamAttendanceTable">
+                    <div class="attendance-table-wrapper">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr id="teamAttendanceHeaderRow"></tr>
+                        </thead>
+                        <tbody id="teamAttendanceBody"></tbody>
+                    </table>
+                    </div>
                 </div>
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btn sitebgcolor" id="saveTeamAttendanceBtn" onclick="saveTeamAttendance()">Save</a>
