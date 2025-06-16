@@ -126,6 +126,9 @@
   pointer-events: none;
   cursor:not-allowed;
 }
+.clickable{
+  cursor: pointer;
+}
 .not-clickable{
   pointer-events: none;
   cursor:not-allowed;

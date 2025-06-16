@@ -24,7 +24,7 @@ function getMyAttendanceTable(id) {
             else{
                 $("#myAttendanceTable").html(data);
                 if(!$("#myAttendanceTable td").hasClass('clickable')){
-                    $("#saveMyAttendanceBtn").hide()
+                    $("#saveMyAttendanceBtn").addClass('disabled');
                 }
             }
         }

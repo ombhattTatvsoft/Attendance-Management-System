@@ -44,9 +44,9 @@ function getTeamAttendanceTable() {
  
                     $("#teamAttendanceBody").append(summaryRow).append(attendanceRow);
                     if (!wrapper.find('td').hasClass('clickable')) {
-                        $("#saveTeamAttendanceBtn").hide();
+                        $("#saveTeamAttendanceBtn").addClass('disabled');
                     } else {
-                        $("#saveTeamAttendanceBtn").show();
+                        $("#saveTeamAttendanceBtn").removeClass('disabled');
                     }
                 }
             }
@@ -62,13 +62,21 @@ function showDropdown(ele){
     currentElement=ele;
 }
 function saveTeamAttendance(){
-    var toBeChanged=$("#teamAttendanceTable select").filter(function() {return $(this).val()!=""});
+    var oldNotApproved=$("#teamAttendanceTable select").filter(function() {return $(this).val()!="" && !$(this).hasClass('approved')});
+    var newUpdated=$("#teamAttendanceTable [data-status]");
     newAttendance = [];
-    $(toBeChanged).each(function(){
+    $(oldNotApproved).each(function(){
         newAttendance.push({
             UserId:$(this).closest('td').data('userid'),
             Date:$(this).closest('td').data('date'),
             Status:$(this).val()
+        });
+    });
+    $(newUpdated).each(function(){
+        newAttendance.push({
+            UserId:$(this).closest('td').data('userid'),
+            Date:$(this).closest('td').data('date'),
+            Status:$(this).closest('td').data('status')
         });
     });
     if(newAttendance.length>0){

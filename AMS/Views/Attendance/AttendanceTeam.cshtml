@@ -4,6 +4,7 @@
     ViewData["Title"] = "Team Attendance Page";
     int currentUserId = 0;
     var nameIdentifierClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var role=User.FindFirst(ClaimTypes.Role)?.Value;
     if (!string.IsNullOrEmpty(nameIdentifierClaim) && int.TryParse(nameIdentifierClaim, out int parsedId))
     {
         currentUserId = parsedId;
@@ -53,7 +54,7 @@
                     </div>
                 </div>
                 <div class="col-12 d-flex justify-content-end">
-                    <a class="btn sitebgcolor" id="saveTeamAttendanceBtn" onclick="saveTeamAttendance()">Save</a>
+                    <a class="btn sitebgcolor" id="saveTeamAttendanceBtn" onclick="saveTeamAttendance()">Submit</a>
                 </div>
             }
             else{
@@ -66,6 +67,7 @@
     <script>
         let currentUserId=@currentUserId;
         let teamUsers =@Html.Raw(Json.Serialize(Model.Select(x => new { id = x.UserId, name = x.Name }).OrderBy(x => x.id)));
+        let currentRole=@Html.Raw(Json.Serialize(role));
     </script>
     <script src="~/js/TeamAttendance.js">
     </script>
