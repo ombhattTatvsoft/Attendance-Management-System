@@ -120,11 +120,11 @@ public class AttendanceService : IAttendanceService
         {
             if (user.Role.RoleName == Entity.Enums.Role.Admin.ToString())
             {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId);
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId,x=>x.Role);
             }
             else
             {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId);
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId,x=>x.Role);
             }
         }
         catch (Exception ex)

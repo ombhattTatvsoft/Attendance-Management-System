@@ -74,11 +74,14 @@ function saveTeamAttendance(){
         });
     });
     $(newUpdated).each(function(){
-        newAttendance.push({
+        newData={
             UserId:$(this).closest('td').data('userid'),
             Date:$(this).closest('td').data('date'),
             Status:$(this).closest('td').data('status')
-        });
+        }
+        if(!oldNotApproved.index(newData)){
+            newAttendance.push(newData);
+        }
     });
     if(newAttendance.length>0){
         var formData={
