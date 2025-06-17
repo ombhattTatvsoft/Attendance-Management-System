@@ -25,3 +25,12 @@ function toggleSubMenu(id) {
     const menu = document.getElementById(id);
     menu.classList.toggle("d-none");
 }
+// create data table
+function createDataTable(tableId){
+    $('#'+tableId).DataTable({
+        responsive: true,
+        "columnDefs": [
+          { "orderable": false, "targets": -1 }
+        ]
+      });
+}

@@ -46,6 +46,10 @@
                         <li class="sidebaroptions" id="user">
                             <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
                         </li>
+                        <li class="sidebaroptions" id="department">
+                            <a asp-controller="Department" asp-action="Index"><i
+                                    class="fa-brands fa-microsoft"></i><span>Department</span></a>
+                        </li>
                     }
                     <li class="sidebaroptions">
                         <a href="javascript:void(0);" onclick="toggleSubMenu('attendanceSubMenu')">
@@ -106,6 +110,24 @@
                     <div class="d-flex justify-content-center gap-2">
                         <a asp-controller="Home" asp-action="Logout" class="btn sitebgcolor">Yes</a>
                         <a type="button" class="btn siteoutlinebtn" data-bs-dismiss="modal">No</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- delete alert modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="d-flex justify-content-between p-3">
+                        <h5 class="text-body-tertiary" id="exampleModalLabel">Delete Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class=" d-flex flex-column align-items-center">
+                        <p>Are you sure you want to delete this <span id="deleteTitle"></span>?</p>
+                    </div>
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <a id="deleteConfirm" class="btn sitebgcolor">Yes</a>
+                        <a class="btn siteoutlinebtn" data-bs-dismiss="modal">No</a>
                     </div>
                 </div>
             </div>

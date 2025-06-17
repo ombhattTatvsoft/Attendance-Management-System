@@ -1,0 +1,66 @@
+@model List<Entity.Models.Department>;
+@{
+  ViewData["Title"] = "Department Page";
+}
+<div class="content" id="department">
+  <div class="row mx-sm-3 mx-2 pt-2">
+    <div class="col-12 my-2 d-flex justify-content-between align-items-center">
+      <h3>Departments</h3>
+      <a class="btn sitebgcolor" id="addDepartment"> + Add Department</a>
+    </div>
+    <div class="col-12">
+      <div class="table-responsive bg-white shadow-lg rounded px-3">
+        <table class="table align-middle table-hover mb-0" id="departmentTable">
+          <thead>
+            <tr>
+              <th scope="col" class="text-muted">Name</th>
+              <th scope="col" class="text-muted">Users </th>
+              <th scope="col" class="text-muted">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (Department department in Model)
+            {
+              <tr>
+                <td class="text-body-secondary">@department.DepartmentName</td>
+                <td class="text-body-secondary">@department.Users.Count</td>
+                <td class="d-flex gap-2">
+                  <a class="links" id="editDepartment" data-id="@department.DepartmentId"><i
+                      class="fa-solid fa-pen"></i></a>
+                  <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    onclick="giveid('department',@department.DepartmentId)"><i
+                      class="fa-regular fa-trash-can ms-3"></i></a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DepartmentModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="DepartmentForm" class="w-100">
+
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/Department.js"></script>
+  <script>
+    createDataTable('departmentTable');
+  </script>
+
+  <script>
+    function giveid(title, id) {
+      document.getElementById("deleteTitle").innerText = title;
+      document.getElementById("deleteConfirm").href = "/Department/DeleteDepartment?id=" + id;
+    }
+  </script>
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}

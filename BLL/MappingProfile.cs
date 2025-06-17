@@ -13,5 +13,6 @@ public class MappingProfile : Profile
         CreateMap<User, UpsertUserVM>();
         CreateMap<HolidayVM, Holiday>().ReverseMap();
         CreateMap<UserAttendanceVM, Attendance>().ReverseMap();
+        CreateMap<UpsertDepartmentVM, Department>().ReverseMap();
     }
 }

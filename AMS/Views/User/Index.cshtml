@@ -35,7 +35,7 @@
                 {
                   <td class="d-flex gap-2">
                     <a class="links" asp-action="UpsertUser" asp-route-id="@user.UserId"><i class="fa-solid fa-pen"></i></a>
-                    <a class="links" data-bs-toggle="modal" data-bs-target="#deleteuser" onclick="giveid(@user.UserId)"><i
+                    <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="giveid('user',@user.UserId)"><i
                         class="fa-regular fa-trash-can ms-3"></i></a>
                   </td>
                 }
@@ -51,24 +51,6 @@
     </div>
   </div>
 </div>
-<!-- delete alert modal -->
-<div class="modal fade" id="deleteuser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="d-flex justify-content-between p-3">
-        <h5 class="text-body-tertiary" id="exampleModalLabel">Delete Confirmation</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class=" d-flex flex-column align-items-center">
-        <p>Are you sure you want to delete this user?</p>
-      </div>
-      <div class="d-flex justify-content-center gap-2 mb-4">
-        <a id="deleteUser" class="btn sitebgcolor">Yes</a>
-        <a class="btn siteoutlinebtn" data-bs-dismiss="modal">No</a>
-      </div>
-    </div>
-  </div>
-</div>
 
 </div>
 </div>
@@ -76,19 +58,13 @@
 
 @section Scripts {
   <script>
-    $(document).ready(function () {
-      $('#usertable').DataTable({
-        responsive: true,
-        "columnDefs": [
-          { "orderable": false, "targets": -1 }
-        ]
-      });
-    });
+    createDataTable('usertable');
   </script>
 
   <script>
-    function giveid(id) {
-      document.getElementById("deleteUser").href = "/User/DeleteUser?id=" + id;
+    function giveid(title,id) {
+      document.getElementById("deleteTitle").innerText = title;
+      document.getElementById("deleteConfirm").href = "/User/DeleteUser?id=" + id;
     }
   </script>
 }

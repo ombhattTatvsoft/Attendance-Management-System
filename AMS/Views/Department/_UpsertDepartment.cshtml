@@ -1,0 +1,26 @@
+@model Entity.ViewModels.UpsertDepartmentVM;
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Department</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" asp-for="DepartmentId" />
+    <div class=" form-floating mb-3">
+      <input asp-for="DepartmentName" type="text" class="form-control" id="floatingInput" placeholder="">
+      <span asp-validation-for="DepartmentName" class="text-danger"></span>
+      <label for="floatingInput">Name</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn sitebgcolor">@(Model.DepartmentId==0?"Add":"Edit")</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>  
+@section Scripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}
