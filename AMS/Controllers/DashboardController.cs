@@ -12,11 +12,11 @@ public class DashboardController : Controller
 {
     private readonly IUserService _userService;
 
-    private readonly IHomeService _homeService;
+    private readonly IAuthService _AuthService;
 
-    public DashboardController(IUserService userService,IHomeService homeService)
+    public DashboardController(IUserService userService,IAuthService AuthService)
     {
-        _homeService = homeService;
+        _AuthService = AuthService;
         _userService = userService;
     }
 
@@ -48,7 +48,7 @@ public class DashboardController : Controller
             else
             {
                 string email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
-                User? user = await _homeService.AuthenticateUserAsync(email, model.CurrentPassword);
+                User? user = await _AuthService.AuthenticateUserAsync(email, model.CurrentPassword);
                 if (user != null)
                 {
                     await _userService.UpdatePasswordAsync(user, model.NewPassword);

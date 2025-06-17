@@ -7,7 +7,7 @@
         <h4 class="mb-2 mt-4">Login</h4>
         <div class="col-10 mb-4">
             <h5>Welcome,</h5>
-            <form asp-controller="Home" asp-action="Index" method="post">
+            <form asp-controller="Auth" asp-action="Index" method="post">
                 <div class="form-floating mb-3">
                     <input asp-for="Email" type="email" class="form-control" placeholder="">
                     <span asp-validation-for="Email" class="text-danger"></span>
@@ -19,7 +19,7 @@
                     <label>Password</label>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <a class="links" asp-controller="Home" asp-action="ForgotPassword">Forgot Password</a>
+                    <a class="links" asp-controller="Auth" asp-action="ForgotPassword">Forgot Password</a>
                     <button type="submit" class="btn sitebgcolor">Login</button>
                 </div>
             </form>

@@ -10,14 +10,14 @@ namespace AMS.Controllers;
 [Authorize(Roles = "Admin")]
 public class UserController : Controller
 {
-    private readonly IHomeService _homeService;
+    private readonly IAuthService _AuthService;
 
     private readonly IUserService _userService;
     
     private readonly IDepartmentService _departmentService;
-    public UserController(IHomeService homeService, IUserService userService, IDepartmentService departmentService)
+    public UserController(IAuthService AuthService, IUserService userService, IDepartmentService departmentService)
     {
-        _homeService = homeService;
+        _AuthService = AuthService;
         _userService = userService;
         _departmentService = departmentService;
     }
@@ -60,7 +60,7 @@ public class UserController : Controller
                 TempData["success"] = response.Message;
                 if (model.UserId == 0)
                 {
-                    string? link = _homeService.PrepareLink((User)response.Data!, HttpContext,true);
+                    string? link = _AuthService.PrepareLink((User)response.Data!, HttpContext,true);
                     string subject = "Update Password Request";
                     string body = $@"
                 <div style='width:50%;'>
@@ -77,7 +77,7 @@ public class UserController : Controller
                 <p>If you encounter any issues or have any question,Please do not hesitate to contact our support team</p>
                 </div>
                 </div>";
-                    Response emailResponse = _homeService.SendEmail(model.Email, body, subject);
+                    Response emailResponse = _AuthService.SendEmail(model.Email, body, subject);
                     if (emailResponse.IsSuccess)
                         TempData["success"] = emailResponse.Message;
                     else

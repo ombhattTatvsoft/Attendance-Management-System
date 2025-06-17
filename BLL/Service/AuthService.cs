@@ -15,15 +15,15 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Service;
 
-public class HomeService : IHomeService
+public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
 
     private readonly IConfiguration _config;
 
-    private readonly ILogger<HomeService> _logger;
+    private readonly ILogger<AuthService> _logger;
 
-    public HomeService(IUserRepository userRepository, IConfiguration config, ILogger<HomeService> logger)
+    public AuthService(IUserRepository userRepository, IConfiguration config, ILogger<AuthService> logger)
     {
         _userRepository = userRepository;
         _config = config;
@@ -106,7 +106,7 @@ public class HomeService : IHomeService
         try
         {
             string resetCode = Guid.NewGuid().ToString();
-            string verifyUrl = "/Home/resetpassword/" + resetCode;
+            string verifyUrl = "/Auth/resetpassword/" + resetCode;
             string link = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{verifyUrl}";
             userFound.ResetPasswordCode = resetCode;
             if (firstLogin == true)

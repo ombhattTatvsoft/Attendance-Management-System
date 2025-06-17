@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using BLL.IService;
 using Entity.Models;
@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers;
 
-public class HomeController : Controller
+public class AuthController : Controller
 {
-    private readonly IHomeService _service;
+    private readonly IAuthService _service;
 
     private readonly IUserService _userService;
 
-    public HomeController(IHomeService service, IUserService userService)
+    public AuthController(IAuthService service, IUserService userService)
     {
         _service = service;
         _userService = userService;
@@ -119,7 +119,7 @@ public class HomeController : Controller
     public async Task<IActionResult> ResetPassword(string id)
     {
         Response response = await _service.CheckResetLinkAsync(id);
-        if (!response.IsSuccess)
+        if (!response.IsSuccess || string.IsNullOrEmpty(id))
         {
             TempData["failed"] = response.Message;
             return RedirectToAction("Index");
