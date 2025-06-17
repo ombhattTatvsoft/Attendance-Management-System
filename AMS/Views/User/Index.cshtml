@@ -30,7 +30,7 @@
                 <td class="text-body-secondary">@user.Email</td>
                 <td class="text-body-secondary">@user.Role.RoleName</td>
                 <td class="text-body-secondary">@user.Manager?.Name</td>
-                <td class="text-body-secondary">@user.Department</td>
+                <td class="text-body-secondary">@user.Department?.DepartmentName</td>
                 @if (user.RoleId != 1)
                 {
                   <td class="d-flex gap-2">

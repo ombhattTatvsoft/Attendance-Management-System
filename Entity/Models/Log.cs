@@ -9,5 +9,5 @@ public partial class Log
 
     public string LogMessage { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

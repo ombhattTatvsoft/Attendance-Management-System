@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +16,8 @@ public partial class AMSContext : DbContext
     }
 
     public virtual DbSet<Attendance> Attendances { get; set; }
+
+    public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<Holiday> Holidays { get; set; }
 
@@ -50,6 +52,7 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.OutTime).HasColumnName("out_time");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
@@ -63,6 +66,29 @@ public partial class AMSContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("attendances_userid_fkey");
+        });
+
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.HasKey(e => e.DepartmentId).HasName("departments_pkey");
+
+            entity.ToTable("departments");
+
+            entity.Property(e => e.DepartmentId).HasColumnName("department_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.DepartmentName)
+                .HasMaxLength(100)
+                .HasColumnName("department_name");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
         });
 
         modelBuilder.Entity<Holiday>(entity =>
@@ -85,6 +111,7 @@ public partial class AMSContext : DbContext
                 .HasColumnName("holiday_name");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
@@ -179,12 +206,14 @@ public partial class AMSContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.Department)
-                .HasMaxLength(50)
-                .HasColumnName("department");
+            entity.Property(e => e.DepartmentId).HasColumnName("department_id");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .HasColumnName("email");
+            entity.Property(e => e.FirstLogin)
+                .IsRequired()
+                .HasDefaultValueSql("true")
+                .HasColumnName("first_login");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.Name)
@@ -193,21 +222,22 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(500)
                 .HasColumnName("password");
+            entity.Property(e => e.ResetPasswordCode).HasMaxLength(100);
+            entity.Property(e => e.ResetPasswordCodeExpiryTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("ResetPasswordCodeExpiryTime");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             entity.Property(e => e.UserImageUrl).HasColumnName("user_image_url");
-            entity.Property(e => e.ResetPasswordCode)
-            .HasMaxLength(100)
-            .HasColumnName("ResetPasswordCode");
-            entity.Property(e => e.ResetPasswordCodeExpiryTime)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("resetpasswordcode_expirytime");
-            entity.Property(e => e.FirstLogin)
-            .HasDefaultValueSql("true")
-            .HasColumnName("first_login");
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Users)
+                .HasForeignKey(d => d.DepartmentId)
+                .HasConstraintName("users_department_id_fkey");
+
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
                 .HasForeignKey(d => d.ManagerId)
                 .HasConstraintName("users_managerid_fkey");

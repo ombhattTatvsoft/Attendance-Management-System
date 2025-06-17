@@ -12,13 +12,19 @@ namespace BLL.Service;
 public class AttendanceService : IAttendanceService
 {
     private readonly IAttendanceRepository _repository;
+
     private readonly IUserRepository _userRepository;
+
     private readonly IHolidayRepository _holidayRepository;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     private readonly ILogger<AttendanceService> _logger;
+
     private readonly IMapper _mapper;
+
     public int UpsertedBy { get; set; }
-    public AttendanceService(IAttendanceRepository repository,IUserRepository userRepository, IHolidayRepository holidayRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<AttendanceService> logger)
+    public AttendanceService(IAttendanceRepository repository, IUserRepository userRepository, IHolidayRepository holidayRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<AttendanceService> logger)
     {
         _repository = repository;
         _holidayRepository = holidayRepository;
@@ -41,19 +47,19 @@ public class AttendanceService : IAttendanceService
             List<DateOnly> holidayDates = holidays.Select(h => h.HolidayDate).ToList();
             List<Attendance> attendances = await _repository.GetAllAsync(x => x.UserId == userId && x.Date.Month == month && x.Date.Year == year);
             User? user = await _userRepository.GetAsync(x => x.UserId == userId);
-            UserMonthlyAttendanceVM model = new UserMonthlyAttendanceVM
+            UserMonthlyAttendanceVM model = new()
             {
                 UserId = userId,
                 Month = month,
                 Year = year,
-                UserCreatedAt=user!.CreatedAt,
+                UserCreatedAt = user!.CreatedAt,
                 AttendanceRecords = allDates.Select(date => new UserAttendanceVM
                 {
                     Date = date,
                     Day = date.DayOfWeek.ToString(),
                     IsHoliday = holidayDates.Contains(date) || date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday,
-                    Status = attendances.Where(x=>x.Date==date).Select(x=>x.Status).FirstOrDefault(),
-                    IsApproved = attendances.Where(x=>x.Date==date).Select(x=>x.IsApproved).FirstOrDefault()
+                    Status = attendances.Where(x => x.Date == date).Select(x => x.Status).FirstOrDefault(),
+                    IsApproved = attendances.Where(x => x.Date == date).Select(x => x.IsApproved).FirstOrDefault()
                 }).ToList()
             };
             return model;
@@ -72,7 +78,7 @@ public class AttendanceService : IAttendanceService
             foreach (UserAttendanceVM attendance in model.AttendanceRecords)
             {
                 bool exist = true;
-                Attendance newAttendance = await _repository.GetAsync(x => x.Date == attendance.Date && x.UserId == attendance.UserId);
+                Attendance? newAttendance = await _repository.GetAsync(x => x.Date == attendance.Date && x.UserId == attendance.UserId);
                 if (newAttendance == null)
                 {
                     exist = false;
@@ -94,6 +100,7 @@ public class AttendanceService : IAttendanceService
                 {
                     newAttendance = _mapper.Map<Attendance>(attendance);
                     newAttendance.CreatedBy = UpsertedBy;
+                    newAttendance.UpdatedBy = UpsertedBy;
                     await _repository.AddAsync(newAttendance);
                 }
             }
@@ -107,20 +114,28 @@ public class AttendanceService : IAttendanceService
         }
     }
 
-    public async Task<List<User>?> GetMyTeam(User user)
+    public async Task<List<User>> GetMyTeam(User user)
     {
-        if (user.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+        try
         {
-            return await _userRepository.GetAllAsync(x => x.UserId != user.UserId);
+            if (user.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+            {
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId);
+            }
+            else
+            {
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId);
+            _logger.LogError(ex, "Error retrieving team members for user {UserId}", user.UserId);
+            return new List<User>();
         }
     }
 
-    public async Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId)
-    {
-        return await _repository.GetAsync(x=>x.Date==date && x.UserId==userId);
-    }
+    // public async Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId)
+    // {
+    //     return await _repository.GetAsync(x=>x.Date==date && x.UserId==userId);
+    // }
 }

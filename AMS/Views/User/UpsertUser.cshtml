@@ -31,11 +31,14 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class=" form-floating">
-                        <select asp-for="Department" class="form-select" id="department"
-                            asp-items="@(Html.GetEnumSelectList<Department>())">
+                        <select asp-for="DepartmentId" class="form-select" id="department">
                             <option value="">Select Department</option>
+                            @foreach (Department department in Model.Departments)
+                            {
+                                <option value="@department.DepartmentId">@department.DepartmentName</option>
+                            }
                         </select>
-                        <span asp-validation-for="Department" class="text-danger"></span>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
                         <label for="floatingInput">Department</label>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
                                     $('#managerId').append(new Option(item.name + `(${item.roleName})`, item.userId));
                             });
                             if (@Model.UserId) {
-                                if (@Model.Department == $("#department").val() && @Model.RoleId == $("#roleId").val())
+                                if (@Model.DepartmentId == $("#department").val() && @Model.RoleId == $("#roleId").val())
                                     $('#managerId').val(@Model.ManagerId);
                             } else {
                                 $('#managerId').val("");

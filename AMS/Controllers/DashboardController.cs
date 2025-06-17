@@ -11,6 +11,7 @@ namespace AMS.Controllers;
 public class DashboardController : Controller
 {
     private readonly IUserService _userService;
+
     private readonly IHomeService _homeService;
 
     public DashboardController(IUserService userService,IHomeService homeService)
@@ -18,18 +19,21 @@ public class DashboardController : Controller
         _homeService = homeService;
         _userService = userService;
     }
+
     [HttpGet]
     public IActionResult Index()
     {
         ViewData["selected"] = "dashboard";
         return View();
     }
+
     [HttpGet]
     public IActionResult ChangePassword()
     {
         ViewData["selected"] = "dashboard";
         return View();
     }
+    
     [HttpPost]
     public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
     {

@@ -11,12 +11,18 @@ namespace AMS.Controllers;
 public class UserController : Controller
 {
     private readonly IHomeService _homeService;
+
     private readonly IUserService _userService;
-    public UserController(IHomeService homeService,IUserService userService)
+    
+    private readonly IDepartmentService _departmentService;
+    public UserController(IHomeService homeService, IUserService userService, IDepartmentService departmentService)
     {
         _homeService = homeService;
         _userService = userService;
+        _departmentService = departmentService;
     }
+
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         ViewData["selected"] = "user";
@@ -28,7 +34,10 @@ public class UserController : Controller
     public async Task<IActionResult> UpsertUser(int? id)
     {
         ViewData["selected"] = "user";
-        UpsertUserVM model = new();
+        UpsertUserVM model = new()
+        {
+            Departments = await _departmentService.GetAllDepartmentsAsync()
+        };
         if (id == null)
             return View(model);
         else
@@ -51,7 +60,7 @@ public class UserController : Controller
                 TempData["success"] = response.Message;
                 if (model.UserId == 0)
                 {
-                    string? link = _homeService.PrepareLink((User)response.Data, HttpContext,true);
+                    string? link = _homeService.PrepareLink((User)response.Data!, HttpContext,true);
                     string subject = "Update Password Request";
                     string body = $@"
                 <div style='width:50%;'>
@@ -83,6 +92,7 @@ public class UserController : Controller
             }
         }
         ViewData["selected"] = "user";
+        model.Departments = await _departmentService.GetAllDepartmentsAsync();
         return View(model);
     }
 

@@ -11,6 +11,7 @@ namespace AMS.Controllers;
 public class HomeController : Controller
 {
     private readonly IHomeService _service;
+
     private readonly IUserService _userService;
 
     public HomeController(IHomeService service, IUserService userService)

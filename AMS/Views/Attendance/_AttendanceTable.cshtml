@@ -4,7 +4,7 @@
 @{
     var role=User.FindFirst(ClaimTypes.Role)?.Value;
 }
-<p class="text-danger mb-1">Today's attendance has been submitted by your Reporting Person. Please contact him/her now in case of any corrections.</p>
+<p class="text-danger mb-1 d-none" id="approvedTitle">Today's attendance has been submitted by your Reporting Person. Please contact him/her now in case of any corrections.</p>
 <div class="d-sm-flex justify-content-between align-items-center">
     <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{

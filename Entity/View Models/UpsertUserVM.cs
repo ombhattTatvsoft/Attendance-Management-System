@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Entity.Models;
 
 namespace Entity.ViewModels;
 
@@ -19,5 +20,7 @@ public class UpsertUserVM
 
     [Required(ErrorMessage = "Manager is Required")]
     public int ManagerId { get; set; }
-    public int Department { get; set; }
+    public int DepartmentId { get; set; }
+    public List<Department> Departments { get; set; } = new List<Department>();
+    
 }

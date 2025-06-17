@@ -29,7 +29,7 @@ function getTeamAttendanceTable() {
                     toastr.error("Failed loading attendance table");
                 } else {
                     let wrapper = $('<div></div>').html(data);
- 
+                    $("#teamAttendanceTable").before(wrapper.find('#approvedTitle'));
                     if (index === 0) {
                         let header = wrapper.find("thead > tr").html();
                         $("#teamAttendanceHeaderRow").html(`<th>Name</th>${header}`);
@@ -41,12 +41,13 @@ function getTeamAttendanceTable() {
  
                     let attendanceRow = `<tr><td><strong>${userName}</strong></td>${userRow}</tr>`;
                     let summaryRow = `<tr><td colspan="${wrapper.find('thead > tr > th').length + 1}">${summaryHtml}</td></tr>`;
- 
                     $("#teamAttendanceBody").append(summaryRow).append(attendanceRow);
                     if (!wrapper.find('td').hasClass('clickable')) {
                         $("#saveTeamAttendanceBtn").addClass('disabled');
+                        $("#approvedTitle").removeClass('d-none');
                     } else {
                         $("#saveTeamAttendanceBtn").removeClass('disabled');
+                        $("#approvedTitle").addClass('d-none');
                     }
                 }
             }
