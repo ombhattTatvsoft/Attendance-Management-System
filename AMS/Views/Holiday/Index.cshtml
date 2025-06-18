@@ -1,4 +1,6 @@
 @using System.Security.Claims
+@using BLL.Helpers
+@using Entity.Enums;
 @model Entity.ViewModels.HolidayVM;
 @{
   ViewData["Title"] = "Holiday Page";
@@ -16,7 +18,7 @@
 </div>
 
 <!-- Bootstrap Modal -->
-@if (role == "Admin")
+@if (role == RoleHelper.ToDbString(RoleEnum.Admin))
 {
   <div class="modal fade" id="holidayModal" tabindex="-1" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog modal-dialog-centered">

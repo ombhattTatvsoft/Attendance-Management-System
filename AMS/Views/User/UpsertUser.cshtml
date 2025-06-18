@@ -45,7 +45,7 @@
                 <div class="col-md-6 mb-3">
                     <div class=" form-floating">
                         <select asp-for="RoleId" class="form-select" id="roleId"
-                            asp-items="@(Html.GetEnumSelectList<Entity.Enums.Role>().Where(r => int.Parse(r.Value) > 1))">
+                            asp-items="@(Html.GetEnumSelectList<Entity.Enums.RoleEnum>().Where(r => int.Parse(r.Value) > 1))">
                             <option value="">Select Designation</option>
                         </select>
                         <span asp-validation-for="RoleId" class="text-danger"></span>

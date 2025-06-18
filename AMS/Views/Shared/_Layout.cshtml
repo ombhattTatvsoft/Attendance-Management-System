@@ -18,6 +18,8 @@
 
 <body>
     @using System.Security.Claims;
+@using BLL.Helpers
+    @using Entity.Enums;
     @{
         var user = User;
         var role = user?.FindFirst(ClaimTypes.Role)?.Value.ToString();
@@ -41,7 +43,7 @@
                         <a asp-controller="Dashboard" asp-action="Index"><i
                                 class="fa-solid fa-table-cells-large"></i><span>Dashboard</span></a>
                     </li>
-                    @if (role == "Admin")
+                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
                     {
                         <li class="sidebaroptions" id="user">
                             <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
@@ -56,7 +58,7 @@
                             <i class="fa-solid fa-clipboard-user"></i><span>Attendance</span>
                         </a>
                         <ul class="submenu ps-3 d-none" id="attendanceSubMenu">
-                            @if (role != "Admin")
+                            @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
                             {
                                 <li id="attendanceSelf">
                                     <a asp-controller="Attendance" asp-action="Index">Self</a>
@@ -68,7 +70,7 @@
                             <li>
                                 <a href="javascript:void(0);" onclick="toggleSubMenu('regularizeSubMenu')">Regularize</a>
                                 <ul class="submenu ps-3 d-none" id="regularizeSubMenu">
-                                    @if (role != "Admin")
+                                    @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
                                     {
                                         <li id="regularizeSelf">
                                             <a asp-controller="Attendance" asp-action="RegularizeSelf">Self</a>
@@ -85,7 +87,7 @@
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>
                     </li>
-                    @if (role == "Admin" || role == "Senior Manager" || role == "Manager")
+                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin) || role == RoleHelper.ToDbString(RoleEnum.SeniorManager) || role == RoleHelper.ToDbString(RoleEnum.Manager))
                     {
                         <li class="sidebaroptions" id="reportAnalytics">
                             <a asp-controller="ReportAnalytics" asp-action="Index"><i

@@ -1,10 +1,12 @@
 using BLL.IService;
 using Entity.Models;
 using Entity.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class DepartmentController : Controller
 {
     private readonly IDepartmentService _service;
@@ -51,7 +53,7 @@ public class DepartmentController : Controller
         }
         return Json(new { success = false, message = "Invalid data." });
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> DeleteDepartment(int id)
     {

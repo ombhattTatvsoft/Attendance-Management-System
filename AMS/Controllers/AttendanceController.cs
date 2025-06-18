@@ -1,4 +1,6 @@
+using BLL.Helpers;
 using BLL.IService;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +26,7 @@ public class AttendanceController : Controller
     {
         ViewData["selected"] = "attendanceSelf";
         User? user = await _userService.GetCurrentUserAsync();
-        if (user!.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+        if (user!.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
             return RedirectToAction("AttendanceTeam");
         return View(user);
     }
@@ -59,7 +61,7 @@ public class AttendanceController : Controller
     // {
     //     ViewData["selected"] = "regularizeSelf";
     //     User? user = await _userService.GetCurrentUserAsync();
-    //     if (user!.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+    //     if (user!.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
     //         return RedirectToAction("RegularizeTeam");
     //     return View(user);
     // }

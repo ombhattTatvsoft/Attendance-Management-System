@@ -20,6 +20,7 @@ public class HolidayService : IHolidayService
     private readonly IMapper _mapper;
     
     public int UpsertedBy { get; set; }
+    
     public HolidayService(IHolidayRepository repository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<UserService> logger)
     {
         _repository = repository;

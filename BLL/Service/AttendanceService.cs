@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -118,7 +120,7 @@ public class AttendanceService : IAttendanceService
     {
         try
         {
-            if (user.Role.RoleName == Entity.Enums.Role.Admin.ToString())
+            if (user.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
             {
                 return await _userRepository.GetAllAsync(x => x.UserId != user.UserId,x=>x.Role);
             }

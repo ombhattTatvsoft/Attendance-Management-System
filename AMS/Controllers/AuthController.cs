@@ -32,7 +32,6 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(UserLoginVM user)
     {
         if (ModelState.IsValid)
@@ -73,7 +72,6 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordVM user)
     {
         if (ModelState.IsValid)
@@ -132,7 +130,6 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordVM user)
     {
         if (ModelState.IsValid)

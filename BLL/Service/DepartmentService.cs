@@ -39,7 +39,7 @@ public class DepartmentService : IDepartmentService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while getting all departments.");
-            return await Task.FromResult(new List<Department>());
+            return new List<Department>();
         }
     }
 
