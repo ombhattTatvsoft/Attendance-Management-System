@@ -116,26 +116,6 @@ public class AttendanceService : IAttendanceService
         }
     }
 
-    public async Task<List<User>> GetMyTeam(User user)
-    {
-        try
-        {
-            if (user.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
-            {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && !x.IsDeleted,x=>x.Role);
-            }
-            else
-            {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId && !x.IsDeleted,x=>x.Role);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving team members for user {UserId}", user.UserId);
-            return new List<User>();
-        }
-    }
-
     // public async Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId)
     // {
     //     return await _repository.GetAsync(x=>x.Date==date && x.UserId==userId);

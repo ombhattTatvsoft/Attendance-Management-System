@@ -36,7 +36,7 @@ public class AttendanceController : Controller
     {
         ViewData["selected"] = "attendanceTeam";
         User? user = await _userService.GetCurrentUserAsync();
-        List<User> team = await _service.GetMyTeam(user!);
+        List<User> team = await _userService.GetMyTeam(user!);
         return View(team);
     }
 
@@ -71,7 +71,7 @@ public class AttendanceController : Controller
     // {
     //     ViewData["selected"] = "regularizeTeam";
     //     User? user = await _userService.GetCurrentUserAsync();
-    //     List<User>? team = await _service.GetMyTeam(user!);
+    //     List<User>? team = await _userService.GetMyTeam(user!);
     //     return View(team);
     // }
 

@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ public class UserService : IUserService
     private readonly ILogger<UserService> _logger;
 
     private readonly IMapper _mapper;
-    
+
     public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
@@ -33,12 +35,12 @@ public class UserService : IUserService
         {
             var upsertedby = _httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier);
             string passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 13);
-            user.ResetPasswordCode=null;
-            user.ResetPasswordCodeExpiryTime=null;
+            user.ResetPasswordCode = null;
+            user.ResetPasswordCodeExpiryTime = null;
             user.FirstLogin = false;
             user.Password = passwordHash;
             user.UpdatedAt = DateTime.Now;
-            user.UpdatedBy = upsertedby==null?user.UserId:int.Parse(upsertedby.Value);
+            user.UpdatedBy = upsertedby == null ? user.UserId : int.Parse(upsertedby.Value);
             _userRepository.Update(user);
             return _userRepository.SaveAsync();
         }
@@ -69,30 +71,40 @@ public class UserService : IUserService
             int upsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             User? userWithEmail = await FindUserByEmailAsync(model.Email);
             User? user = (model.UserId == 0) ? new User() : await _userRepository.GetAsync(u => u.UserId == model.UserId && !u.IsDeleted);
-            if (userWithEmail != null)
-                if (model.UserId == 0 || (model.UserId != 0 && userWithEmail.UserId != model.UserId))
-                    return new Response(false, "Email already exists");
+            if (userWithEmail != null && (model.UserId == 0 || (model.UserId != 0 && userWithEmail.UserId != model.UserId)))
+                return new Response(false, "Email already exists");
             if (model.UserId != 0 && user == null)
                 return new Response(false, "User not found");
+            // if (model.UserId == 0)
+            // {
+            //     user = _mapper.Map<User>(model);
+            //     user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(Guid.NewGuid().ToString(), 13);
+            //     user.CreatedBy = upsertedBy;
+            //     user.UpdatedBy = upsertedBy;
+            //     await _userRepository.AddAsync(user);
+            // }
+            // else
+            // {
+            //     user = _mapper.Map(model, user);
+            //     user.UpdatedAt = DateTime.Now;
+            //     user.UpdatedBy = upsertedBy;
+            //     _userRepository.Update(user);
+            // }
+            user = model.UserId == 0 ?   _mapper.Map<User>(model) : _mapper.Map(model, user);
+            user!.UpdatedBy = upsertedBy;
             if (model.UserId == 0)
             {
-                user = _mapper.Map<User>(model);
                 user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(Guid.NewGuid().ToString(), 13);
                 user.CreatedBy = upsertedBy;
-                user.UpdatedBy = upsertedBy;
                 await _userRepository.AddAsync(user);
             }
             else
             {
-                user = _mapper.Map(model, user);
                 user.UpdatedAt = DateTime.Now;
-                user.UpdatedBy = upsertedBy;
                 _userRepository.Update(user);
             }
             await _userRepository.SaveAsync();
-            if (model.UserId == 0)
-                return new Response(true, "User created successfully", user);
-                return new Response(true, "User updated successfully", user);
+            return new Response(true, string.Format("User {0} successfully",model.UserId==0?"created":"updated"), user);
         }
         catch (Exception ex)
         {
@@ -105,7 +117,7 @@ public class UserService : IUserService
     {
         try
         {
-            return await _userRepository.GetAllAsync(x => !x.IsDeleted, x => x.Role, x => x.Manager,x=>x.Department);
+            return await _userRepository.GetAllAsync(x => !x.IsDeleted, x => x.Role, x => x.Manager, x => x.Department);
         }
         catch (Exception ex)
         {
@@ -114,12 +126,13 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<User>> GetManagersByDepartmentAndRole(int departmentId,int roleId)
+    public async Task<List<User>> GetManagersByDepartmentAndRole(int departmentId, int roleId)
     {
         try
         {
-            return await _userRepository.GetAllAsync(u => u.DepartmentId == departmentId && !u.IsDeleted && u.RoleId<roleId,u=>u.Role);
-        }catch (Exception ex)
+            return await _userRepository.GetAllAsync(u => u.DepartmentId == departmentId && !u.IsDeleted && u.RoleId < roleId, u => u.Role);
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving managers for department {DepartmentId}", departmentId);
             return new List<User>();
@@ -176,6 +189,26 @@ public class UserService : IUserService
         {
             _logger.LogError(ex, "An error occurred while fetching the current user");
             return null;
+        }
+    }
+
+    public async Task<List<User>> GetMyTeam(User user)
+    {
+        try
+        {
+            if (user.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
+            {
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && !x.IsDeleted, x => x.Role);
+            }
+            else
+            {
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId && !x.IsDeleted, x => x.Role);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving team members for user {UserId}", user.UserId);
+            return new List<User>();
         }
     }
 }

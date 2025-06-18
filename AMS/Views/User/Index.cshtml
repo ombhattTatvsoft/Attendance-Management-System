@@ -10,7 +10,7 @@
       <a class="btn sitebgcolor" asp-action="UpsertUser"> + Add User</a>
     </div>
     <div class="col-12">
-      <div class="table-responsive bg-white shadow-lg rounded px-3">
+      <div class="table-responsive bg-white shadow-lg rounded p-3">
         <table class="table align-middle table-hover mb-0" id="usertable">
           <thead>
             <tr>
@@ -26,11 +26,11 @@
             @foreach (User user in Model)
             {
               <tr>
-                <td class="text-body-secondary">@user.Name</td>
-                <td class="text-body-secondary">@user.Email</td>
-                <td class="text-body-secondary">@user.Role.RoleName</td>
-                <td class="text-body-secondary">@user.Manager?.Name</td>
-                <td class="text-body-secondary">@user.Department?.DepartmentName</td>
+                <td class="text-body-secondary text-nowrap">@user.Name</td>
+                <td class="text-body-secondary text-nowrap">@user.Email</td>
+                <td class="text-body-secondary text-nowrap">@user.Role.RoleName</td>
+                <td class="text-body-secondary text-nowrap">@user.Manager?.Name</td>
+                <td class="text-body-secondary text-nowrap">@user.Department?.DepartmentName</td>
                 @if (user.RoleId != 1)
                 {
                   <td class="d-flex gap-2">
@@ -58,7 +58,7 @@
 
 @section Scripts {
   <script>
-    createDataTable('usertable');
+    var table=createDataTable('usertable');
   </script>
 
   <script>

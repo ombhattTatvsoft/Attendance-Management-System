@@ -7,6 +7,5 @@ public interface IAttendanceService
 {
     // Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId);
     Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year,int userId);
-    Task<List<User>> GetMyTeam(User user);
     Task<Response> SaveAttendances(UserMonthlyAttendanceVM model);
 }

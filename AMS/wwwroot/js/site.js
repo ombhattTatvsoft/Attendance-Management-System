@@ -27,10 +27,35 @@ function toggleSubMenu(id) {
 }
 // create data table
 function createDataTable(tableId){
-    $('#'+tableId).DataTable({
+    return $('#'+tableId).DataTable({
         responsive: true,
+        lengthMenu: [5,10, 25, -1],
+        scrollCollapse: true,
+        scrollY: '415px',
         "columnDefs": [
           { "orderable": false, "targets": -1 }
-        ]
+        ],
+        layout: {
+            bottomStart:null,
+            topStart: null,
+            bottomEnd: [
+                {
+                    info:{
+                        text : "Showing _START_ - _END_ of _TOTAL_"
+                    }
+                    
+                },
+                {
+                    pageLength:{
+                        text: "_MENU_",
+                    }
+                },
+                {
+                    paging:{
+                        buttons: 3
+                    }
+                }
+            ],
+        }
       });
 }

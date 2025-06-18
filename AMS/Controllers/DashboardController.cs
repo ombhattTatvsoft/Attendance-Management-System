@@ -32,7 +32,7 @@ public class DashboardController : Controller
         ViewData["selected"] = "dashboard";
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         User? user = await _userService.GetCurrentUserAsync();
-        List<User> team = await _attendanceService.GetMyTeam(user!);
+        List<User> team = await _userService.GetMyTeam(user!);
         DashboardVM model = new()
         {
             AdminDashboard = await _service.GetAdminDashboardDataAsync(),

@@ -9,40 +9,50 @@
         <div class="col-12 my-2">
             <h3 class="sitetxtcolor">Attendance</h3>
         </div>
-            <div class="col-12 h5 text-primary">
-                Self
-            </div>
-            <div class="col-12 d-xxl-flex justify-content-between align-items-center">
-                <div class="mb-3 d-flex flex-wrap gap-3">
+        <div class="col-12 h5 text-primary">
+            Self
+        </div>
+        <div class="col-12 d-xxl-flex justify-content-between align-items-center">
+            <div class="mb-3 d-flex flex-wrap gap-3">
+                <div>
+                    <label for="myMonth" class="form-label fw-semibold">Select Month</label>
                     <select class="form-select" id="myMonth" style="width: 150px;">
                         @for (int i = 1; i < 13; i++)
                         {
                             <option value="@i">@(new DateTime(2025, i, 1).ToString("MMMM"))</option>
                         }
                     </select>
+                </div>
+                <div>
+                    <label for="myYear" class="form-label fw-semibold">Select Year</label>
                     <select class="form-select" id="myYear" style="width: 150px;">
                         <option value="2025" selected>2025</option>
                     </select>
-                    <div class="d-flex gap-3">
-                        <button class="btn sitebgcolor" type="button"
-                        onclick="getMyAttendanceTable(@Model.UserId)">Search</button>
-                    <button class="btn siteoutlinebtn" type="button"
-                        onclick="resetMyAttendanceTable(@Model.UserId)">Reset</button>
-                    </div>
                 </div>
-                <div class="d-flex flex-wrap">
-                    Present <div style="width: 15px;" class="bg-success-subtle m-1 me-2"></div>
-                    Absent <div style="width: 15px;" class="bg-danger-subtle m-1 me-2"></div>
-                    Half Present <div style="width: 15px;" class="bg-info-subtle m-1 me-2"></div>
-                    Today <div style="width: 15px;" class="bg-warning-subtle m-1 me-2"></div>
-                    Weekend,Holiday <div style="width: 15px;" class="bg-secondary-subtle m-1 me-2"></div>
+                <div class="d-flex align-items-end">
+                    <button class="btn btn-dark w-100" onclick="getMyAttendanceTable(@Model.UserId)" type="button">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                </div>
+                <div class="d-flex align-items-end">
+                    <button class="btn btn-dark w-100" onclick="resetMyAttendanceTable(@Model.UserId)" type="button">
+                        <i class="bi bi-arrow-repeat me-1"></i></i> Reset
+                    </button>
                 </div>
             </div>
-            <div class="col-12" id="myAttendanceTable">
+            <div class="d-flex flex-wrap">
+                Present <div style="width: 15px;" class="bg-success-subtle m-1 me-2"></div>
+                Absent <div style="width: 15px;" class="bg-danger-subtle m-1 me-2"></div>
+                Half Present <div style="width: 15px;" class="bg-info-subtle m-1 me-2"></div>
+                Today <div style="width: 15px;" class="bg-warning-subtle m-1 me-2"></div>
+                Weekend,Holiday <div style="width: 15px;" class="bg-secondary-subtle m-1 me-2"></div>
             </div>
-            <div class="col-12 d-flex justify-content-end">
-                <button class="btn sitebgcolor" id="saveMyAttendanceBtn" onclick="saveMyAttendance()">Submit</button>
-            </div>
+        </div>
+        <div class="col-12" id="myAttendanceTable">
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <button class="btn sitebgcolor" id="saveMyAttendanceBtn" onclick="saveMyAttendance()">Submit</button>
+        </div>
     </div>
 </div>
 

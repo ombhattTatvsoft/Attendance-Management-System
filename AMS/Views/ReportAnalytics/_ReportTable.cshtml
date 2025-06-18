@@ -1,0 +1,77 @@
+@using Entity.ViewModels
+@model List<Entity.ViewModels.ReportAnalyticsVM>;
+<table class="table align-middle table-hover mb-0" id="reportTable">
+    <thead>
+        <tr>
+            <th scope="col" class="text-muted">Name</th>
+            <th scope="col" class="text-muted">Present</th>
+            <th scope="col" class="text-muted">Half Present</th>
+            <th scope="col" class="text-muted">Absent</th>
+            <th scope="col" class="text-muted">Percentage</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ReportAnalyticsVM report in Model)
+        {
+            <tr>
+                <td class="text-body-secondary">@report.User.Name</td>
+                <td class="text-body-secondary">@report.PresentCount</td>
+                <td class="text-body-secondary">@report.HalfPresentCount</td>
+                <td class="text-body-secondary">@report.AbsentCount</td>
+                <td class="text-body-secondary">@report.AttendancePercentage%</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        var reportTable = $('#reportTable').DataTable({
+            responsive: true,
+            lengthMenu: [5, 10, 25, -1],
+            scrollCollapse: true,
+            scrollY: '415px',
+            "order": [[4, "desc"]],
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 1, 2, 3] }
+            ],
+            layout: {
+                bottomStart: null,
+                topStart: null,
+                bottomEnd: [
+                    {
+                        info: {
+                            text: "Showing _START_ - _END_ of _TOTAL_"
+                        }
+
+                    },
+                    {
+                        pageLength: {
+                            text: "_MENU_",
+                        }
+                    },
+                    {
+                        paging: {
+                            buttons: 3
+                        }
+                    }
+                ],
+            }
+        });
+        new DataTable.Buttons(reportTable, {
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: 'Export to Excel',
+                    className: 'sitebgcolor rounded text-white',
+                }, {
+                    extend: 'pdf',
+                    text: 'Export to PDF',
+                    className: 'siteoutlinebtn',
+                }
+            ]
+        });
+        reportTable.buttons().container()
+            .appendTo('#reportFilterContainer');
+    });
+</script>

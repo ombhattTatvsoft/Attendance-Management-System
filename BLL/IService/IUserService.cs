@@ -13,5 +13,6 @@ public interface IUserService
     Task<List<User>> GetManagersByDepartmentAndRole(int departmentId, int roleId);
     Task<Response> DeleteUserAsync(int id);
     Task<User?> GetCurrentUserAsync();
+    Task<List<User>> GetMyTeam(User user);
 
 }
