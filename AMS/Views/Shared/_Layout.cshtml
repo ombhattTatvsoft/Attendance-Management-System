@@ -67,7 +67,7 @@
                             <li id="attendanceTeam">
                                 <a asp-controller="Attendance" asp-action="AttendanceTeam">Team</a>
                             </li>
-                            <li>
+                            @* <li>
                                 <a href="javascript:void(0);" onclick="toggleSubMenu('regularizeSubMenu')">Regularize</a>
                                 <ul class="submenu ps-3 d-none" id="regularizeSubMenu">
                                     @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
@@ -80,7 +80,7 @@
                                         <a asp-controller="Attendance" asp-action="RegularizeTeam">Team</a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> *@
                         </ul>
                     </li>
                     <li class="sidebaroptions" id="holiday">

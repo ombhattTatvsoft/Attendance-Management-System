@@ -45,7 +45,7 @@ public class AttendanceService : IAttendanceService
             List<DateOnly> allDates = Enumerable.Range(1, daysInMonth)
                 .Select(day => new DateOnly(year, month, day))
                 .ToList();
-            List<Holiday> holidays = await _holidayRepository.GetAllAsync(x => x.HolidayDate.Month == month && x.HolidayDate.Year == year);
+            List<Holiday> holidays = await _holidayRepository.GetAllAsync(x => x.HolidayDate.Month == month && x.HolidayDate.Year == year && !x.IsDeleted);
             List<DateOnly> holidayDates = holidays.Select(h => h.HolidayDate).ToList();
             List<Attendance> attendances = await _repository.GetAllAsync(x => x.UserId == userId && x.Date.Month == month && x.Date.Year == year);
             User? user = await _userRepository.GetAsync(x => x.UserId == userId);
@@ -122,11 +122,11 @@ public class AttendanceService : IAttendanceService
         {
             if (user.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
             {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId,x=>x.Role);
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && !x.IsDeleted,x=>x.Role);
             }
             else
             {
-                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId,x=>x.Role);
+                return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && x.ManagerId == user.UserId && !x.IsDeleted,x=>x.Role);
             }
         }
         catch (Exception ex)

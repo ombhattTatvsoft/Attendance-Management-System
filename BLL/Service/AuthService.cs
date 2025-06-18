@@ -181,7 +181,7 @@ public class AuthService : IAuthService
     {
         try
         {
-            return await _userRepository.GetAsync(x => x.ResetPasswordCode == resetCode);
+            return await _userRepository.GetAsync(x => x.ResetPasswordCode == resetCode && !x.IsDeleted);
         }
         catch (Exception ex)
         {
