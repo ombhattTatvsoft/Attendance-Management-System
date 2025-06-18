@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
+using BLL.Helpers;
 using BLL.IService;
 using Entity.Models;
 using Entity.ViewModels;
@@ -80,19 +81,8 @@ public class AuthController : Controller
             if (userFound != null)
             {
                 string? link = _service.PrepareLink(userFound, HttpContext);
-                string subject = "Password Reset Request";
-                string body = $@"<div style='width:50%;'>
-                <div style='display: flex;justify-content:center;align-items: center;background-color: #167BBC;padding:20px;gap:5px;'>
-                    <h2 style='color: white;'>AMS</h2>
-                </div>
-                <div style='padding: 20px;'>
-                <p>Attendance Management System,</p>
-                <p>Please click <a href={link}>
-                here</a> for reset your account Password.</p>
-                <p>If you encounter any issues or have any question,Please do not hesitate to contact our support team</p>
-                <p><span style='color:orange'>Important Note:</span> For security reasons,the link will expire in 24 hours. If you did not request a password reset, Please ignore this email or contact our support team immediately.</p>
-                </div>
-                </div>";
+                string subject = EmailBodyHelper.ForgotPasswordSubject;
+                string body = EmailBodyHelper.ForgotPasswordBody(link!);
 
                 Response response = _service.SendEmail(userFound.Email, body, subject);
                 if (response.IsSuccess)
