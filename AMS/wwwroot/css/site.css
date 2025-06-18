@@ -13,6 +13,7 @@
 
 .siteoutlinebtn,
 .siteoutlinebtn:hover {
+  background-color: white !important;
   border: 1px solid black;
   border-radius: 5px;
   color: black !important;
