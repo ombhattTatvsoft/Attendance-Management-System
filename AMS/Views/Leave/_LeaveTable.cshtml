@@ -1,0 +1,37 @@
+@using Entity.ViewModels
+@model List<Entity.ViewModels.LeaveVM>;
+<table class="table align-middle table-hover mb-0" id="leaveTable">
+    <thead>
+        <tr>
+            <th scope="col" class="text-muted">Name</th>
+            <th scope="col" class="text-muted text-center">From Date</th>
+            <th scope="col" class="text-muted text-center">To Date</th>
+            <th scope="col" class="text-muted text-center">TotalLeave</th>
+            <th scope="col" class="text-muted text-center">Status</th>
+            <th scope="col" class="text-muted text-center">Approved By</th>
+            <th scope="col" class="text-muted text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (LeaveVM leave in Model)
+        {
+            <tr>
+                <td class="text-center">@leave.User!.Name</td>
+                <td class="text-center">@leave.FromDate</td>
+                <td class="text-center">@leave.ToDate</td>
+                <td class="text-center">@leave.TotalLeave</td>
+                <td class="text-center">@leave.IsApproved</td>
+                <td class="text-center">@leave.ApprovedByNavigation?.Name</td>
+                <td class="text-center">
+                  <div class="d-flex gap-4 justify-content-center align-items-center">
+                    <a class="links" id="editLeave" data-id="@leave.LeaveId"><i
+                        class="fa-solid fa-pen"></i></a>
+                    <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                      onclick="giveid('leave',@leave.LeaveId)"><i
+                        class="fa-regular fa-trash-can"></i></a>
+                  </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

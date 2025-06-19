@@ -29,6 +29,7 @@ function toggleSubMenu(id) {
 function createDataTable(tableId){
     return $('#'+tableId).DataTable({
         responsive: true,
+        pageLength: 10,
         lengthMenu: [5,10, 25, -1],
         scrollCollapse: true,
         scrollY: '415px',

@@ -101,10 +101,15 @@ public class DepartmentService : IDepartmentService
     {
         try
         {
-            Department? department = await _repository.GetAsync(x => x.DepartmentId == id && !x.IsDeleted);
+            Department? department = await _repository.GetAsync(x => x.DepartmentId == id && !x.IsDeleted,x=> x.Users);
             if (department == null)
             {
                 return new Response(false, "Department not found");
+            }
+            Console.WriteLine(department.Users.Any() + " users associated with this department.");
+            if (department.Users.Any())
+            {
+                return new Response(false, "Cannot delete department with associated users");
             }
             department.IsDeleted = true;
             _repository.Update(department);

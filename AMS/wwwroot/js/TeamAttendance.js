@@ -18,6 +18,7 @@ function getTeamAttendanceTable() {
     teamUsers.forEach((element, index) => {
         $.ajax({
             type: "GET",
+            async: false,
             url: "/Attendance/GetAttendanceTable",
             data: {
                 month: $("#teamMonth").val(),
@@ -40,8 +41,8 @@ function getTeamAttendanceTable() {
                     let summaryHtml = wrapper.find("h6").eq(1).html();
  
                     let attendanceRow = `<tr><td><strong>${userName}</strong></td>${userRow}</tr>`;
-                    let summaryRow = `<tr><td colspan="${wrapper.find('thead > tr > th').length + 1}">${summaryHtml}</td></tr>`;
-                    $("#teamAttendanceBody").append(summaryRow).append(attendanceRow);
+                    let summaryRow = `<tr><td></td><td colspan="${wrapper.find('thead > tr > th').length}">${summaryHtml}</td></tr>`;
+                    $("#teamAttendanceBody").append(attendanceRow).append(summaryRow);
                     if (!wrapper.find('td').hasClass('clickable')) {
                         $("#saveTeamAttendanceBtn").addClass('disabled');
                         $("#approvedTitle").removeClass('d-none');

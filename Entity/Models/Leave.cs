@@ -31,6 +31,12 @@ public partial class Leave
 
     public int UpdatedBy { get; set; }
 
+    public decimal FromDateLeaveDuration { get; set; }
+
+    public decimal ToDateLeaveDuration { get; set; }
+
+    public decimal TotalLeave{ get; set; }
+
     public virtual User? ApprovedByNavigation { get; set; }
 
     public virtual User User { get; set; } = null!;

@@ -2,9 +2,16 @@ $(document).ready(function () {
   var calendar = new FullCalendar.Calendar(document.getElementById('holidayCalendar'), {
     height:window.innerHeight-200,
     headerToolbar: {
-      left: 'prev,next today',
+      left: 'prev next today',
       center: 'title',
-      right: 'dayGridMonth,listYear'
+      right: 'dayGridMonth listMonth listYear'
+    },
+    buttonText:{
+      today: 'Today',
+      month: 'Month',
+      dayGridMonth: 'Month View',
+      listMonth: ' Monthly List',
+      listYear: 'Yearly List'
     },
     initialView: 'dayGridMonth',
     events: '/Holiday/GetHolidays',

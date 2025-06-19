@@ -25,12 +25,12 @@
           <tbody>
             @foreach (User user in Model)
             {
-              <tr>
-                <td class="text-body-secondary text-nowrap">@user.Name</td>
-                <td class="text-body-secondary text-nowrap">@user.Email</td>
-                <td class="text-body-secondary text-nowrap">@user.Role.RoleName</td>
-                <td class="text-body-secondary text-nowrap">@user.Manager?.Name</td>
-                <td class="text-body-secondary text-nowrap">@user.Department?.DepartmentName</td>
+              <tr class="text-nowrap">
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Role.RoleName</td>
+                <td>@user.Manager?.Name</td>
+                <td>@user.Department?.DepartmentName</td>
                 @if (user.RoleId != 1)
                 {
                   <td class="d-flex gap-2">

@@ -1,5 +1,5 @@
 const today = new Date().toISOString().split('T')[0];
-$(document).ready(function(){
+$(document).ready(function () {
     $("#startDate,#endDate").prop('max', today);
     $("#startDate").val(today);
     $("#endDate").val(today);
@@ -11,12 +11,12 @@ $(document).ready(function(){
     });
     fetchReport();
 });
-function resetReport(){
+function resetReport() {
     $("#startDate").val(today);
     $("#endDate").val(today);
     fetchReport();
 }
-function fetchReport(){
+function fetchReport() {
     $.ajax({
         url: '/ReportAnalytics/FetchReport',
         type: 'POST',
@@ -24,8 +24,56 @@ function fetchReport(){
             startDate: $("#startDate").val(),
             endDate: $("#endDate").val()
         },
-        success: function(response) {
+        success: function (response) {
             $("#reportTableContainer").html(response);
+            ReportDataTable();
+        }
+    });
+}
+function ReportDataTable() {
+    var reportTable = $('#reportTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, -1],
+        scrollCollapse: true,
+        scrollY: '415px',
+        "order": [[4, "desc"]],
+        "columnDefs": [
+            { "orderable": false, "targets": [0, 1, 2, 3] }
+        ],
+        layout: {
+            bottomStart: null,
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'excel',
+                        text: 'Export to Excel',
+                        className: 'sitebgcolor rounded text-white',
+                    }, {
+                        extend: 'pdf',
+                        text: 'Export to PDF',
+                        className: 'border border-dark rounded bg-white',
+                    }
+                ]
+            },
+            bottomEnd: [
+                {
+                    info: {
+                        text: "Showing _START_ - _END_ of _TOTAL_"
+                    }
+
+                },
+                {
+                    pageLength: {
+                        text: "_MENU_",
+                    }
+                },
+                {
+                    paging: {
+                        buttons: 3
+                    }
+                }
+            ]
         }
     });
 }

@@ -37,11 +37,14 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IReportAnalyticsService, ReportAnalyticsService>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
 
 // add automapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));

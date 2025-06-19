@@ -12,7 +12,7 @@
 
     @* data tables *@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.min.css">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 
@@ -93,13 +93,31 @@
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>
                     </li>
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin) || role == RoleHelper.ToDbString(RoleEnum.SeniorManager) || role == RoleHelper.ToDbString(RoleEnum.Manager))
+                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin) || role ==
+                                    RoleHelper.ToDbString(RoleEnum.SeniorManager) || role == RoleHelper.ToDbString(RoleEnum.Manager))
                     {
                         <li class="sidebaroptions" id="reportAnalytics">
                             <a asp-controller="ReportAnalytics" asp-action="Index"><i
                                     class="fa-solid fa-chart-pie"></i><span>Report & Analytics</span></a>
                         </li>
                     }
+                    <li class="sidebaroptions">
+                        <a href="javascript:void(0);" onclick="toggleSubMenu('leaveSubMenu')">
+                            <i class="fa-regular fa-clipboard"></i><span>Leave</span>
+                        </a>
+                        <ul class="submenu ps-3 d-none" id="leaveSubMenu">
+                            @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
+                            {
+                                <li id="leaveSelf">
+                                    <a asp-controller="Leave" asp-action="Index">Self</a>
+                                </li>
+                            }
+                            <li id="leaveTeam">
+                                <a asp-controller="Leave" asp-action="Team">Team</a>
+                            </li>
+
+                        </ul>
+                    </li>
                 </ul>
             </aside>
         }

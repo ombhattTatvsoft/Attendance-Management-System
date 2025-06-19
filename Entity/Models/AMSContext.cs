@@ -138,6 +138,14 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.FromDate).HasColumnName("from_date");
             entity.Property(e => e.IsApproved).HasColumnName("is_approved");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.FromDateLeaveDuration)
+                .HasPrecision(2, 1)
+                .HasColumnName("from_date_leave_duration");
+            entity.Property(e => e.ToDateLeaveDuration)
+                .HasPrecision(2, 1)
+                .HasColumnName("to_date_leave_duration");
+            entity.Property(e => e.TotalLeave)
+                .HasColumnName("total_leave");
             entity.Property(e => e.Reason)
                 .HasMaxLength(500)
                 .HasColumnName("reason");

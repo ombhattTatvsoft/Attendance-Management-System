@@ -29,7 +29,8 @@ public class DashboardService : IDashboardService
         {
             AdminDashboard model = new();
             model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=RoleHelper.ToDbString(RoleEnum.Admin))).Count;
-            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date.ToDateTime(TimeOnly.MinValue) == DateTime.Now.Date && (x.Status=="Present" || x.Status=="Half Present") && !x.User.IsDeleted)).Count;
+            var targetDate = DateOnly.FromDateTime(DateTime.Now);
+            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.Status=="Present" || x.Status=="Half Present") && !x.User.IsDeleted)).Count;
             model.AbsentEmployee = model.TotalEmployee - model.PresentEmployee;
             model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.SeniorManager))).Count;
             model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.Manager))).Count;

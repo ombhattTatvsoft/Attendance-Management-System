@@ -1,0 +1,70 @@
+@model Entity.ViewModels.LeaveVM;
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Leave</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="row modal-body">
+    <input type="hidden" asp-for="LeaveId" />
+    <div class="col-6">
+      <div class="form-floating mb-3">
+        <input asp-for="FromDate" type="date" class="form-control" id="fromDate" value="@Model.FromDate.ToString("yyyy-MM-dd")">
+        <span asp-validation-for="FromDate" class="text-danger"></span>
+        <label for="fromDate">From</label>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-floating mb-3">
+        <select asp-for="FromDateLeaveDuration" class="form-select" id="fromDateType">
+          <option value="1">Full Day</option>
+          <option value="0.5">Half Day</option>
+        </select>
+        <label>Leave Type</label>
+        <span asp-validation-for="FromDateLeaveDuration" class="text-danger"></span>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-floating mb-3">
+        <input asp-for="ToDate" type="date" class="form-control" id="toDate" value="@Model.ToDate.ToString("yyyy-MM-dd")">
+        <span asp-validation-for="ToDate" class="text-danger"></span>
+        <label for="toDate">To</label>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-floating mb-3">
+        <select asp-for="ToDateLeaveDuration" class="form-select" id="toDateType">
+          <option value="1">Full Day</option>
+          <option value="0.5">Half Day</option>
+        </select>
+        <label>Leave Type</label>
+        <span asp-validation-for="ToDateLeaveDuration" class="text-danger"></span>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating mb-3">
+        <input asp-for="TotalLeave" type="number" class="form-control" id="totalLeave" readonly>
+        <span asp-validation-for="TotalLeave" class="text-danger"></span>
+        <label for="floatingInput">Total Leave</label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating mb-3">
+        <textarea asp-for="Reason" style="height: 120px" class="form-control"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+        <label for="floatingInput">Reason</label>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn sitebgcolor">@(Model.LeaveId == 0 ? "Add" : "Edit")</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+@section Scripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}

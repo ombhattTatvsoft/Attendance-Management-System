@@ -14,22 +14,26 @@
           <thead>
             <tr>
               <th scope="col" class="text-muted">Name</th>
-              <th scope="col" class="text-muted">Users </th>
-              <th scope="col" class="text-muted">Actions</th>
+              <th scope="col" class="text-muted text-center">Users </th>
+              <th scope="col" class="text-muted text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             @foreach (Department department in Model)
             {
               <tr>
-                <td class="text-body-secondary">@department.DepartmentName</td>
-                <td class="text-body-secondary">@department.Users.Count</td>
-                <td class="d-flex gap-2">
-                  <a class="links" id="editDepartment" data-id="@department.DepartmentId"><i
-                      class="fa-solid fa-pen"></i></a>
-                  <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                    onclick="giveid('department',@department.DepartmentId)"><i
-                      class="fa-regular fa-trash-can ms-3"></i></a>
+                <td>@department.DepartmentName</td>
+                <td class="text-center">
+                    @department.Users.Count
+                </td>
+                <td class="text-center">
+                  <div class="d-flex gap-4 justify-content-center align-items-center">
+                    <a class="links" id="editDepartment" data-id="@department.DepartmentId"><i
+                        class="fa-solid fa-pen"></i></a>
+                    <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                      onclick="giveid('department',@department.DepartmentId)"><i
+                        class="fa-regular fa-trash-can"></i></a>
+                  </div>
                 </td>
               </tr>
             }
@@ -40,6 +44,7 @@
   </div>
 </div>
 
+@* department upsert modal *@
 <div class="modal fade" id="DepartmentModal" tabindex="-1" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog modal-dialog-centered">
     <form id="DepartmentForm" class="w-100">
