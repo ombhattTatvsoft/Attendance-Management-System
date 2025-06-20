@@ -7,16 +7,29 @@ $(document).ready(function () {
     $('#endDate').change(function () {
         $("#startDate").prop('max', $(this).val());
     });
-    getLeaves();
-    $(document).on('click','#addLeave,#editLeave',function () {
+    $(document).on('click','#addSelfLeave,#editSelfLeave,#viewSelfLeave,#editTeamLeave',function () {
+        var id  = $(this).data('id');
+        var isView= $(this).attr('id') == 'viewSelfLeave';
+        var teamEdit= $(this).attr('id') == 'editTeamLeave';
         $.ajax({
             url: '/Leave/UpsertLeave',
-            data: { id: $(this).data('id') },
+            data: { id: id },
             type: 'GET',
             success: function (response) {
                 $("#LeaveForm").html(response);
+                $("#teamLeaveForm").html(response);
                 $("#LeaveModal").modal('show');
                 $("#fromDate,#toDate").prop('min', today);
+                if(isView){
+                    $('#leaveFieldSet').attr('disabled', true);
+                    $('#upsertBtn').hide();
+                    $('.viewable').removeClass('d-none');
+                }
+                if(teamEdit){
+                    $('input,select,textarea').prop('readonly', true);
+                    $('.viewable').removeClass('d-none');
+                    $('.teamEditable').prop('readonly', false);
+                }
             },
         });
     });
@@ -38,7 +51,8 @@ $(document).ready(function () {
             });
         }
     });
-    $("#LeaveForm").on("submit", function (e) {
+    $("#LeaveForm,#teamLeaveForm").on("submit", function (e) {
+        var isTeamForm = $(this).attr('id') === 'teamLeaveForm';
         e.preventDefault();
         if ($(this).valid()) {
             $.ajax({
@@ -46,9 +60,13 @@ $(document).ready(function () {
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function (response) {
-                    $("#DepartmentModal").modal('hide');
+                    $("#LeaveModal").modal('hide');
                     if (response.success) {
-                        location.reload();
+                        toastr.success(response.message);
+                        if(isTeamForm)
+                            getLeaves(true);
+                        else
+                            getLeaves();
                     } else {
                         toastr.error(response.message);
                     }
@@ -57,11 +75,15 @@ $(document).ready(function () {
         }
     });
 });
-function refetchLeaves() {
+function refetchLeaves(team) {
+    $("#startDate").val("");
+    $("#endDate").val("");
+    $("#startDate,#endDate").removeAttr('min');
+    $("#startDate,#endDate").prop('max', today);
     $("#leaveStatus").val('All');
-    getLeaves();
+    getLeaves(team);
 }
-function getLeaves() {
+function getLeaves(team) {
     $.ajax({
         url: '/Leave/GetLeaves',
         type: 'GET',
@@ -69,11 +91,34 @@ function getLeaves() {
             startDate: $("#startDate").val(),
             endDate: $("#endDate").val(),
             leaveStatus: $("#leaveStatus").val(),
-            userId:currentUserId
+            userId:currentUserId,
+            team: team
         },
         success: function (response) {
             $("#leaveTableContainer").html(response);
             createDataTable("leaveTable");
+            if(team){
+                $('.notTeamBtn').hide();
+            }
         }
     });
+}
+function cancelLeave(id){
+    document.getElementById("deleteTitle").innerText = "leave";
+    $('#deleteConfirm').click(function(){
+        $.ajax({
+            url: '/Leave/CancelLeave',
+            type: 'POST',
+            data: { id: id },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    getLeaves();
+                } else {
+                    toastr.error(response.message);
+                }
+            }
+        });
+        $("#deleteModal").modal('hide');
+    })
 }

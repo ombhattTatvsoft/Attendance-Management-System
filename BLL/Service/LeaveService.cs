@@ -13,6 +13,10 @@ public class LeaveService : ILeaveService
 {
     private readonly ILeaveRepository _repository;
 
+    private readonly IUserService _userService;
+
+    private readonly IAttendanceRepository _attendanceRepository;
+
     private readonly IHolidayRepository _holidayRepository;
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -23,11 +27,13 @@ public class LeaveService : ILeaveService
 
     public int UpsertedBy { get; set; }
 
-    public LeaveService(ILeaveRepository repository, IHolidayRepository holidayRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<LeaveService> logger)
+    public LeaveService(ILeaveRepository repository,IUserService userService, IAttendanceRepository attendanceRepository, IHolidayRepository holidayRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<LeaveService> logger)
     {
         _repository = repository;
+        _attendanceRepository = attendanceRepository;
         _holidayRepository = holidayRepository;
         _httpContextAccessor = httpContextAccessor;
+        _userService = userService;
         _mapper = mapper;
         _logger = logger;
         UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -37,7 +43,7 @@ public class LeaveService : ILeaveService
     {
         try
         {
-            Leave? leave = await _repository.GetAsync(x => x.LeaveId == id && !x.IsDeleted);
+            Leave? leave = await _repository.GetAsync(x => x.LeaveId == id,x=>x.User);
             if (leave == null)
                 return new LeaveVM();
             LeaveVM model = _mapper.Map<LeaveVM>(leave);
@@ -84,6 +90,7 @@ public class LeaveService : ILeaveService
             Leave? leave = (model.LeaveId == 0) ? new Leave() : await _repository.GetAsync(x => x.LeaveId == model.LeaveId && !x.IsDeleted);
             if (model.LeaveId != 0 && leave == null)
                 return new Response(false, "Leave not found");
+            model.CreatedAt = leave.CreatedAt;
             leave = model.LeaveId == 0 ? _mapper.Map<Leave>(model) : _mapper.Map(model, leave);
             leave.UserId = model.UserId == 0 ? UpsertedBy : model.UserId;
             leave!.UpdatedBy = UpsertedBy;
@@ -97,8 +104,35 @@ public class LeaveService : ILeaveService
             }
             else
             {
+                leave.ApprovedBy=model.IsApproved!=null && (bool)model.IsApproved?UpsertedBy:null;
                 leave.UpdatedAt = DateTime.Now;
                 _repository.Update(leave);
+            }
+            await _repository.SaveAsync();
+            await DeleteAttendanceByLeaveIdAsync(leave.LeaveId);
+            List<Holiday> holidays = await _holidayRepository.GetAllAsync(x => x.HolidayDate >= leave.FromDate && x.HolidayDate <= leave.ToDate && !x.IsDeleted);
+            for (var date = leave.FromDate; date <= leave.ToDate; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday && !holidays.Any(h => h.HolidayDate == date) && leave.IsApproved != false)
+                {
+                    Attendance attendance = new()
+                    {
+                        UserId = leave.UserId,
+                        Date = date,
+                        Status = "Absent",
+                        IsApproved = leave.IsApproved,
+                        ApprovedBy = leave.IsApproved != null && (bool)leave.IsApproved ? UpsertedBy : null,
+                        CreatedBy = UpsertedBy,
+                        UpdatedBy = UpsertedBy,
+                        LeaveId = leave.LeaveId
+                    };
+                    if(date == leave.FromDate)
+                        attendance.Status = leave.FromDateLeaveDuration == 1 ? "Absent" : "Half Present";
+                    if(date == leave.ToDate)
+                        attendance.Status = leave.ToDateLeaveDuration == 1 ? "Absent" : "Half Present";
+
+                    await _attendanceRepository.AddAsync(attendance);
+                }
             }
             await _repository.SaveAsync();
             return new Response(true, string.Format("Leave {0} successfully", model.LeaveId == 0 ? "created" : "updated"), leave);
@@ -110,21 +144,61 @@ public class LeaveService : ILeaveService
         }
     }
 
-    public async Task<List<LeaveVM>> GetLeavesAsync(DateOnly? startDate, DateOnly? endDate, string leaveStatus,int userId)
+    public async Task<List<LeaveVM>> GetLeavesAsync(DateOnly? startDate, DateOnly? endDate, string leaveStatus, int userId,bool? team)
     {
         try
         {
-            List<Leave> leaves = await _repository.GetAllAsync(x => !x.IsDeleted &&
-                (userId == 0 || x.UserId == userId) &&
+            User? user = await _userService.GetCurrentUserAsync();
+            List<User>? userTeam = await _userService.GetMyTeam(user!);
+
+            List<Leave> leaves = await _repository.GetAllAsync(x =>
                 (startDate == null || x.FromDate >= startDate) &&
                 (endDate == null || x.ToDate <= endDate) &&
-                (leaveStatus=="All" || (leaveStatus == "Approved" && x.IsApproved == true) || (leaveStatus == "Pending" && x.IsApproved == null) || (leaveStatus == "Rejected" && x.IsApproved == false)),x=>x.User,x=>x.ApprovedByNavigation);
+                (leaveStatus == "All" || (leaveStatus == "Approved" && x.IsApproved == true) || (leaveStatus == "Pending" && x.IsApproved == null && !x.IsDeleted) || (leaveStatus == "Rejected" && x.IsApproved == false) || (leaveStatus == "Cancelled" && x.IsDeleted)), x => x.User, x => x.ApprovedByNavigation);
+            if (team != null && (bool)team)
+                leaves = leaves.Where(x => userTeam!.Any(u => u.UserId == x.UserId)).ToList();
+            else
+                leaves = leaves.Where(x => x.UserId == userId).ToList();
             return leaves.Select(leave => _mapper.Map<LeaveVM>(leave)).ToList();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while getting leaves.");
             return new List<LeaveVM>();
+        }
+    }
+
+    public async Task<Response> CancelLeaveAsync(int id)
+    {
+        try
+        {
+            Leave? leave = await _repository.GetAsync(x => x.LeaveId == id && !x.IsDeleted);
+            if (leave == null)
+                return new Response(false, "Leave not found");
+            leave.IsDeleted = true;
+            _repository.Update(leave);
+            await DeleteAttendanceByLeaveIdAsync(leave.LeaveId);
+            await _repository.SaveAsync();
+            return new Response(true, "Leave cancelled successfully", leave);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while cancelling leave with ID {Id}.", id);
+            return new Response(false, "An error occurred while cancelling the leave.");
+        }
+    }
+
+    public async Task DeleteAttendanceByLeaveIdAsync(int leaveId)
+    {
+        try
+        {
+            List<Attendance> attendances = await _attendanceRepository.GetAllAsync(x => x.LeaveId == leaveId);
+            foreach (Attendance attendance in attendances)
+                _attendanceRepository.DeleteAttendance(attendance);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while deleting attendance for leave ID {LeaveId}.", leaveId);
         }
     }
 }

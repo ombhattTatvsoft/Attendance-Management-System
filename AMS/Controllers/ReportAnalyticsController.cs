@@ -23,17 +23,11 @@ public class ReportAnalyticsController : Controller
     public async Task<IActionResult> Index()
     {
         ViewData["selected"] = "reportAnalytics";
-        User? user = await _userService.GetCurrentUserAsync();
-        List<User> team = await _userService.GetMyTeam(user!);
-        if (user.Role.RoleName != RoleHelper.ToDbString(RoleEnum.Admin))
-        {
-            team.Add(user);
-        }
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> FetchReport(DateOnly startDate, DateOnly endDate)
+    public async Task<IActionResult> FetchReport(DateOnly? startDate, DateOnly? endDate)
     {
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);

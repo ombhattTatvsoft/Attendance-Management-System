@@ -57,6 +57,7 @@ public partial class AMSContext : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.LeaveId).HasColumnName("leave_id");
 
             entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.AttendanceApprovedByNavigations)
                 .HasForeignKey(d => d.ApprovedBy)
@@ -151,6 +152,7 @@ public partial class AMSContext : DbContext
                 .HasColumnName("reason");
             entity.Property(e => e.ToDate).HasColumnName("to_date");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");

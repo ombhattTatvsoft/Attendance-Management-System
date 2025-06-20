@@ -7,16 +7,16 @@
     var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
     var currentUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     double
-    fullAbsentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) <=
+    fullAbsentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) <
     DateTime.Now.Date
     && Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday &&
-    (x.Status == null || x.Status == "Absent")).Count() ?? 0;
-    double halfDays = (Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Half Present").Count() / 2.0) ?? 0;
+    (x.Status == null || x.Status == "Absent")).Count() + Model.UserDashboard.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count() ?? 0;
+    double halfDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Half Present").Count() ?? 0;
     double holidays = Model.UserDashboard?.AttendanceRecords.Where(x => x.IsHoliday == true && x.Day != "Saturday" &&
     x.Day != "Sunday").Count() ?? 0;
     double totalDays = Model.UserDashboard?.AttendanceRecords.Where(x => !(bool)x.IsHoliday &&
     Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)).Count() ?? 0;
-    double presentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Present").Count() + halfDays ?? 0;
+    double presentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Present").Count() + halfDays/2 ?? 0;
 }
 
 <div class="content" id="dashboard">
@@ -30,7 +30,7 @@
                 <div class="card-header bg-primary-subtle d-flex justify-content-between fw-semibold rounded-top-4">
                     @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? "Today's Attendance" : "Monthly Leaves")
                     <div>
-                        @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? Html.Raw("<a href='./Attendance/AttendanceTeam'>Attendance<i class='bi bi-arrow-up-right'></i></a>") : "")
+                        @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? Html.Raw("<a href='./Attendance/AttendanceTeam'>Attendance<i class='bi bi-arrow-up-right'></i></a>") : Html.Raw("<a href='./Leave/Index'>Leaves<i class='bi bi-arrow-up-right'></i></a>"))
                     </div>
                 </div>
                 <div class="card-body d-flex justify-content-between gap-1">
@@ -61,7 +61,7 @@
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Total Days</p>
-                            <p class="h6 mb-0">@(fullAbsentDays + halfDays)</p>
+                            <p class="h6 mb-0">@(fullAbsentDays + halfDays/2)</p>
                         </div>
                     }
                 </div>
@@ -131,7 +131,7 @@
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Leave Days</p>
-                            <p class="h6 mb-0">@(fullAbsentDays + halfDays)</p>
+                            <p class="h6 mb-0">@(fullAbsentDays + halfDays/2)</p>
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Present Days</p>

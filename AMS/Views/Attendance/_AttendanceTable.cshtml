@@ -13,7 +13,8 @@
         double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);
         int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue)).Count();
         double presentDays=Model.AttendanceRecords.Where(x=>x.Status=="Present").Count()+halfPresentDays;
-        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<=DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count() + halfPresentDays;
+        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count() + halfPresentDays
+        +Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count();
     }
     <h6>Present <span class="badge bg-success">@presentDays</span> Absent <span class="badge bg-danger">@absentDays</span> Total <span class="badge bg-secondary">@totalDays</span> days</h6>
 </div>

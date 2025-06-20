@@ -35,9 +35,7 @@ public class LeaveController : Controller
     public async Task<IActionResult> Team()
     {
         ViewData["selected"] = "leaveTeam";
-        User? user = await _userService.GetCurrentUserAsync();
-        List<User>? team = await _userService.GetMyTeam(user!);
-        return View(team);
+        return View();
     }
 
     [HttpGet]
@@ -56,24 +54,28 @@ public class LeaveController : Controller
         {
             Response response = await _service.UpsertLeaveAsync(model);
             if (response.IsSuccess)
-            {
-                TempData["Success"] = response.Message;
                 return Json(new { success = true, message = response.Message });
-            }
             else
-            {
-                TempData["failed"] = response.Message;
                 return Json(new { success = false, message = response.Message });
-            }
         }
         return Json(new { success = false, message = "Invalid data." });
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetLeaves(DateOnly? startDate, DateOnly? endDate, string leaveStatus, int userId)
+    public async Task<IActionResult> GetLeaves(DateOnly? startDate, DateOnly? endDate, string leaveStatus, int userId,bool? team)
     {
-        List<LeaveVM> model = await _service.GetLeavesAsync(startDate, endDate, leaveStatus, userId);
+        List<LeaveVM> model = await _service.GetLeavesAsync(startDate, endDate, leaveStatus, userId,team);
         return PartialView("_LeaveTable", model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CancelLeave(int id)
+    {
+        Response response = await _service.CancelLeaveAsync(id);
+        if (response.IsSuccess)
+            return Json(new { success = true, message = response.Message });
+        else
+            return Json(new { success = false, message = response.Message });
     }
 
     [HttpGet]

@@ -19,7 +19,7 @@ public class LeaveVM
     [RegularExpression(@"^[A-Za-z]+(?:\s[A-Za-z]+)*$", ErrorMessage = "Enter valid Reason")]
     public string Reason { get; set; } = null!;
 
-    public bool? IsApproved { get; set; }
+    public bool? IsApproved { get; set; } = null;
 
     public string? Comment { get; set; }
 
@@ -30,7 +30,12 @@ public class LeaveVM
     [Required]
     [Range(0.5, 10, ErrorMessage = "Max 10 Leave allowed, ensure selected dates are not holiday already")]
     public decimal TotalLeave { get; set; }
-    public virtual User? ApprovedByNavigation { get; set; }
+    
+    public bool IsDeleted { get; set; }
 
-    public virtual User? User { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
+
+    public User? ApprovedByNavigation { get; set; }
+
+    public User? User { get; set; } = null;
 }

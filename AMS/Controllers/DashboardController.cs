@@ -47,9 +47,11 @@ public class DashboardController : Controller
     {
         ViewData["selected"] = "dashboard";
         UserMonthlyAttendanceVM? model = await _attendanceService.GetUserMonthlyAttendance(month, year, userId);
-        double fullAbsentDays = model!.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) <= DateTime.Now.Date && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == "Absent")).Count();
-        double halfDays = model.AttendanceRecords.Where(x => x.Status == "Half Present").Count() / 2.0;
-        double presentDays = model.AttendanceRecords.Where(x => x.Status == "Present").Count() + halfDays;
+        
+        double fullAbsentDays = model!.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == "Absent")).Count()
+        + model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count();
+        double halfDays = model.AttendanceRecords.Where(x => x.Status == "Half Present").Count();
+        double presentDays = model.AttendanceRecords.Where(x => x.Status == "Present").Count();
         double totalDays = model.AttendanceRecords.Where(x => !(bool)x.IsHoliday && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)).Count();
         var data= new
         {

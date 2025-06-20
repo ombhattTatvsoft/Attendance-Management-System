@@ -6,7 +6,7 @@
     <div class="row mx-sm-3 mx-2 pt-2">
         <div class="col-12 my-2 d-flex align-items-center justify-content-between">
             <h3 class="sitetxtcolor">Leave</h3>
-            <a class="btn sitebgcolor" id="addLeave"> + Add</a>
+            <a class="btn sitebgcolor" id="addSelfLeave"> + Add</a>
         </div>
         <div class="col-12 h5 text-primary">
             Self
@@ -63,6 +63,9 @@
 @section scripts {
     <script>
         var currentUserId = @Model.UserId;
+        $(document).ready(function () {
+            getLeaves();
+        });
     </script>
     <script src="~/js/Leave.js">
     </script>

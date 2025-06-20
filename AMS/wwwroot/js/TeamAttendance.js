@@ -45,6 +45,7 @@ function getTeamAttendanceTable() {
                     $("#teamAttendanceBody").append(attendanceRow).append(summaryRow);
                     if (!wrapper.find('td').hasClass('clickable')) {
                         $("#saveTeamAttendanceBtn").addClass('disabled');
+                        if($("#myMonth").val()==currentMonth)
                         $("#approvedTitle").removeClass('d-none');
                     } else {
                         $("#saveTeamAttendanceBtn").removeClass('disabled');

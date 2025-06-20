@@ -25,6 +25,7 @@ function getMyAttendanceTable(id) {
                 $("#myAttendanceTable").html(data);
                 if(!$("#myAttendanceTable td").hasClass('clickable')){
                     $("#saveMyAttendanceBtn").addClass('disabled');
+                    if($("#myMonth").val()==currentMonth)
                     $("#approvedTitle").removeClass('d-none');
                 }
             }

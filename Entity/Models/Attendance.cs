@@ -29,6 +29,8 @@ public partial class Attendance
 
     public int? UpdatedBy { get; set; }
 
+    public int? LeaveId { get; set; }
+
     public virtual User? ApprovedByNavigation { get; set; }
 
     public virtual User User { get; set; } = null!;

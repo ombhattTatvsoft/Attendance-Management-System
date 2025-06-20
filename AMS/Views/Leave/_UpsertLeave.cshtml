@@ -4,59 +4,87 @@
     <h5 class="modal-title">Leave</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
   </div>
-  <div class="row modal-body">
-    <input type="hidden" asp-for="LeaveId" />
-    <div class="col-6">
-      <div class="form-floating mb-3">
-        <input asp-for="FromDate" type="date" class="form-control" id="fromDate" value="@Model.FromDate.ToString("yyyy-MM-dd")">
-        <span asp-validation-for="FromDate" class="text-danger"></span>
-        <label for="fromDate">From</label>
+  <fieldset id="leaveFieldSet">
+    <div class="row modal-body">
+      <input type="hidden" asp-for="LeaveId" />
+      <input type="hidden" asp-for="UserId" />
+      <div class="col-6 viewable d-none">
+        <div class="form-floating mb-3">
+          <input asp-for="User.Name" type="text" class="form-control" disabled>
+          <label for="fromDate">Name</label>
+        </div>
+      </div>
+      <div class="col-6 viewable d-none">
+        <div class="form-floating mb-3">
+          <select asp-for="IsApproved" class="form-select teamEditable">
+            <option value="">Pending</option>
+            <option value="true">Approved</option>
+            <option value="false">Rejectd</option>
+          </select>
+          <label for="">Status</label>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <input asp-for="FromDate" type="date" class="form-control" id="fromDate"
+            value="@Model.FromDate.ToString("yyyy-MM-dd")">
+          <span asp-validation-for="FromDate" class="text-danger"></span>
+          <label for="fromDate">From</label>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <select asp-for="FromDateLeaveDuration" class="form-select" id="fromDateType">
+            <option value="1">Full Day</option>
+            <option value="0.5">Half Day</option>
+          </select>
+          <label>Leave Type</label>
+          <span asp-validation-for="FromDateLeaveDuration" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <input asp-for="ToDate" type="date" class="form-control" id="toDate"
+            value="@Model.ToDate.ToString("yyyy-MM-dd")">
+          <span asp-validation-for="ToDate" class="text-danger"></span>
+          <label for="toDate">To</label>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <select asp-for="ToDateLeaveDuration" class="form-select" id="toDateType" >
+            <option value="1">Full Day</option>
+            <option value="0.5">Half Day</option>
+          </select>
+          <label>Leave Type</label>
+          <span asp-validation-for="ToDateLeaveDuration" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-floating mb-3">
+          <input asp-for="TotalLeave" type="number" class="form-control" id="totalLeave" readonly>
+          <span asp-validation-for="TotalLeave" class="text-danger"></span>
+          <label for="floatingInput">Total Leave</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-floating mb-3">
+          <textarea asp-for="Reason" style="height: 120px" class="form-control"></textarea>
+          <span asp-validation-for="Reason" class="text-danger"></span>
+          <label for="floatingInput">Reason</label>
+        </div>
+      </div>
+      <div class="col-12 viewable d-none">
+        <div class="form-floating mb-3">
+          <textarea asp-for="Comment" style="height: 120px" class="form-control teamEditable"></textarea>
+          <label for="floatingInput">Comment</label>
+        </div>
       </div>
     </div>
-    <div class="col-6">
-      <div class="form-floating mb-3">
-        <select asp-for="FromDateLeaveDuration" class="form-select" id="fromDateType">
-          <option value="1">Full Day</option>
-          <option value="0.5">Half Day</option>
-        </select>
-        <label>Leave Type</label>
-        <span asp-validation-for="FromDateLeaveDuration" class="text-danger"></span>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="form-floating mb-3">
-        <input asp-for="ToDate" type="date" class="form-control" id="toDate" value="@Model.ToDate.ToString("yyyy-MM-dd")">
-        <span asp-validation-for="ToDate" class="text-danger"></span>
-        <label for="toDate">To</label>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="form-floating mb-3">
-        <select asp-for="ToDateLeaveDuration" class="form-select" id="toDateType">
-          <option value="1">Full Day</option>
-          <option value="0.5">Half Day</option>
-        </select>
-        <label>Leave Type</label>
-        <span asp-validation-for="ToDateLeaveDuration" class="text-danger"></span>
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="form-floating mb-3">
-        <input asp-for="TotalLeave" type="number" class="form-control" id="totalLeave" readonly>
-        <span asp-validation-for="TotalLeave" class="text-danger"></span>
-        <label for="floatingInput">Total Leave</label>
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="form-floating mb-3">
-        <textarea asp-for="Reason" style="height: 120px" class="form-control"></textarea>
-        <span asp-validation-for="Reason" class="text-danger"></span>
-        <label for="floatingInput">Reason</label>
-      </div>
-    </div>
-  </div>
+  </fieldset>
   <div class="modal-footer">
-    <button type="submit" class="btn sitebgcolor">@(Model.LeaveId == 0 ? "Add" : "Edit")</button>
+    <button type="submit" id="upsertBtn" class="btn sitebgcolor">@(Model.LeaveId == 0 ? "Add" : "Edit")</button>
+    <button type="button" class="btn sitebgcolor" data-bs-dismiss="modal">Cancel</button>
   </div>
 </div>
 

@@ -5,6 +5,6 @@ namespace BLL.IService;
 
 public interface IReportAnalyticsService
 {
-    Task<List<ReportAnalyticsVM>> GetReportAnalyticsAsync(List<User> team, DateOnly startDate, DateOnly endDate);
+    Task<List<ReportAnalyticsVM>> GetReportAnalyticsAsync(List<User> team, DateOnly? startDate, DateOnly? endDate);
 
 }
