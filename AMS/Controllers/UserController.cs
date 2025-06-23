@@ -33,7 +33,7 @@ public class UserController : Controller
 
     [HttpGet]
     public async Task<IActionResult> UpsertUser(int? id)
-    fixed 
+    {
         ViewData["selected"] = "user";
         UpsertUserVM model = new();
         if (id == null)
