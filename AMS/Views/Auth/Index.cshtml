@@ -1,10 +1,15 @@
 ﻿@model Entity.ViewModels.UserLoginVM;
 @{
-    ViewData["Title"] = "Login Page";
+    ViewData["Title"] = "Login";
 }
 <div class="container-fluid d-flex align-items-center justify-content-center vh-100">
-    <div class="d-flex col-xxl-4 col-xl-6 col-md-8 col-11 flex-column align-items-center justify-content-center card bg-white rounded-4">
-        <h4 class="mb-2 mt-4">Login</h4>
+    <div
+        class="d-flex col-xxl-4 col-xl-6 col-md-8 col-11 flex-column align-items-center justify-content-center card border-3 bg-white rounded-4">
+        <div class="d-flex align-items-center gap-1 my-4 bg-dark text-white rounded-3 p-1">
+            <img src="~/images/AMS_logo_2.png" class="img-fluid" style="height: 60px;" alt="">
+            <span class="me-3 h3 mb-0">AMS</span>
+        </div>
+        <h4 class="mb-4">Login</h4>
         <div class="col-10 mb-4">
             <h5>Welcome,</h5>
             <form asp-controller="Auth" asp-action="Index" method="post">
@@ -13,10 +18,12 @@
                     <span asp-validation-for="Email" class="text-danger"></span>
                     <label>Email</label>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Password" type="password" class="form-control" placeholder="">
+                <div class="form-floating mb-3 position-relative">
+                    <input asp-for="Password" type="password" class="form-control" id="userPassword" placeholder=""> 
                     <span asp-validation-for="Password" class="text-danger"></span>
                     <label>Password</label>
+                    <i class="position-absolute passwordEyeIcon fa-regular fa-eye-slash" id="eyeicon4"
+                        style="cursor: pointer;" onclick="togglePassword('userPassword','eyeicon4')"></i>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <a class="links" asp-controller="Auth" asp-action="ForgotPassword">Forgot Password</a>

@@ -19,7 +19,7 @@
           <select asp-for="IsApproved" class="form-select teamEditable">
             <option value="">Pending</option>
             <option value="true">Approved</option>
-            <option value="false">Rejectd</option>
+            <option value="false">Rejected</option>
           </select>
           <label for="">Status</label>
         </div>
@@ -52,7 +52,7 @@
       </div>
       <div class="col-6">
         <div class="form-floating mb-3">
-          <select asp-for="ToDateLeaveDuration" class="form-select" id="toDateType" >
+          <select asp-for="ToDateLeaveDuration" class="form-select" id="toDateType">
             <option value="1">Full Day</option>
             <option value="0.5">Half Day</option>
           </select>
@@ -60,6 +60,8 @@
           <span asp-validation-for="ToDateLeaveDuration" class="text-danger"></span>
         </div>
       </div>
+      <input type="hidden" asp-for="FromDateLeaveDuration">
+      <input type="hidden" asp-for="ToDateLeaveDuration">
       <div class="col-12">
         <div class="form-floating mb-3">
           <input asp-for="TotalLeave" type="number" class="form-control" id="totalLeave" readonly>
@@ -84,7 +86,7 @@
   </fieldset>
   <div class="modal-footer">
     <button type="submit" id="upsertBtn" class="btn sitebgcolor">@(Model.LeaveId == 0 ? "Add" : "Edit")</button>
-    <button type="button" class="btn sitebgcolor" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn sitebgcolor ms-2" data-bs-dismiss="modal">Cancel</button>
   </div>
 </div>
 

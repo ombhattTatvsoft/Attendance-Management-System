@@ -3,7 +3,7 @@
 @using Entity.Enums;
 @model Entity.ViewModels.HolidayVM;
 @{
-  ViewData["Title"] = "Holiday Page";
+  ViewData["Title"] = "Holiday";
   var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
 }
 <div class="content" id="holiday">
@@ -43,7 +43,7 @@
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn sitebgcolor">Save</button>
-            <button type="button" class="btn siteoutlinebtn" id="btnDelete">Delete</button>
+            <button type="button" class="btn siteoutlinebtn ms-2" id="btnDelete">Delete</button>
           </div>
         </div>
       </form>
@@ -52,6 +52,9 @@
 }
 
 @section scripts {
+  <script>
+    var currentRole= '@role';
+  </script>
   <script src="~/js/Holiday.js"></script>
   @{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");

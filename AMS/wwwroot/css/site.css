@@ -29,6 +29,9 @@
   }
 }
 
+.warning-icon{
+  height: 60px;
+}
 
 /* sidebar css */
 .sidebar{
@@ -102,8 +105,9 @@
 
 /* change password */
 .passwordEyeIcon {
+  font-size: large;
   right: 10px;
-  transform: translateY(-160%);
+  top: 22px;
 }
 /* calendar page */
 @media (max-width:449px) {

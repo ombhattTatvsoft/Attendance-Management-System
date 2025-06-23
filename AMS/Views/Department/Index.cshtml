@@ -1,6 +1,6 @@
 @model List<Entity.Models.Department>;
 @{
-  ViewData["Title"] = "Department Page";
+  ViewData["Title"] = "Department";
 }
 <div class="content" id="department">
   <div class="row mx-sm-3 mx-2 pt-2">
@@ -65,7 +65,4 @@
       document.getElementById("deleteConfirm").href = "/Department/DeleteDepartment?id=" + id;
     }
   </script>
-  @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-  }
 }

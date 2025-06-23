@@ -35,6 +35,8 @@ public class LeaveController : Controller
     public async Task<IActionResult> Team()
     {
         ViewData["selected"] = "leaveTeam";
+        if(TempData.Peek("hasTeam").ToString()=="false")
+            return RedirectToAction("Index");
         return View();
     }
 

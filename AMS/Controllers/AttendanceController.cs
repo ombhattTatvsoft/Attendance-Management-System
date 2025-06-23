@@ -35,6 +35,8 @@ public class AttendanceController : Controller
     public async Task<IActionResult> AttendanceTeam()
     {
         ViewData["selected"] = "attendanceTeam";
+        if(TempData.Peek("hasTeam").ToString()=="false")
+            return RedirectToAction("Index");
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);
         return View(team);

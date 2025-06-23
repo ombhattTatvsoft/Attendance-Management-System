@@ -7,10 +7,10 @@ $(document).ready(function () {
     $('#endDate').change(function () {
         $("#startDate").prop('max', $(this).val());
     });
-    $(document).on('click','#addSelfLeave,#editSelfLeave,#viewSelfLeave,#editTeamLeave',function () {
-        var id  = $(this).data('id');
-        var isView= $(this).attr('id') == 'viewSelfLeave';
-        var teamEdit= $(this).attr('id') == 'editTeamLeave';
+    $(document).on('click', '#addSelfLeave,#editSelfLeave,#viewSelfLeave,#editTeamLeave', function () {
+        var id = $(this).data('id');
+        var isView = $(this).attr('id') == 'viewSelfLeave';
+        var teamEdit = $(this).attr('id') == 'editTeamLeave';
         $.ajax({
             url: '/Leave/UpsertLeave',
             data: { id: id },
@@ -20,30 +20,31 @@ $(document).ready(function () {
                 $("#teamLeaveForm").html(response);
                 $("#LeaveModal").modal('show');
                 $("#fromDate,#toDate").prop('min', today);
-                if(isView){
+                if (isView) {
                     $('#leaveFieldSet').attr('disabled', true);
                     $('#upsertBtn').hide();
                     $('.viewable').removeClass('d-none');
                 }
-                if(teamEdit){
-                    $('input,select,textarea').prop('readonly', true);
+                if (teamEdit) {
+                    $('input,textarea').prop('readonly', true);
+                    $('select').prop('disabled', true);
                     $('.viewable').removeClass('d-none');
-                    $('.teamEditable').prop('readonly', false);
+                    $('.teamEditable').prop('readonly', false).prop('disabled', false);
                 }
             },
         });
     });
-    $(document).on('change','#fromDate',function () {
+    $(document).on('change', '#fromDate', function () {
         $("#toDate").prop('min', $('#fromDate').val());
     });
-    $(document).on('change','#toDate',function () {
+    $(document).on('change', '#toDate', function () {
         $("#fromDate").prop('max', $('#toDate').val());
     });
-    $(document).on('change','#fromDate,#toDate,#fromDateType,#toDateType',function () {
-        if($('#fromDate').val() && $('#toDate').val()) {
+    $(document).on('change', '#fromDate,#toDate,#fromDateType,#toDateType', function () {
+        if ($('#fromDate').val() && $('#toDate').val()) {
             $.ajax({
                 url: '/Leave/CountLeaveDays',
-                data: { fromDate: $('#fromDate').val(), toDate: $('#toDate').val(),fromDateType: $('#fromDateType').val(), toDateType: $('#toDateType').val() },
+                data: { fromDate: $('#fromDate').val(), toDate: $('#toDate').val(), fromDateType: $('#fromDateType').val(), toDateType: $('#toDateType').val() },
                 type: 'GET',
                 success: function (response) {
                     $("#totalLeave").val(response.days);
@@ -63,7 +64,7 @@ $(document).ready(function () {
                     $("#LeaveModal").modal('hide');
                     if (response.success) {
                         toastr.success(response.message);
-                        if(isTeamForm)
+                        if (isTeamForm)
                             getLeaves(true);
                         else
                             getLeaves();
@@ -91,21 +92,21 @@ function getLeaves(team) {
             startDate: $("#startDate").val(),
             endDate: $("#endDate").val(),
             leaveStatus: $("#leaveStatus").val(),
-            userId:currentUserId,
+            userId: currentUserId,
             team: team
         },
         success: function (response) {
             $("#leaveTableContainer").html(response);
             createDataTable("leaveTable");
-            if(team){
+            if (team) {
                 $('.notTeamBtn').hide();
             }
         }
     });
 }
-function cancelLeave(id){
+function cancelLeave(id) {
     document.getElementById("deleteTitle").innerText = "leave";
-    $('#deleteConfirm').click(function(){
+    $('#deleteConfirm').click(function () {
         $.ajax({
             url: '/Leave/CancelLeave',
             type: 'POST',

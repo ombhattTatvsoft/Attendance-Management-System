@@ -92,9 +92,9 @@ public class HolidayService : IHolidayService
             else
             {   
                 if(holiday == null)
-                {
                     return new Response(false, "Holiday not found.");
-                }
+                if(model.HolidayDate <= DateOnly.FromDateTime(DateTime.Now))
+                    return new Response(false, "Cannot update holiday to a past date.");
                 holiday = _mapper.Map(model, holiday);
                 holiday.UpdatedAt = DateTime.Now;
                 holiday.UpdatedBy = UpsertedBy;

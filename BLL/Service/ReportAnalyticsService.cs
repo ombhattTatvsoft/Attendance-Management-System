@@ -31,6 +31,8 @@ public class ReportAnalyticsService : IReportAnalyticsService
                 DateOnly newStartDate = startDate ?? DateOnly.FromDateTime(user.CreatedAt);
                 DateOnly newEndDate = endDate ?? DateOnly.FromDateTime(DateTime.Now);
                 newStartDate = DateOnly.FromDateTime(user.CreatedAt) > newStartDate ? DateOnly.FromDateTime(user.CreatedAt) : newStartDate;
+                if (DateOnly.FromDateTime(user.CreatedAt) > newEndDate)
+                    continue;
                 ReportAnalyticsVM report = new()
                 {
                     User = user,

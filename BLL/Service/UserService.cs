@@ -55,7 +55,7 @@ public class UserService : IUserService
     {
         try
         {
-            return await _userRepository.GetAsync(u => u.Email.ToLower() == email.ToLower() && !u.IsDeleted);
+            return await _userRepository.GetAsync(u => u.Email.ToLower() == email.ToLower() && !u.IsDeleted,x=>x.Role);
         }
         catch (Exception e)
         {

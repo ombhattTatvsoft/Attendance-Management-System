@@ -33,16 +33,19 @@ public class UserController : Controller
 
     [HttpGet]
     public async Task<IActionResult> UpsertUser(int? id)
-    {
+    fixed 
         ViewData["selected"] = "user";
-        UpsertUserVM model = new()
-        {
-            Departments = await _departmentService.GetAllDepartmentsAsync()
-        };
+        UpsertUserVM model = new();
         if (id == null)
+        {
+            model.Departments = await _departmentService.GetAllDepartmentsAsync();
             return View(model);
+        }
         else
+        {
             model = await _userService.GetUserAsync((int)id);
+            model.Departments = await _departmentService.GetAllDepartmentsAsync();
+        }
         return View(model);
     }
 

@@ -1,12 +1,12 @@
 $(document).ready(function () {
   var calendar = new FullCalendar.Calendar(document.getElementById('holidayCalendar'), {
-    height:window.innerHeight-200,
+    height: window.innerHeight - 200,
     headerToolbar: {
       left: 'prev next today',
       center: 'title',
       right: 'dayGridMonth listMonth listYear'
     },
-    buttonText:{
+    buttonText: {
       today: 'Today',
       month: 'Month',
       dayGridMonth: 'Month View',
@@ -16,30 +16,46 @@ $(document).ready(function () {
     initialView: 'dayGridMonth',
     events: '/Holiday/GetHolidays',
     dateClick: function (info) {
-      $('#holidayForm')[0].reset();
-      $('#btnDelete').hide();
-      $('#holidayModal').modal('show');
-      $('input[name="HolidayId"]').val(0);
-      $('input[name="HolidayDate"]').val(info.dateStr);
+      if (currentRole === 'Admin') {
+        const today = new Date();
+        const selectedDate = new Date(info.dateStr);
+        if (selectedDate <= today) {
+          toastr.error('You cannot add a holiday in the past.');
+          return;
+        }
+        $('#holidayForm')[0].reset();
+        $('#btnDelete').hide();
+        $('#holidayModal').modal('show');
+        $('input[name="HolidayId"]').val(0);
+        $('input[name="HolidayDate"]').val(info.dateStr);
+      }
     },
     eventClick: function (info) {
-      $('#btnDelete').show();
-      $.ajax({
-        url: '/Holiday/GetHoliday',
-        type: 'GET',
-        data: { id: info.event.id },
-        success: function (response) {
-          if (response.success) {
-            $('#HolidayId').val(response.data.holidayId);
-            $('input[name="HolidayName"]').val(response.data.holidayName);
-            $('input[name="HolidayDate"]').val(response.data.holidayDate);
-            $('#holidayModal').modal('show');
-          }
-          else {
-            toastr.error(response.message);
-          }
-        },
-      });
+      if (currentRole === 'Admin') {
+        const today = new Date();
+        const selectedDate = new Date(info.event.start);
+        if (selectedDate <= today) {
+          toastr.error('You cannot edit past holidays.');
+          return;
+        }
+        $('#btnDelete').show();
+        $.ajax({
+          url: '/Holiday/GetHoliday',
+          type: 'GET',
+          data: { id: info.event.id },
+          success: function (response) {
+            if (response.success) {
+              $('#HolidayId').val(response.data.holidayId);
+              $('input[name="HolidayName"]').val(response.data.holidayName);
+              $('input[name="HolidayDate"]').val(response.data.holidayDate);
+              $('#holidayModal').modal('show');
+            }
+            else {
+              toastr.error(response.message);
+            }
+          },
+        });
+      }
     }
   });
   calendar.render();

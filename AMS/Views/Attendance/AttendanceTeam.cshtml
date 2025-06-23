@@ -1,7 +1,7 @@
 @using System.Security.Claims
 @model List<Entity.Models.User>;
 @{
-    ViewData["Title"] = "Team Attendance Page";
+    ViewData["Title"] = "Attendance";
     int currentUserId = 0;
     var nameIdentifierClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     var role = User.FindFirst(ClaimTypes.Role)?.Value;
