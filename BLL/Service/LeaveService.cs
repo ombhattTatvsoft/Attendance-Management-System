@@ -87,6 +87,7 @@ public class LeaveService : ILeaveService
     {
         try
         {
+            
             Leave? leave = (model.LeaveId == 0) ? new Leave() : await _repository.GetAsync(x => x.LeaveId == model.LeaveId && !x.IsDeleted);
             if (model.LeaveId != 0 && leave == null)
                 return new Response(false, "Leave not found");
