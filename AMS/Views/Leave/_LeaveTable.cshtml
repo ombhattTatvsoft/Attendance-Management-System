@@ -1,0 +1,73 @@
+@using BLL.Helpers
+@using Entity.Enums
+@using Entity.ViewModels
+@using System.Security.Claims
+@model List<Entity.ViewModels.LeaveVM>;
+@{
+    var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+}
+<table class="table align-middle table-hover mb-0" id="leaveTable">
+    <thead>
+        <tr>
+            <th scope="col" class="text-muted">Name</th>
+            <th scope="col" class="text-muted text-center">From Date</th>
+            <th scope="col" class="text-muted text-center">To Date</th>
+            <th scope="col" class="text-muted text-center">TotalLeave</th>
+            <th scope="col" class="text-muted text-center">Status</th>
+            <th scope="col" class="text-muted text-center">Approved By</th>
+            <th scope="col" class="text-muted text-center">Applied At</th>
+            <th scope="col" class="text-muted text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (LeaveVM leave in Model)
+        {
+            <tr>
+                <td>@leave.User!.Name</td>
+                <td class="text-center">@leave.FromDate</td>
+                <td class="text-center">@leave.ToDate</td>
+                <td class="text-center">@leave.TotalLeave</td>
+                <td class="text-center">
+                    @if (leave.IsDeleted)
+                    {
+                        <span class="badge bg-info">Cancelled</span>
+                    }
+                    else if (leave.IsApproved == null)
+                    {
+                        <span class="badge bg-secondary">Pending</span>
+                    }
+                    else if (leave.IsApproved == true)
+                    {
+                        <span class="badge bg-success">Approved</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Rejected</span>
+                    }
+                </td>
+                <td class="text-center">@(leave.ApprovedByNavigation != null ? leave.ApprovedByNavigation.Name : "-")</td>
+                <td class="text-center">@leave.CreatedAt.ToString("dd-MM-yyyy")</td>
+                <td class="text-center">
+                    <div class="d-flex gap-4 justify-content-center align-items-center">
+                        <a class="links" id="viewSelfLeave" data-id="@leave.LeaveId"><i class="fa-solid fa-eye"></i></a>
+                        @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
+                        {
+                            <a class="links @(leave.IsApproved != null || leave.IsDeleted ? "not-clickable text-secondary" : "")"
+                                id="@(currentUserId != leave.UserId.ToString() ? "editTeamLeave" : "editSelfLeave")"
+                                data-id="@leave.LeaveId"><i class="fa-solid fa-pen"></i></a>
+                        }
+                        <a class="links notTeamBtn @(leave.IsApproved != null || leave.IsDeleted ? "not-clickable text-secondary" : "")"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="cancelLeave(@leave.LeaveId)"><i
+                                class="fa-regular fa-trash-can"></i></a>
+                        @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                        {
+                            <a class="links @(leave.IsDeleted ? "not-clickable text-secondary" : "")" id="editTeamLeave"
+                                data-id="@leave.LeaveId"><i class="fa-solid fa-pen"></i></a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

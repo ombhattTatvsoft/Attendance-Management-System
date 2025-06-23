@@ -1,7 +1,9 @@
 @using System.Security.Claims
+@using BLL.Helpers
+@using Entity.Enums;
 @model Entity.ViewModels.HolidayVM;
 @{
-  ViewData["Title"] = "Holiday Page";
+  ViewData["Title"] = "Holiday";
   var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
 }
 <div class="content" id="holiday">
@@ -9,14 +11,14 @@
     <div class="col-12 my-2">
       <h3 class="sitetxtcolor">Holiday</h3>
     </div>
-    <div class="col-12 py-3" style="max-width: 800px;">
+    <div class="col-12 py-3">
       <div class="card p-3" id="holidayCalendar"></div>
     </div>
   </div>
 </div>
 
 <!-- Bootstrap Modal -->
-@if (role == "Admin")
+@if (role == RoleHelper.ToDbString(RoleEnum.Admin))
 {
   <div class="modal fade" id="holidayModal" tabindex="-1" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog modal-dialog-centered">
@@ -40,8 +42,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Save</button>
-            <button type="button" class="btn btn-danger" id="btnDelete">Delete</button>
+            <button type="submit" class="btn sitebgcolor">Save</button>
+            <button type="button" class="btn siteoutlinebtn ms-2" id="btnDelete">Delete</button>
           </div>
         </div>
       </form>
@@ -50,6 +52,9 @@
 }
 
 @section scripts {
+  <script>
+    var currentRole= '@role';
+  </script>
   <script src="~/js/Holiday.js"></script>
   @{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");

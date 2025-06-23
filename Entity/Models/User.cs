@@ -17,11 +17,9 @@ public partial class User
 
     public int? ManagerId { get; set; }
 
-    public string? Department { get; set; }
-
     public bool IsDeleted { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
@@ -31,9 +29,19 @@ public partial class User
 
     public string? UserImageUrl { get; set; }
 
+    public string? ResetPasswordCode { get; set; }
+
+    public DateTime? ResetPasswordCodeExpiryTime { get; set; }
+
+    public bool FirstLogin { get; set; }
+
+    public int? DepartmentId { get; set; }
+
     public virtual ICollection<Attendance> AttendanceApprovedByNavigations { get; } = new List<Attendance>();
 
     public virtual ICollection<Attendance> AttendanceUsers { get; } = new List<Attendance>();
+
+    public virtual Department? Department { get; set; }
 
     public virtual ICollection<User> InverseManager { get; } = new List<User>();
 

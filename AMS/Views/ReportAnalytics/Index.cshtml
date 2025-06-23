@@ -1,5 +1,48 @@
-
 @{
-    ViewData["Title"] = "Reports Page";
+    ViewData["Title"] = "Reports";
 }
-<p>Welcome to Reports</p>
+<div class="content" id="ReportAnalytics">
+    <div class="row mx-sm-3 mx-2 pt-2">
+        <div class="col-12 my-2">
+            <h3 class="sitetxtcolor">Reports & Analytics</h3>
+        </div>
+        <div class="col-12 d-xxl-flex justify-content-between align-items-center" id="reportFilterContainer">
+            <div class="mb-3 d-flex flex-wrap gap-3">
+                <div>
+                    <label for="startDate" class="form-label fw-semibold">From Date</label>
+                    <input id="startDate" class="form-control" type="date" />
+                </div>
+                <div>
+                    <label for="endDate" class="form-label fw-semibold">To Date</label>
+                    <input id="endDate" class="form-control" type="date" />
+                </div>
+                <div class="d-flex gap-3 align-items-end">
+                    <div>
+                        <button class="btn sitebgcolor w-100" type="button" onclick="fetchReport()">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn siteoutlinebtn w-100" onclick="resetReport()" type="button">
+                            <i class="bi bi-arrow-repeat me-1"></i></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12">
+            <div class="table-responsive bg-white shadow-lg rounded p-3" id="reportTableContainer">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/ReportAnalytics.js"></script>
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

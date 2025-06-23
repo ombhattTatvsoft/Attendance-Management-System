@@ -12,10 +12,15 @@ namespace BLL.Service;
 public class HolidayService : IHolidayService
 {
     private readonly IHolidayRepository _repository;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     private readonly ILogger<UserService> _logger;
+
     private readonly IMapper _mapper;
-    public int UpsertedBy { get;  set; }
+    
+    public int UpsertedBy { get; set; }
+    
     public HolidayService(IHolidayRepository repository, IHttpContextAccessor httpContextAccessor, IMapper mapper, ILogger<UserService> logger)
     {
         _repository = repository;
@@ -46,13 +51,13 @@ public class HolidayService : IHolidayService
         }
     }
 
-
     public async Task<Holiday?> GetHoliday(int id)
     {
         try
         {
             return await _repository.GetAsync(x => x.HolidayId == id && !x.IsDeleted);
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             _logger.LogError(e, "Error fetching holiday with ID {Id}", id);
             return null;
@@ -81,14 +86,15 @@ public class HolidayService : IHolidayService
             {
                 holiday= _mapper.Map<Holiday>(model);
                 holiday.CreatedBy = UpsertedBy;
+                holiday.UpdatedBy = UpsertedBy;
                 await _repository.AddAsync(holiday);
             }
             else
             {   
                 if(holiday == null)
-                {
                     return new Response(false, "Holiday not found.");
-                }
+                if(model.HolidayDate <= DateOnly.FromDateTime(DateTime.Now))
+                    return new Response(false, "Cannot update holiday to a past date.");
                 holiday = _mapper.Map(model, holiday);
                 holiday.UpdatedAt = DateTime.Now;
                 holiday.UpdatedBy = UpsertedBy;

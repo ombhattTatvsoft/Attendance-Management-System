@@ -1,10 +1,13 @@
 @model Entity.Models.User;
-<img src="~/images/Default_pfp.svg.png" class="img-fluid rounded-circle dropdown-toggle" id="dropdownMenuButton1"
-    data-bs-toggle="dropdown" aria-expanded="false" alt="" style="height: 50px;width: 50px;">
+<div class="d-flex align-items-center justify-content-center gap-2" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+    @* <span class="text-white fs-5">@Model.Name</span> *@
+    <img src="~/images/Default_pfp.svg.png" class="img-fluid rounded-circle" 
+    alt="" style="height: 50px;width: 50px;">
+</div>
 <ul class="dropdown-menu dropdown-menu-end me-1 mt-1" aria-labelledby="dropdownMenuButton1">
     <li>
         <a class="dropdown-item disabled">
-            <span class="text-dark">@Model.Name</span>
+            <span class="text-dark">@Model.Name (@Model.Role.RoleName)</span>
         </a>
     </li>
     <hr class="my-1">

@@ -1,61 +1,203 @@
+@model Entity.ViewModels.DashboardVM;
 @using System.Security.Claims
+@using BLL.Helpers
+@using Entity.Enums
 @{
-    ViewData["Title"] = "Dashboard Page";
+    ViewData["Title"] = "Dashboard";
     var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
+    var currentUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    double
+    fullAbsentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) <
+    DateTime.Now.Date
+    && Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday &&
+    (x.Status == null || x.Status == "Absent")).Count() + Model.UserDashboard.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count() ?? 0;
+    double halfDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Half Present").Count() ?? 0;
+    double holidays = Model.UserDashboard?.AttendanceRecords.Where(x => x.IsHoliday == true && x.Day != "Saturday" &&
+    x.Day != "Sunday").Count() ?? 0;
+    double totalDays = Model.UserDashboard?.AttendanceRecords.Where(x => !(bool)x.IsHoliday &&
+    Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)).Count() ?? 0;
+    double presentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == "Present").Count() + halfDays/2 ?? 0;
 }
+
 <div class="content" id="dashboard">
     <div class="row mx-sm-3 mx-2 pt-2">
         <div class="col-12 my-2">
             <h3 class="sitetxtcolor">Dashboard</h3>
         </div>
-        <div class="col-xxl-4 col-md-6">
-                <div class="card bg-secondary text-white shadow h-100">
-                    <div class="p-3 h-100 d-flex flex-column justify-content-between">
-                        <p class="fw-bold h4">@(role=="Admin"?"Today's Attendance":"Monthly Leaves")</p>
-                        <div class="w-100 d-flex justify-content-between">
-                                @if(role=="Admin"){
-                                    <div><p class="mb-0 h6">Total Employee</p><p class="mb-0">13</p></div>
-                                    <div><p class="mb-0 h6">Present Employee</p><p class="mb-0">12</p></div>
-                                    <div><p class="mb-0 h6">Absent Employee</p><p class="mb-0">1</p></div>
-                                }
-                                else{
-                                    <div><p class="mb-0 h6">Absent days</p><p class="mb-0">3</p></div>
-                                    <div><p class="mb-0 h6">Half days</p><p class="mb-0">3</p></div>
-                                    <div><p class="mb-0 h6">Total days</p><p class="mb-0">4.5</p></div>
-                                }
-                        </div>
+
+        <div class="col-xxl-4 col-md-6 mb-4">
+            <div class="card shadow h-100 border-0 rounded-4">
+                <div class="card-header bg-primary-subtle d-flex justify-content-between fw-semibold rounded-top-4">
+                    @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? "Today's Attendance" : "Monthly Leaves")
+                    <div>
+                        @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? Html.Raw("<a href='./Attendance/AttendanceTeam'>Attendance<i class='bi bi-arrow-up-right'></i></a>") : Html.Raw("<a href='./Leave/Index'>Leaves<i class='bi bi-arrow-up-right'></i></a>"))
                     </div>
                 </div>
+                <div class="card-body d-flex justify-content-between gap-1">
+                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    {
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Total Employee</p>
+                            <p class="h5 mb-0">@Model.AdminDashboard?.TotalEmployee</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Present</p>
+                            <p class="h5 mb-0">@Model.AdminDashboard?.PresentEmployee</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Absent</p>
+                            <p class="h5 mb-0">@Model.AdminDashboard?.AbsentEmployee</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Absent Days</p>
+                            <p class="h5 mb-0">@fullAbsentDays</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Half Days</p>
+                            <p class="h5 mb-0">@halfDays</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Total Days</p>
+                            <p class="h5 mb-0">@(fullAbsentDays + halfDays/2)</p>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="col-xxl-4 col-md-6 mt-3 mt-md-0">
-            <div class="card shadow h-100 bg-secondary text-white">
-                <div class="p-3 h-100 d-flex flex-column justify-content-between">
-                    <p class="fw-bold h4">Public Holidays</p>
-                    <div class="w-100 d-flex justify-content-between">
-                        <div><p class="mb-0 h6">Month</p><p class="mb-0">June</p></div>
-                        <div><p class="mb-0 h6">Holiday</p><p class="mb-0">3</p></div>
+
+        <div class="col-xxl-4 col-md-6 mb-4">
+            <div class="card shadow h-100 border-0 rounded-4">
+                <div class="card-header bg-success-subtle d-flex justify-content-between fw-semibold rounded-top-4">
+                    Public Holidays
+                     <div>
+                        <a href='./Holiday'>Holiday<i class='bi bi-arrow-up-right'></i></a>
+                    </div>
+                </div>
+                <div class="card-body d-flex justify-content-between gap-1">
+                    <div>
+                        <p class="mb-1 fw-bold text-muted">Month</p>
+                        <p class="h5 mb-0">@DateTime.Now.ToString("MMMM")</p>
+                    </div>
+                    <div>
+                        <p class="mb-1 fw-bold text-muted">Holiday</p>
+                        <p class="h5 mb-0">@holidays</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-md-6 mt-3 mt-xxl-0">
-            <div class="card bg-secondary text-white shadow h-100">
-                <div class="p-3 h-100 d-flex flex-column justify-content-between">
-                    <p class="fw-bold h4">@(role=="Admin"?"Users":"Present Days")</p>
-                    <div class="w-100 d-flex justify-content-between">
-                        @if(role=="Admin"){
-                            <div><p class="mb-0 h6">Total Users</p><p class="mb-0">14</p></div>
-                            <div><p class="mb-0 h6">Managers</p><p class="mb-0">6</p></div>
-                            <div><p class="mb-0 h6">Employee</p><p class="mb-0">7</p></div>
-                        }
-                        else{
-                            <div><p class="mb-0 h6">Total days</p><p class="mb-0">22</p></div>
-                            <div><p class="mb-0 h6">Leave days</p><p class="mb-0">3</p></div>
-                            <div><p class="mb-0 h6">Present days</p><p class="mb-0">19</p></div>
-                        }
+
+        <div class="col-xxl-4 col-md-6 mb-4">
+            <div class="card shadow h-100 border-0 rounded-4">
+                <div class="card-header bg-warning-subtle d-flex justify-content-between fw-semibold rounded-top-4">
+                    @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? "Users" : "Present Days")
+                    <div>
+                        @(role == RoleHelper.ToDbString(RoleEnum.Admin) ? Html.Raw("<a href='./User'>User<i class='bi bi-arrow-up-right'></i></a>") : Html.Raw("<a href='./Attendance/'>Attendance<i class='bi bi-arrow-up-right'></i></a>"))
                     </div>
+                </div>
+                <div class="card-body d-flex justify-content-between gap-1">
+                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    {
+                        <div>
+                            <div>
+                                <p class="mb-1 fw-bold text-muted">Total <span
+                                        class="h5 text-dark">@(Model.AdminDashboard?.Managers +
+                                                                            Model.AdminDashboard?.SeniorManagers + Model.AdminDashboard?.Employees + 1)</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Managers <span
+                                    class="h5 text-dark">@Model.AdminDashboard?.Managers</span></p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Senior Managers <span
+                                    class="h5 text-dark">@Model.AdminDashboard?.SeniorManagers</span></p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Employees <span
+                                    class="h5 text-dark">@Model.AdminDashboard?.Employees</span></p>
+                        </div>
+                    </div>
+                                        }
+                    else
+                    {
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Total Days</p>
+                            <p class="h5 mb-0">@totalDays</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Leave Days</p>
+                            <p class="h5 mb-0">@(fullAbsentDays + halfDays/2)</p>
+                        </div>
+                        <div>
+                            <p class="mb-1 fw-bold text-muted">Present Days</p>
+                            <p class="h5 mb-0">@presentDays</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            <div class="card shadow border-0 rounded-4">
+                <div
+                    class="card-header bg-info-subtle fw-semibold rounded-top-4 d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-pie-chart-fill me-2"></i>Attendance Graph</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4 col-sm-6">
+                            <label for="selectedUserId" class="form-label fw-semibold">Select User</label>
+                            <select class="form-select" id="selectedUserId" onchange="fetchGraph()">
+                                @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
+                                {
+                                    <option value="@currentUserId">Self</option>
+                                }
+                                @foreach (var user in Model.Team)
+                                {
+                                    <option value="@user.UserId">@(user.Name) (@user.Role.RoleName)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label for="myMonth" class="form-label fw-semibold">Select Month</label>
+                            <select class="form-select" id="myMonth" onchange="fetchGraph()">
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i">@(new DateTime(2025, i, 1).ToString("MMMM"))</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <label for="myYear" class="form-label fw-semibold">Select Year</label>
+                            <select class="form-select" id="myYear" onchange="fetchGraph()">
+                                @for (int i = -1; i <= 1; i++)
+                                {
+                                    var currentYear = DateTime.Now.Year;
+                                    var year=DateTime.Now.AddYears(i).Year;
+                                    if(year==currentYear)
+                                    {
+                                        <option value="@year" selected>@year</option>
+                                    }
+                                    else{
+                                        <option value="@year">@year</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="chart_div" class="p-md-3 border rounded shadow-sm mt-3" style="min-height: 400px;"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/Dashboard.js"></script>
+}

@@ -21,13 +21,15 @@ public partial class Attendance
 
     public int? ApprovedBy { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
     public int CreatedBy { get; set; }
 
     public int? UpdatedBy { get; set; }
+
+    public int? LeaveId { get; set; }
 
     public virtual User? ApprovedByNavigation { get; set; }
 

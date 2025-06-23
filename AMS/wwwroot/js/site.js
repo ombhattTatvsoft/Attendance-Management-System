@@ -20,3 +20,43 @@ function togglePassword(id1,id2){
         eyeicon.classList.remove('fa-eye');
     }
 }
+// toggle attendance sub menu
+function toggleSubMenu(id) {
+    const menu = document.getElementById(id);
+    menu.classList.toggle("d-none");
+}
+// create data table
+function createDataTable(tableId){
+    return $('#'+tableId).DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [5,10, 25, -1],
+        scrollCollapse: true,
+        scrollY: '415px',
+        "columnDefs": [
+          { "orderable": false, "targets": -1 }
+        ],
+        layout: {
+            bottomStart:null,
+            topStart: null,
+            bottomEnd: [
+                {
+                    info:{
+                        text : "Showing _START_ - _END_ of _TOTAL_"
+                    }
+                    
+                },
+                {
+                    pageLength:{
+                        text: "_MENU_",
+                    }
+                },
+                {
+                    paging:{
+                        buttons: 3
+                    }
+                }
+            ],
+        }
+      });
+}

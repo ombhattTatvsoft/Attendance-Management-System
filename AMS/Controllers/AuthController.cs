@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using BLL.Helpers;
 using BLL.IService;
 using Entity.Models;
 using Entity.ViewModels;
@@ -7,12 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Controllers;
 
-public class HomeController : Controller
+public class AuthController : Controller
 {
-    private readonly IHomeService _service;
+    private readonly IAuthService _service;
+
     private readonly IUserService _userService;
 
-    public HomeController(IHomeService service, IUserService userService)
+    public AuthController(IAuthService service, IUserService userService)
     {
         _service = service;
         _userService = userService;
@@ -30,7 +33,6 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(UserLoginVM user)
     {
         if (ModelState.IsValid)
@@ -42,16 +44,18 @@ public class HomeController : Controller
                 return RedirectToAction("Index");
             }
             string? token = _service.CreateJwtToken(userFound);
-            if( token == null)
+            if (token == null)
             {
                 TempData["failed"] = "Login Failed, Please Try Again!";
                 return RedirectToAction("Index");
             }
             _service.CreateCookie(userFound, HttpContext, token);
+            bool hasTeam = (await _userService.GetMyTeam(userFound!)).Count > 0;
+            TempData["hasTeam"] = hasTeam ? "true" : "false";
             TempData["success"] = "Login Successful";
             return RedirectToAction("Index", "Dashboard");
         }
-        TempData["failed"] = "Login Failed";
+        TempData["failed"] = "Login Failed, Please Try Again!";
         return RedirectToAction("Index");
     }
 
@@ -59,6 +63,9 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Logout()
     {
+        // Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        // Response.Headers["Pragma"] = "no-cache";
+        // Response.Headers["Expires"] = "-1";
         Response.Cookies.Delete("JwtAMSToken");
         TempData["success"] = "Logout Successful";
         return RedirectToAction("Index");
@@ -67,11 +74,15 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult ForgotPassword()
     {
+        if (Request.Cookies["JwtAMSToken"] != null)
+        {
+            TempData["success"] = "Login Successful";
+            return RedirectToAction("Index", "Dashboard");
+        }
         return View();
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordVM user)
     {
         if (ModelState.IsValid)
@@ -79,7 +90,15 @@ public class HomeController : Controller
             User? userFound = await _userService.FindUserByEmailAsync(user.Email.Trim());
             if (userFound != null)
             {
-                
+                string? link = _service.PrepareLink(userFound, HttpContext);
+                string subject = EmailBodyHelper.ForgotPasswordSubject;
+                string body = EmailBodyHelper.ForgotPasswordBody(link!);
+
+                Response response = _service.SendEmail(userFound.Email, body, subject);
+                if (response.IsSuccess)
+                    TempData["success"] = response.Message;
+                else
+                    TempData["failed"] = response.Message;
             }
             else
             {
@@ -91,7 +110,40 @@ public class HomeController : Controller
         {
             TempData["failed"] = "Please Provide Email.";
         }
-        return View();
+        return View(user);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ResetPassword(string id)
+    {
+        Response response = await _service.CheckResetLinkAsync(id);
+        if (!response.IsSuccess || string.IsNullOrEmpty(id))
+        {
+            TempData["failed"] = response.Message;
+            return RedirectToAction("Index");
+        }
+        ResetPasswordVM model = new()
+        {
+            ResetCode = id
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(ResetPasswordVM user)
+    {
+        if (ModelState.IsValid)
+        {
+            User? userFound = await _service.FindUserByResetCodeAsync(user.ResetCode);
+            if (userFound != null)
+            {
+                await _userService.UpdatePasswordAsync(userFound, user.NewPassword);
+                TempData["success"] = "Reset Password Successful";
+                return RedirectToAction("index");
+            }
+        }
+        TempData["failed"] = "Invalid Data";
+        return RedirectToAction("index");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,9 +1,11 @@
+using Entity.Models;
 using Entity.ViewModels;
 
 namespace BLL.IService;
 
 public interface IAttendanceService
 {
-    Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year,int? id);
-
+    // Task<Attendance?> GetAttendanceByDateAndUser(DateOnly date, int userId);
+    Task<UserMonthlyAttendanceVM?> GetUserMonthlyAttendance(int month, int year,int userId);
+    Task<Response> SaveAttendances(UserMonthlyAttendanceVM model);
 }

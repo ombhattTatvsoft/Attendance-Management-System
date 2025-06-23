@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entity.Enums;
 
-public enum Role
+public enum RoleEnum
 {
     Admin = 1,
     [Display(Name ="Senior Manager")]
-    Senior_Manager = 2,
+    SeniorManager = 2,
     Manager = 3,
     Employee = 4
 }

@@ -11,4 +11,10 @@ public class AttendanceRepository :  BaseRepository<Attendance>, IAttendanceRepo
     {
         _context = context;
     }
+
+    public void DeleteAttendance(Attendance attendance)
+    {
+        _context.Attendances.Remove(attendance);
+    }
+
 }

@@ -13,6 +13,7 @@
 
 .siteoutlinebtn,
 .siteoutlinebtn:hover {
+  background-color: white !important;
   border: 1px solid black;
   border-radius: 5px;
   color: black !important;
@@ -28,6 +29,9 @@
   }
 }
 
+.warning-icon{
+  height: 60px;
+}
 
 /* sidebar css */
 .sidebar{
@@ -86,11 +90,24 @@
     transform: translateX(0);
   }
 }
+.submenu {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.submenu li a {
+  display: block;
+  padding: 5px 10px;
+  color: #333;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
 
 /* change password */
 .passwordEyeIcon {
+  font-size: large;
   right: 10px;
-  transform: translateY(-160%);
+  top: 22px;
 }
 /* calendar page */
 @media (max-width:449px) {
@@ -99,10 +116,63 @@
       margin-top: 0.75rem;
   }
 }
+.fc-button{
+  background-color: white !important;
+  color: black !important;
+}
+.fc-button:hover,.fc-button-active {
+  background-color: black !important;
+  color: white !important;
+}
+.fc-list-event-time{
+  display: none;
+}
 /* attendance */
 .attendance-table-wrapper{
   overflow-x: auto;
+  select{
+    appearance: none;
+  }
 }
-.disabled-attendance{
+.attendance-table-wrapper table td{
+  cursor:pointer;
+}
+.leave-days{
   background-color: rgb(237, 236, 236) !important;
+  pointer-events: none;
+  cursor:not-allowed;
+}
+.clickable{
+  cursor: pointer;
+}
+.not-clickable{
+  pointer-events: none;
+  cursor:not-allowed;
+}
+.absent-day-approved{
+  background-color: rgb(252, 223, 223);
+  color:red;
+}
+.present-day-approved{
+  background-color: rgb(217, 253, 217);
+  color: green;
+}
+.halfpresent-day-approved{
+  background-color: rgb(213, 243, 253);
+  color: rgb(13, 191, 250);
+}
+.today-not-filled{
+  background-color: rgb(253, 253, 188);
+}
+.absent-day{
+  color: red;
+  background-color: white;
+}
+.present-day{
+  color: green;
+  background-color: white;
+}
+.halfpresent-day{
+  color: rgb(13, 191, 250);
+  background-color: white;
 }

@@ -1,0 +1,34 @@
+@using Entity.ViewModels
+@model List<Entity.ViewModels.ReportAnalyticsVM>;
+<table class="table align-middle table-hover mb-0" id="reportTable">
+    <thead>
+        <tr>
+            <th scope="col" class="text-muted">Name</th>
+            <th scope="col" class="text-muted text-center">Present</th>
+            <th scope="col" class="text-muted text-center">Half Present</th>
+            <th scope="col" class="text-muted text-center">Absent</th>
+            <th scope="col" class="text-muted text-center">Percentage</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ReportAnalyticsVM report in Model)
+        {
+            <tr>
+                <td>@report.User.Name</td>
+                <td class="text-center">
+                    @report.PresentCount
+                </td>
+                <td class="text-center">
+                    @report.HalfPresentCount
+                </td>
+                <td class="text-center">
+                    @report.AbsentCount
+                </td>
+                <td class="text-center">
+                    @report.AttendancePercentage%
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

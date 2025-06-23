@@ -10,16 +10,19 @@ namespace AMS.Controllers;
 public class HolidayController : Controller
 {
     private readonly IHolidayService _service;
+
     public HolidayController(IHolidayService service)
     {
         _service = service;
     }
+
     [HttpGet]
     public IActionResult Index()
     {
         ViewData["selected"] = "holiday";
         return View();
     }
+
     [HttpGet]
     public async Task<JsonResult> GetHolidays()
     {
@@ -32,6 +35,7 @@ public class HolidayController : Controller
         });
         return Json(data);
     }
+
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<JsonResult> GetHoliday(int id)
@@ -43,6 +47,7 @@ public class HolidayController : Controller
         }
         return Json(new { success = true, data = holiday });
     }
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<JsonResult> SaveHoliday(HolidayVM model)
@@ -61,6 +66,7 @@ public class HolidayController : Controller
         }
         return Json(new { success = false, message = "Invalid data." });
     }
+    
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<JsonResult> DeleteHoliday(int id)

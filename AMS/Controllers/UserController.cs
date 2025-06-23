@@ -1,3 +1,4 @@
+using BLL.Helpers;
 using BLL.IService;
 using BLL.Service;
 using Entity.Models;
@@ -10,11 +11,19 @@ namespace AMS.Controllers;
 [Authorize(Roles = "Admin")]
 public class UserController : Controller
 {
+    private readonly IAuthService _AuthService;
+
     private readonly IUserService _userService;
-    public UserController(IUserService userService)
+    
+    private readonly IDepartmentService _departmentService;
+    public UserController(IAuthService AuthService, IUserService userService, IDepartmentService departmentService)
     {
+        _AuthService = AuthService;
         _userService = userService;
+        _departmentService = departmentService;
     }
+
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         ViewData["selected"] = "user";
@@ -28,9 +37,15 @@ public class UserController : Controller
         ViewData["selected"] = "user";
         UpsertUserVM model = new();
         if (id == null)
+        {
+            model.Departments = await _departmentService.GetAllDepartmentsAsync();
             return View(model);
+        }
         else
+        {
             model = await _userService.GetUserAsync((int)id);
+            model.Departments = await _departmentService.GetAllDepartmentsAsync();
+        }
         return View(model);
     }
 
@@ -41,14 +56,23 @@ public class UserController : Controller
         {
             ModelState.Remove("ManagerId");
         }
-        if (model.UserId != 0)
-                ModelState.Remove("Password");
         if (ModelState.IsValid)
         {
             Response response = await _userService.SaveUserAsync(model);
             if (response.IsSuccess)
             {
                 TempData["success"] = response.Message;
+                if (model.UserId == 0)
+                {
+                    string? link = _AuthService.PrepareLink((User)response.Data!, HttpContext,true);
+                    string subject = EmailBodyHelper.UpsertUserSubject;
+                    string body = EmailBodyHelper.UpsertUserBody(link!);
+                    Response emailResponse = _AuthService.SendEmail(model.Email, body, subject);
+                    if (emailResponse.IsSuccess)
+                        TempData["success"] = emailResponse.Message;
+                    else
+                        TempData["failed"] = emailResponse.Message;
+                }
                 return RedirectToAction("Index");
             }
             else
@@ -58,13 +82,14 @@ public class UserController : Controller
             }
         }
         ViewData["selected"] = "user";
+        model.Departments = await _departmentService.GetAllDepartmentsAsync();
         return View(model);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetManagers(int departmentId,int roleId)
+    public async Task<IActionResult> GetManagers(int departmentId, int roleId)
     {
-        List<User> managers = await _userService.GetManagersByDepartmentAndRole(departmentId,roleId);
+        List<User> managers = await _userService.GetManagersByDepartmentAndRole(departmentId, roleId);
         return Json(managers.Select(m => new
         {
             m.UserId,

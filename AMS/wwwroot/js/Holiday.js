@@ -1,20 +1,43 @@
 $(document).ready(function () {
-    var calendar = new FullCalendar.Calendar(document.getElementById('holidayCalendar'), {
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,listYear'
-      },
-      initialView: 'dayGridMonth',
-      events: '/Holiday/GetHolidays',
-      dateClick: function (info) {
+  var calendar = new FullCalendar.Calendar(document.getElementById('holidayCalendar'), {
+    height: window.innerHeight - 200,
+    headerToolbar: {
+      left: 'prev next today',
+      center: 'title',
+      right: 'dayGridMonth listMonth listYear'
+    },
+    buttonText: {
+      today: 'Today',
+      month: 'Month',
+      dayGridMonth: 'Month View',
+      listMonth: ' Monthly List',
+      listYear: 'Yearly List'
+    },
+    initialView: 'dayGridMonth',
+    events: '/Holiday/GetHolidays',
+    dateClick: function (info) {
+      if (currentRole === 'Admin') {
+        const today = new Date();
+        const selectedDate = new Date(info.dateStr);
+        if (selectedDate <= today) {
+          toastr.error('You cannot add a holiday in the past.');
+          return;
+        }
         $('#holidayForm')[0].reset();
         $('#btnDelete').hide();
         $('#holidayModal').modal('show');
         $('input[name="HolidayId"]').val(0);
         $('input[name="HolidayDate"]').val(info.dateStr);
-      },
-      eventClick: function (info) {
+      }
+    },
+    eventClick: function (info) {
+      if (currentRole === 'Admin') {
+        const today = new Date();
+        const selectedDate = new Date(info.event.start);
+        if (selectedDate <= today) {
+          toastr.error('You cannot edit past holidays.');
+          return;
+        }
         $('#btnDelete').show();
         $.ajax({
           url: '/Holiday/GetHoliday',
@@ -33,16 +56,36 @@ $(document).ready(function () {
           },
         });
       }
-    });
-    calendar.render();
+    }
+  });
+  calendar.render();
 
-    $('#holidayForm').on('submit', function (e) {
-      e.preventDefault();
-      var formData = $(this).serialize();
+  $('#holidayForm').on('submit', function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.ajax({
+      url: '/Holiday/SaveHoliday',
+      type: 'POST',
+      data: formData,
+      success: function (response) {
+        if (response.success) {
+          toastr.success(response.message);
+          $('#holidayModal').modal('hide');
+          calendar.refetchEvents();
+        } else {
+          toastr.error(response.message);
+        }
+      },
+    });
+  });
+
+  $('#btnDelete').on('click', function () {
+    var holidayId = $('#HolidayId').val();
+    if (holidayId) {
       $.ajax({
-        url: '/Holiday/SaveHoliday',
+        url: '/Holiday/DeleteHoliday',
         type: 'POST',
-        data: formData,
+        data: { id: holidayId },
         success: function (response) {
           if (response.success) {
             toastr.success(response.message);
@@ -51,27 +94,8 @@ $(document).ready(function () {
           } else {
             toastr.error(response.message);
           }
-        },
+        }
       });
-    });
-
-    $('#btnDelete').on('click', function () {
-      var holidayId = $('#HolidayId').val();
-      if (holidayId) {
-        $.ajax({
-          url: '/Holiday/DeleteHoliday',
-          type: 'POST',
-          data: { id: holidayId },
-          success: function (response) {
-            if (response.success) {
-              toastr.success(response.message);
-              $('#holidayModal').modal('hide');
-              calendar.refetchEvents();
-            } else {
-              toastr.error(response.message);
-            }
-          }
-        });
-      }
-    });
+    }
   });
+});
