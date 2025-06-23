@@ -30,13 +30,12 @@ public class DashboardController : Controller
     public async Task<IActionResult> Index()
     {
         ViewData["selected"] = "dashboard";
-        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);
         DashboardVM model = new()
         {
             AdminDashboard = await _service.GetAdminDashboardDataAsync(),
-            UserDashboard = await _attendanceService.GetUserMonthlyAttendance(DateTime.Now.Month, DateTime.Now.Year, userId),
+            UserDashboard = await _attendanceService.GetUserMonthlyAttendance(DateTime.Now.Month, DateTime.Now.Year, user!.UserId),
             Team = team
         };
         return View(model);

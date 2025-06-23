@@ -36,16 +36,11 @@ public class UserController : Controller
     {
         ViewData["selected"] = "user";
         UpsertUserVM model = new();
-        if (id == null)
-        {
-            model.Departments = await _departmentService.GetAllDepartmentsAsync();
-            return View(model);
-        }
-        else
+        if (id != null)
         {
             model = await _userService.GetUserAsync((int)id);
-            model.Departments = await _departmentService.GetAllDepartmentsAsync();
         }
+        model.Departments = await _departmentService.GetAllDepartmentsAsync();
         return View(model);
     }
 
