@@ -94,6 +94,9 @@
 </div>
 
 @section scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         let currentUserId =@currentUserId;
         let teamUsers =@Html.Raw(Json.Serialize(Model.Select(x => new { id = x.UserId, name = x.Name }).OrderBy(x => x.id)));
@@ -101,7 +104,4 @@
     </script>
     <script src="~/js/TeamAttendance.js">
     </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 }

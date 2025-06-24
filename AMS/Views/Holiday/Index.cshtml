@@ -52,11 +52,11 @@
 }
 
 @section scripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
   <script>
     var currentRole= '@role';
   </script>
   <script src="~/js/Holiday.js"></script>
-  @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-  }
 }

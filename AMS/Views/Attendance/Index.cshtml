@@ -70,12 +70,12 @@
 </div>
 
 @section scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         let currentUserId =@Model.UserId;
     </script>
     <script src="~/js/Attendance.js">
     </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 }

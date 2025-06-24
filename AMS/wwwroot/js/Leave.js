@@ -18,6 +18,7 @@ $(document).ready(function () {
             success: function (response) {
                 $("#LeaveForm").html(response);
                 $("#teamLeaveForm").html(response);
+                $.validator.unobtrusive.parse($("#LeaveForm,#teamLeaveForm"));
                 $("#LeaveModal").modal('show');
                 $("#fromDate,#toDate").prop('min', today);
                 if (isView) {
