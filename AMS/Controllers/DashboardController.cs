@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using BLL.Helpers;
 using BLL.IService;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -47,16 +49,16 @@ public class DashboardController : Controller
         ViewData["selected"] = "dashboard";
         UserMonthlyAttendanceVM? model = await _attendanceService.GetUserMonthlyAttendance(month, year, userId);
         
-        double fullAbsentDays = model!.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == "Absent")).Count()
-        + model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count();
-        double halfDays = model.AttendanceRecords.Where(x => x.Status == "Half Present").Count();
-        double presentDays = model.AttendanceRecords.Where(x => x.Status == "Present").Count();
-        double totalDays = model.AttendanceRecords.Where(x => !(bool)x.IsHoliday && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)).Count();
+        double fullAbsentDays = model!.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)))
+        + model.AttendanceRecords.Count(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent));
+        double halfDays = model.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent));
+        double presentDays = model.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present));
+        double totalDays = model.AttendanceRecords.Count(x => !(bool)x.IsHoliday && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue));
         var data= new
         {
-            presentDays = presentDays,
-            fullAbsentDays = fullAbsentDays,
-            halfDays = halfDays,
+            presentDays,
+            fullAbsentDays,
+            halfDays,
             remainingDays = totalDays-(presentDays + fullAbsentDays + halfDays)
         };
         return Json(data);
@@ -78,11 +80,11 @@ public class DashboardController : Controller
             if (model.CurrentPassword == model.NewPassword)
             {
                 TempData["failed"] = "Current and New Password are same.";
-                return View();
+                return View(model);
             }
             else
             {
-                string email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+                string email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
                 User? user = await _AuthService.AuthenticateUserAsync(email, model.CurrentPassword);
                 if (user != null)
                 {
@@ -102,7 +104,7 @@ public class DashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> GetUserData()
     {
-        string email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value!;
+        string email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
         User? user = await _userService.FindUserByEmailAsync(email);
         return PartialView("_UserData", user);
     }

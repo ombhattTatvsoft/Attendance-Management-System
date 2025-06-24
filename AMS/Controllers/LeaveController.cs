@@ -26,7 +26,7 @@ public class LeaveController : Controller
     {
         ViewData["selected"] = "leaveSelf";
         User? user = await _userService.GetCurrentUserAsync();
-        if (user!.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
+        if (user!.Role.RoleName == EnumHelper.RoleToDbString(RoleEnum.Admin))
             return RedirectToAction("Team");
         return View(user);
     }
@@ -35,7 +35,7 @@ public class LeaveController : Controller
     public async Task<IActionResult> Team()
     {
         ViewData["selected"] = "leaveTeam";
-        if(TempData.Peek("hasTeam").ToString()=="false")
+        if (TempData.Peek("hasTeam").ToString() == "false")
             return RedirectToAction("Index");
         return View();
     }
@@ -43,9 +43,7 @@ public class LeaveController : Controller
     [HttpGet]
     public async Task<IActionResult> UpsertLeave(int? id)
     {
-        LeaveVM model = new();
-        if (id != null)
-            model = await _service.GetLeaveAsync((int)id);
+        LeaveVM model = id != null ? await _service.GetLeaveAsync((int)id) : new();
         return PartialView("_UpsertLeave", model);
     }
 
@@ -55,18 +53,15 @@ public class LeaveController : Controller
         if (ModelState.IsValid)
         {
             Response response = await _service.UpsertLeaveAsync(model);
-            if (response.IsSuccess)
-                return Json(new { success = true, message = response.Message });
-            else
-                return Json(new { success = false, message = response.Message });
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
         return Json(new { success = false, message = "Invalid data." });
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetLeaves(DateOnly? startDate, DateOnly? endDate, string leaveStatus, int userId,bool? team)
+    public async Task<IActionResult> GetLeaves(DateOnly? startDate, DateOnly? endDate, string leaveStatus, int userId, bool? team)
     {
-        List<LeaveVM> model = await _service.GetLeavesAsync(startDate, endDate, leaveStatus, userId,team);
+        List<LeaveVM> model = await _service.GetLeavesAsync(startDate, endDate, leaveStatus, userId, team);
         return PartialView("_LeaveTable", model);
     }
 
@@ -74,10 +69,7 @@ public class LeaveController : Controller
     public async Task<IActionResult> CancelLeave(int id)
     {
         Response response = await _service.CancelLeaveAsync(id);
-        if (response.IsSuccess)
-            return Json(new { success = true, message = response.Message });
-        else
-            return Json(new { success = false, message = response.Message });
+        return Json(new { success = response.IsSuccess, message = response.Message });
     }
 
     [HttpGet]

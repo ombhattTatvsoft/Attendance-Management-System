@@ -27,7 +27,7 @@ public class DepartmentService : IDepartmentService
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _logger = logger;
-        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
     public async Task<List<Department>> GetAllDepartmentsAsync()
@@ -48,12 +48,7 @@ public class DepartmentService : IDepartmentService
         try
         {
             Department? department = await _repository.GetAsync(x => x.DepartmentId == id && !x.IsDeleted);
-            if (department == null)
-            {
-                return new UpsertDepartmentVM();
-            }
-            UpsertDepartmentVM model = _mapper.Map<UpsertDepartmentVM>(department);
-            return model;
+            return department == null ? new UpsertDepartmentVM() : _mapper.Map<UpsertDepartmentVM>(department);
         }
         catch (Exception ex)
         {
@@ -72,8 +67,6 @@ public class DepartmentService : IDepartmentService
                 department.CreatedBy = UpsertedBy;
                 department.UpdatedBy = UpsertedBy;
                 await _repository.AddAsync(department);
-                await _repository.SaveAsync();
-                return new Response(true, "Department added successfully.");
             }
             else
             {
@@ -82,13 +75,13 @@ public class DepartmentService : IDepartmentService
                 {
                     return new Response(false, "Department not found.");
                 }
-                Department department = _mapper.Map(model,existingDepartment);
-                department.UpdatedAt= DateTime.Now;
+                Department department = _mapper.Map(model, existingDepartment);
+                department.UpdatedAt = DateTime.Now;
                 department.UpdatedBy = UpsertedBy;
                 _repository.Update(department);
-                await _repository.SaveAsync();
-                return new Response(true, "Department updated successfully.");
             }
+            await _repository.SaveAsync();
+            return new Response(true, string.Format("Department {0} successfully.", model.DepartmentId == 0 ? "created" : "updated"));
         }
         catch (Exception ex)
         {
@@ -101,12 +94,11 @@ public class DepartmentService : IDepartmentService
     {
         try
         {
-            Department? department = await _repository.GetAsync(x => x.DepartmentId == id && !x.IsDeleted,x=> x.Users);
+            Department? department = await _repository.GetAsync(x => x.DepartmentId == id && !x.IsDeleted, x => x.Users);
             if (department == null)
             {
                 return new Response(false, "Department not found");
             }
-            Console.WriteLine(department.Users.Any() + " users associated with this department.");
             if (department.Users.Any())
             {
                 return new Response(false, "Cannot delete department with associated users");

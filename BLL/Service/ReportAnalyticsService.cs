@@ -1,5 +1,7 @@
+using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -26,30 +28,34 @@ public class ReportAnalyticsService : IReportAnalyticsService
         try
         {
             List<ReportAnalyticsVM> reportAnalytics = new();
+            DateOnly defaultEndDate = DateOnly.FromDateTime(DateTime.Now);
             foreach (User user in team)
             {
-                DateOnly newStartDate = startDate ?? DateOnly.FromDateTime(user.CreatedAt);
-                DateOnly newEndDate = endDate ?? DateOnly.FromDateTime(DateTime.Now);
-                newStartDate = DateOnly.FromDateTime(user.CreatedAt) > newStartDate ? DateOnly.FromDateTime(user.CreatedAt) : newStartDate;
-                if (DateOnly.FromDateTime(user.CreatedAt) > newEndDate)
+                DateOnly userCreatedAt = DateOnly.FromDateTime(user.CreatedAt);
+                DateOnly newStartDate = startDate ?? userCreatedAt;
+                DateOnly newEndDate = endDate ?? defaultEndDate;
+                newStartDate = userCreatedAt > newStartDate ? userCreatedAt : newStartDate;
+                if (userCreatedAt > newEndDate)
                     continue;
+                List<Attendance> attendances = await _attendanceRepository.GetAllAsync(x => x.Date >= newStartDate && x.Date <= newEndDate && x.UserId == user.UserId);
                 ReportAnalyticsVM report = new()
                 {
                     User = user,
-                    PresentCount = (await _attendanceRepository.GetAllAsync(x => x.Date >= newStartDate && x.Date <= newEndDate && x.UserId == user.UserId && x.Status == "Present")).Count,
-                    HalfPresentCount = (await _attendanceRepository.GetAllAsync(x => x.Date >= newStartDate && x.Date <= newEndDate && x.UserId == user.UserId && x.Status == "Half Present")).Count
+                    PresentCount = attendances.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)),
+                    HalfPresentCount = attendances.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent))
                 };
-                int holidayCount=0,satCount=0,sunCount=0;
+                List<Holiday> holidays = await _holidayRepository.GetAllAsync(x => x.HolidayDate >= newStartDate && x.HolidayDate <= newEndDate && !x.IsDeleted);
+                int holidayCount = 0, satCount = 0, sunCount = 0;
                 for (DateOnly date = newStartDate; date <= newEndDate; date = date.AddDays(1))
                 {
-                    if (await _holidayRepository.GetAsync(x => x.HolidayDate == date && !x.IsDeleted && x.HolidayDate.DayOfWeek != DayOfWeek.Saturday && x.HolidayDate.DayOfWeek != DayOfWeek.Sunday) != null)
+                    if (holidays.Any(x => x.HolidayDate == date && x.HolidayDate.DayOfWeek != DayOfWeek.Saturday && x.HolidayDate.DayOfWeek != DayOfWeek.Sunday))
                         holidayCount++;
                     if (date.DayOfWeek == DayOfWeek.Saturday)
                         satCount++;
                     if (date.DayOfWeek == DayOfWeek.Sunday)
                         sunCount++;
                 }
-                int dayDifference= (newEndDate.ToDateTime(TimeOnly.MinValue) - newStartDate.ToDateTime(TimeOnly.MinValue)).Days + 1 - holidayCount - satCount - sunCount;
+                int dayDifference = (newEndDate.ToDateTime(TimeOnly.MinValue) - newStartDate.ToDateTime(TimeOnly.MinValue)).Days + 1 - holidayCount - satCount - sunCount;
                 report.AbsentCount = dayDifference - report.PresentCount - report.HalfPresentCount;
                 report.AttendancePercentage = Math.Round((double)(report.PresentCount + (report.HalfPresentCount * 0.5)) / dayDifference * 100, 2);
                 reportAnalytics.Add(report);

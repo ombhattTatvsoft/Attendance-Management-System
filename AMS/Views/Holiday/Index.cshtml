@@ -18,7 +18,7 @@
 </div>
 
 <!-- Bootstrap Modal -->
-@if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+@if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
 {
   <div class="modal fade" id="holidayModal" tabindex="-1" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog modal-dialog-centered">

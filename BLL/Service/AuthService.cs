@@ -35,12 +35,9 @@ public class AuthService : IAuthService
         try
         {
             User? user = await _userRepository.GetAsync(x => x.Email.ToLower() == email.ToLower() && !x.IsDeleted, x => x.Role);
-            if (user != null)
+            if (user != null && BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
             {
-                if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Password))
-                {
-                    return user;
-                }
+                return user;
             }
             return null;
         }

@@ -28,9 +28,7 @@ public class DepartmentController : Controller
     public async Task<IActionResult> UpsertDepartment(int? id)
     {
         ViewData["selected"] = "department";
-        UpsertDepartmentVM model = new();
-        if (id != null)
-            model = await _service.GetDepartmentAsync((int)id);
+        UpsertDepartmentVM model = id != null ? await _service.GetDepartmentAsync((int)id) : new();
         return PartialView("_UpsertDepartment", model);
     }
 
@@ -40,16 +38,8 @@ public class DepartmentController : Controller
         if (ModelState.IsValid)
         {
             Response response = await _service.SaveDepartmentAsync(model);
-            if (response.IsSuccess)
-            {
-                TempData["Success"] = response.Message;
-                return Json(new { success = true, message = response.Message });
-            }
-            else
-            {
-                TempData["failed"] = response.Message;
-                return Json(new { success = false, message = response.Message });
-            }
+            TempData[response.IsSuccess ? "success" : "failed"] = response.Message;
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
         return Json(new { success = false, message = "Invalid data." });
     }
@@ -58,14 +48,7 @@ public class DepartmentController : Controller
     public async Task<IActionResult> DeleteDepartment(int id)
     {
         Response response = await _service.DeleteDepartmentAsync(id);
-        if (response.IsSuccess)
-        {
-            TempData["success"] = response.Message;
-        }
-        else
-        {
-            TempData["failed"] = response.Message;
-        }
+        TempData[response.IsSuccess ? "success" : "failed"] = response.Message;
         return RedirectToAction("Index");
     }
 }

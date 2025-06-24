@@ -26,7 +26,7 @@ public class AttendanceController : Controller
     {
         ViewData["selected"] = "attendanceSelf";
         User? user = await _userService.GetCurrentUserAsync();
-        if (user!.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
+        if (user!.Role.RoleName == EnumHelper.RoleToDbString(RoleEnum.Admin))
             return RedirectToAction("AttendanceTeam");
         return View(user);
     }
@@ -63,7 +63,7 @@ public class AttendanceController : Controller
     // {
     //     ViewData["selected"] = "regularizeSelf";
     //     User? user = await _userService.GetCurrentUserAsync();
-    //     if (user!.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
+    //     if (user!.Role.RoleName == EnumHelper.RoleToDbString(RoleEnum.Admin))
     //         return RedirectToAction("RegularizeTeam");
     //     return View(user);
     // }

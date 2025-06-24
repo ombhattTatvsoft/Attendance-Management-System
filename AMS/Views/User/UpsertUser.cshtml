@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class=" form-floating">
-                        <select asp-for="DepartmentId" class="form-select" id="department">
+                        <select asp-for="DepartmentId" class="form-select" id="departmentId">
                             <option value="">Select Department</option>
                             @foreach (Department department in Model.Departments)
                             {
@@ -72,17 +72,17 @@
 
 @section Scripts {
     <script>
-        $("#department,#roleId").change(function () {
+        $("#departmentId,#roleId").change(function () {
             if ($("#roleId").val() == "2") {
                 $("#managerId").parent().parent().hide();
             }
             else {
                 $("#managerId").parent().parent().show();
-                if ($("#department").val() != "" && $("#roleId").val() != "") {
+                if ($("#departmentId").val() != "" && $("#roleId").val() != "") {
                     $.ajax({
                         url: "@Url.Action("GetManagers", "User")",
                         type: "GET",
-                        data: { departmentId: $("#department").val(), roleId: $("#roleId").val() },
+                        data: { departmentId: $("#departmentId").val(), roleId: $("#roleId").val() },
                         success: function (data) {
                             $('#managerId').empty().append(new Option("Select Reporting Person", ""));
                             $.each(data, function (index, item) {
@@ -90,7 +90,7 @@
                                     $('#managerId').append(new Option(item.name + `(${item.roleName})`, item.userId));
                             });
                             if (@Model.UserId) {
-                                if (@Model.DepartmentId == $("#department").val() && @Model.RoleId == $("#roleId").val())
+                                if (@Model.DepartmentId == $("#departmentId").val() && @Model.RoleId == $("#roleId").val())
                                     $('#managerId').val(@Model.ManagerId);
                             } else {
                                 $('#managerId').val("");
@@ -105,7 +105,7 @@
             }
         });
         $(document).ready(function () {
-            $("#department").trigger("change");
+            $("#departmentId").trigger("change");
             if (@Model.UserId != 0) {
                 $("#userPassword").prop("disabled", true);
             }

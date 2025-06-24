@@ -28,13 +28,13 @@ public class DashboardService : IDashboardService
         try
         {
             AdminDashboard model = new();
-            model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=RoleHelper.ToDbString(RoleEnum.Admin))).Count;
+            model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=EnumHelper.RoleToDbString(RoleEnum.Admin))).Count;
             var targetDate = DateOnly.FromDateTime(DateTime.Now);
-            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.Status=="Present" || x.Status=="Half Present") && !x.User.IsDeleted)).Count;
+            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) || x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)) && !x.User.IsDeleted)).Count;
             model.AbsentEmployee = model.TotalEmployee - model.PresentEmployee;
-            model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.SeniorManager))).Count;
-            model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.Manager))).Count;
-            model.Employees = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.Employee))).Count;
+            model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.SeniorManager))).Count;
+            model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Manager))).Count;
+            model.Employees = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Employee))).Count;
             return model;
         }
         catch (Exception ex)

@@ -27,7 +27,7 @@ public class HolidayService : IHolidayService
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _logger = logger;
-        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        UpsertedBy = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
     public async Task<Response> DeleteHolidayAsync(int id)
@@ -101,9 +101,7 @@ public class HolidayService : IHolidayService
                 _repository.Update(holiday);
             }
             await _repository.SaveAsync();
-            if(model.HolidayId == 0)
-                return new Response(true, "Holiday added successfully.");
-            return new Response(true, "Holiday updated successfully.");
+            return new Response(true, string.Format("Holiday {0} successfully.", model.HolidayId == 0 ? "added" : "updated"));
         }
         catch (Exception ex)
         {

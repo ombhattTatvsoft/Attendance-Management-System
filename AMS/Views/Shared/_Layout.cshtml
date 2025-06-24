@@ -54,13 +54,13 @@
                         <a asp-controller="Dashboard" asp-action="Index"><i
                                 class="fa-solid fa-table-cells-large"></i><span>Dashboard</span></a>
                     </li>
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
                     {
                         <li class="sidebaroptions" id="user">
                             <a asp-controller="User" asp-action="Index"><i class="fa-solid fa-users"></i><span>Users</span></a>
                         </li>
                     }
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
                     {
                         <li class="sidebaroptions" id="attendanceTeam">
                             <a asp-controller="Attendance" asp-action="AttendanceTeam"><i
@@ -90,7 +90,7 @@
                                 @* <li>
                                 <a href="javascript:void(0);" onclick="toggleSubMenu('regularizeSubMenu')">Regularize</a>
                                 <ul class="submenu ps-3 d-none" id="regularizeSubMenu">
-                                    @if (role != RoleHelper.ToDbString(RoleEnum.Admin))
+                                    @if (role != EnumHelper.RoleToDbString(RoleEnum.Admin))
                                     {
                                         <li id="regularizeSelf">
                                             <a asp-controller="Attendance" asp-action="RegularizeSelf">Self</a>
@@ -104,7 +104,7 @@
                             </ul>
                         </li>
                     }
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
                     {
                         <li class="sidebaroptions" id="leaveTeam">
                             <a asp-controller="Leave" asp-action="Team"><i
@@ -138,15 +138,15 @@
                         <a asp-controller="Holiday" asp-action="Index"><i
                                 class="fa-solid fa-calendar"></i><span>Holiday</span></a>
                     </li>
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin))
+                    @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
                     {
                         <li class="sidebaroptions" id="department">
                             <a asp-controller="Department" asp-action="Index"><i
                                     class="fa-brands fa-microsoft"></i><span>Department</span></a>
                         </li>
                     }
-                    @if (role == RoleHelper.ToDbString(RoleEnum.Admin) || role ==
-                                    RoleHelper.ToDbString(RoleEnum.SeniorManager) || role == RoleHelper.ToDbString(RoleEnum.Manager))
+                    @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin) || role ==
+                                    EnumHelper.RoleToDbString(RoleEnum.SeniorManager) || role == EnumHelper.RoleToDbString(RoleEnum.Manager))
                     {
                         <li class="sidebaroptions" id="reportAnalytics">
                             <a asp-controller="ReportAnalytics" asp-action="Index"><i

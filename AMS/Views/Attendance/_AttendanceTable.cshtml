@@ -10,11 +10,11 @@
 <div class="d-sm-flex justify-content-between align-items-center">
     <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{
-        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status=="Half Present").Count()/2.0);
+        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count()/2.0);
         int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue)).Count();
-        double presentDays=Model.AttendanceRecords.Where(x=>x.Status=="Present").Count()+halfPresentDays;
-        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status=="Absent")).Count() + halfPresentDays
-        +Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status=="Absent").Count();
+        double presentDays=Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count()+halfPresentDays;
+        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent))).Count() + halfPresentDays
+        +Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)).Count();
     }
     <h6>Present <span class="badge bg-success">@presentDays</span> Absent <span class="badge bg-danger">@absentDays</span> Total <span class="badge bg-secondary">@totalDays</span> days</h6>
 </div>
@@ -40,7 +40,7 @@
             {
                 bool clickable=true;
                 bool blockDay=data.IsHoliday!.Value || Model.UserCreatedAt!.Value.Date>data.Date.ToDateTime(TimeOnly.MinValue);
-                if(role!=RoleHelper.ToDbString(RoleEnum.Admin)){
+                if(role!=EnumHelper.RoleToDbString(RoleEnum.Admin)){
                     clickable = DateTime.Now.Date==data.Date.ToDateTime(TimeOnly.MinValue);
                     if((data.IsApproved!=null && (bool)data.IsApproved))
                     clickable = false;
@@ -52,7 +52,7 @@
                     clickable=false;
                 if(DateTime.Now.Date<data.Date.ToDateTime(TimeOnly.MinValue))
                 clickable=false;
-                bool satOrSun=data.Day=="Saturday" || data.Day=="Sunday";
+                bool satOrSun=data.Day==DayOfWeek.Saturday.ToString() || data.Day==DayOfWeek.Sunday.ToString();
                 <td class="text-center p-0 @(blockDay?"leave-days":"") @(clickable?"clickable":"not-clickable")"
                 data-userid="@Model.UserId" data-date="@data.Date.ToString("yyyy-MM-dd")" onclick="showDropdown(this)">
                     <div style="height:41px;"> 
@@ -66,9 +66,9 @@
                                 data.IsApproved=false;
                             }
                             @{
-                                bool PresentApproved=data.Status=="Present" && data.IsApproved!=null && (bool)data.IsApproved,Present=data.Status=="Present" && (data.IsApproved==null || !(bool)data.IsApproved);
-                                bool AbsentApproved=data.Status=="Absent"  && data.IsApproved!=null && (bool)data.IsApproved,Absent=data.Status=="Absent"  && (data.IsApproved==null || !(bool)data.IsApproved);
-                                bool HalfPresentApproved=data.Status=="Half Present" && data.IsApproved!=null && (bool)data.IsApproved,HalfPresent=data.Status=="Half Present" && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool PresentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) && data.IsApproved!=null && (bool)data.IsApproved,Present=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool AbsentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)  && data.IsApproved!=null && (bool)data.IsApproved,Absent=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)  && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool HalfPresentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent) && data.IsApproved!=null && (bool)data.IsApproved,HalfPresent=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent) && (data.IsApproved==null || !(bool)data.IsApproved);
                             }
                             @if(clickable){
                                 <div class="h-100 d-flex justify-content-center align-items-center">

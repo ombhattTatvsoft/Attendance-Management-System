@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -44,10 +46,7 @@ public class LeaveService : ILeaveService
         try
         {
             Leave? leave = await _repository.GetAsync(x => x.LeaveId == id,x=>x.User);
-            if (leave == null)
-                return new LeaveVM();
-            LeaveVM model = _mapper.Map<LeaveVM>(leave);
-            return model;
+            return leave == null ? new LeaveVM() : _mapper.Map<LeaveVM>(leave);
         }
         catch (Exception ex)
         {
@@ -120,7 +119,7 @@ public class LeaveService : ILeaveService
                     {
                         UserId = leave.UserId,
                         Date = date,
-                        Status = "Absent",
+                        Status = EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent),
                         IsApproved = leave.IsApproved,
                         ApprovedBy = leave.IsApproved != null && (bool)leave.IsApproved ? UpsertedBy : null,
                         CreatedBy = UpsertedBy,
@@ -128,9 +127,9 @@ public class LeaveService : ILeaveService
                         LeaveId = leave.LeaveId
                     };
                     if(date == leave.FromDate)
-                        attendance.Status = leave.FromDateLeaveDuration == 1 ? "Absent" : "Half Present";
+                        attendance.Status = leave.FromDateLeaveDuration == 1 ? EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent) : EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent);
                     if(date == leave.ToDate)
-                        attendance.Status = leave.ToDateLeaveDuration == 1 ? "Absent" : "Half Present";
+                        attendance.Status = leave.ToDateLeaveDuration == 1 ? EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent) : EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent);
 
                     await _attendanceRepository.AddAsync(attendance);
                 }
