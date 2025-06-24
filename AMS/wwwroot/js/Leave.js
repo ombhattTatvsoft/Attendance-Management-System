@@ -27,6 +27,7 @@ $(document).ready(function () {
                     $('.viewable').removeClass('d-none');
                 }
                 if (teamEdit) {
+                    $('#upsertBtn').text('Save');
                     $('input,textarea').prop('readonly', true);
                     $('select').prop('disabled', true);
                     $('.viewable').removeClass('d-none');
@@ -81,7 +82,6 @@ function refetchLeaves(team) {
     $("#startDate").val("");
     $("#endDate").val("");
     $("#startDate,#endDate").removeAttr('min');
-    $("#startDate,#endDate").prop('max', today);
     $("#leaveStatus").val('All');
     getLeaves(team);
 }

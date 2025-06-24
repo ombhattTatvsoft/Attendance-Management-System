@@ -28,8 +28,8 @@
                     <select class="form-select" id="myYear" style="width: 150px;">
                         @for (int i = -1; i <= 1; i++)
                         {
-                            var currentYear = DateTime.Now.Year;
-                            var year = DateTime.Now.AddYears(i).Year;
+                            int currentYear = DateTime.Now.Year;
+                            int year = DateTime.Now.AddYears(i).Year;
                             if (year == currentYear)
                             {
                                 <option value="@year" selected>@year</option>

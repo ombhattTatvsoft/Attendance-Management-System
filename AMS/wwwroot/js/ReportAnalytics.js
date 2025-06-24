@@ -1,6 +1,7 @@
 const today = new Date().toISOString().split('T')[0];
 $(document).ready(function () {
     $("#startDate,#endDate").prop('max', today);
+    $("#endDate").val(today);
     $('#startDate').change(function () {
         $("#endDate").prop('min', $(this).val());
     });
@@ -11,7 +12,7 @@ $(document).ready(function () {
 });
 function resetReport() {
     $("#startDate").val("");
-    $("#endDate").val("");
+    $("#endDate").val(today);
     $("#startDate,#endDate").removeAttr('min');
     $("#startDate,#endDate").prop('max', today);
     fetchReport();
