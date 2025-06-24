@@ -10,7 +10,7 @@
 <div class="d-sm-flex justify-content-between align-items-center">
     <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{
-        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count()/2.0);
+        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)).Count()/2.0);
         int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue)).Count();
         double presentDays=Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count()+halfPresentDays;
         double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent))).Count() + halfPresentDays
@@ -62,7 +62,7 @@
                                 </div>
                             }
                             @if(data.Status==null && !blockDay && DateTime.Now.Date>data.Date.ToDateTime(TimeOnly.MinValue) && !satOrSun){
-                                data.Status="Absent";
+                                data.Status=EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent);
                                 data.IsApproved=false;
                             }
                             @{

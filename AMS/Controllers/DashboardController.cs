@@ -34,10 +34,11 @@ public class DashboardController : Controller
         ViewData["selected"] = "dashboard";
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);
+        UserMonthlyAttendanceVM? monthlyData = await _attendanceService.GetUserMonthlyAttendance(DateTime.Now.Month, DateTime.Now.Year, user!.UserId);
         DashboardVM model = new()
         {
             AdminDashboard = await _service.GetAdminDashboardDataAsync(),
-            UserDashboard = await _attendanceService.GetUserMonthlyAttendance(DateTime.Now.Month, DateTime.Now.Year, user!.UserId),
+            UserDashboard = await _service.GetDaysByAttendanceAsync(monthlyData!),
             Team = team
         };
         return View(model);
@@ -48,18 +49,13 @@ public class DashboardController : Controller
     {
         ViewData["selected"] = "dashboard";
         UserMonthlyAttendanceVM? model = await _attendanceService.GetUserMonthlyAttendance(month, year, userId);
-        
-        double fullAbsentDays = model!.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)))
-        + model.AttendanceRecords.Count(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent));
-        double halfDays = model.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent));
-        double presentDays = model.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present));
-        double totalDays = model.AttendanceRecords.Count(x => !(bool)x.IsHoliday && model.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue));
+        DaysByAttendance daysByAttendance = await _service.GetDaysByAttendanceAsync(model!);
         var data= new
         {
-            presentDays,
-            fullAbsentDays,
-            halfDays,
-            remainingDays = totalDays-(presentDays + fullAbsentDays + halfDays)
+            presentDays = daysByAttendance.PresentDays,
+            fullAbsentDays = daysByAttendance.FullAbsentDays,
+            halfDays = daysByAttendance.HalfDays,
+            remainingDays = daysByAttendance.TotalDays-(daysByAttendance.PresentDays + daysByAttendance.FullAbsentDays + daysByAttendance.HalfDays)
         };
         return Json(data);
     }

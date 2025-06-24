@@ -6,17 +6,6 @@
     ViewData["Title"] = "Dashboard";
     var role = User?.FindFirst(ClaimTypes.Role)?.Value.ToString();
     var currentUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    double
-    fullAbsentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Date.ToDateTime(TimeOnly.MinValue) <
-    DateTime.Now.Date
-    && Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday &&
-    (x.Status == null || x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent))).Count() + Model.UserDashboard.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)).Count() ?? 0;
-    double halfDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)).Count() ?? 0;
-    double holidays = Model.UserDashboard?.AttendanceRecords.Where(x => x.IsHoliday == true && x.Day != DayOfWeek.Saturday.ToString() &&
-    x.Day != DayOfWeek.Sunday.ToString()).Count() ?? 0;
-    double totalDays = Model.UserDashboard?.AttendanceRecords.Where(x => !(bool)x.IsHoliday &&
-    Model.UserDashboard.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)).Count() ?? 0;
-    double presentDays = Model.UserDashboard?.AttendanceRecords.Where(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count() + halfDays/2 ?? 0;
 }
 
 <div class="content" id="dashboard">
@@ -53,15 +42,15 @@
                     {
                         <div>
                             <p class="mb-1 fw-bold text-muted">Absent Days</p>
-                            <p class="h5 mb-0">@fullAbsentDays</p>
+                            <p class="h5 mb-0">@Model.UserDashboard?.FullAbsentDays</p>
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Half Days</p>
-                            <p class="h5 mb-0">@halfDays</p>
+                            <p class="h5 mb-0">@Model.UserDashboard?.HalfDays</p>
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Total Days</p>
-                            <p class="h5 mb-0">@(fullAbsentDays + halfDays/2)</p>
+                            <p class="h5 mb-0">@(Model.UserDashboard?.FullAbsentDays + Model.UserDashboard?.HalfDays/2)</p>
                         </div>
                     }
                 </div>
@@ -83,7 +72,7 @@
                     </div>
                     <div>
                         <p class="mb-1 fw-bold text-muted">Holiday</p>
-                        <p class="h5 mb-0">@holidays</p>
+                        <p class="h5 mb-0">@Model.UserDashboard?.Holidays</p>
                     </div>
                 </div>
             </div>
@@ -127,15 +116,15 @@
                     {
                         <div>
                             <p class="mb-1 fw-bold text-muted">Total Days</p>
-                            <p class="h5 mb-0">@totalDays</p>
+                            <p class="h5 mb-0">@Model.UserDashboard?.TotalDays</p>
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Leave Days</p>
-                            <p class="h5 mb-0">@(fullAbsentDays + halfDays/2)</p>
+                            <p class="h5 mb-0">@(Model.UserDashboard?.FullAbsentDays + Model.UserDashboard?.HalfDays/2)</p>
                         </div>
                         <div>
                             <p class="mb-1 fw-bold text-muted">Present Days</p>
-                            <p class="h5 mb-0">@presentDays</p>
+                            <p class="h5 mb-0">@(Model.UserDashboard?.PresentDays + Model.UserDashboard?.HalfDays/2)</p>
                         </div>
                     }
                 </div>

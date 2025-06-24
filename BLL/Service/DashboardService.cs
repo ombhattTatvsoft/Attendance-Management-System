@@ -44,4 +44,25 @@ public class DashboardService : IDashboardService
         }
     }
 
+    public async Task<DaysByAttendance> GetDaysByAttendanceAsync(UserMonthlyAttendanceVM monthlyData)
+    {
+        try
+        {
+            DaysByAttendance model = new()
+            {
+                FullAbsentDays = monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)))
+                    + monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Now.Date && x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)),
+                HalfDays = monthlyData.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)),
+                PresentDays = monthlyData.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)),
+                TotalDays = monthlyData.AttendanceRecords.Count(x => !(bool)x.IsHoliday && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)),
+                Holidays = monthlyData.AttendanceRecords.Count(x => x.IsHoliday == true && x.Day != DayOfWeek.Saturday.ToString() && x.Day != DayOfWeek.Sunday.ToString())
+            };
+            return model;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while getting days by attendance data.");
+            return new DaysByAttendance();
+        }
+    }
 }
