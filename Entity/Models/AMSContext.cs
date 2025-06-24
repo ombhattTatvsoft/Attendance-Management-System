@@ -17,6 +17,8 @@ public partial class AMSContext : DbContext
 
     public virtual DbSet<Attendance> Attendances { get; set; }
 
+    public virtual DbSet<AttendanceStatus> AttendanceStatuses { get; set; }
+
     public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<Holiday> Holidays { get; set; }
@@ -50,7 +52,7 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.InTime).HasColumnName("in_time");
             entity.Property(e => e.IsApproved).HasColumnName("is_approved");
             entity.Property(e => e.OutTime).HasColumnName("out_time");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
@@ -69,6 +71,18 @@ public partial class AMSContext : DbContext
                 .HasConstraintName("attendances_userid_fkey");
         });
 
+        modelBuilder.Entity<AttendanceStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("attendance_status_pkey");
+
+            entity.ToTable("attendance_status");
+
+            entity.HasIndex(e => e.StatusName, "attendance_status_status_name_key").IsUnique();
+
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.StatusName).HasColumnName("status_name");
+        });
+        
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.DepartmentId).HasName("departments_pkey");

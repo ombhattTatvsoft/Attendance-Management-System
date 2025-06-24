@@ -50,8 +50,6 @@ public class AuthController : Controller
                 return RedirectToAction("Index");
             }
             _service.CreateCookie(userFound, HttpContext, token);
-            bool hasTeam = (await _userService.GetMyTeam(userFound!)).Count > 0;
-            TempData["hasTeam"] = hasTeam ? "true" : "false";
             TempData["success"] = "Login Successful";
             return RedirectToAction("Index", "Dashboard");
         }
@@ -63,9 +61,6 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Logout()
     {
-        // Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
-        // Response.Headers["Pragma"] = "no-cache";
-        // Response.Headers["Expires"] = "-1";
         Response.Cookies.Delete("JwtAMSToken");
         TempData["success"] = "Logout Successful";
         return RedirectToAction("Index");

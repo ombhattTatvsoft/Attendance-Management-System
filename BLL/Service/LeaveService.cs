@@ -119,7 +119,7 @@ public class LeaveService : ILeaveService
                     {
                         UserId = leave.UserId,
                         Date = date,
-                        Status = EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent),
+                        StatusId = (int)AttendanceStatusEnum.Absent,
                         IsApproved = leave.IsApproved,
                         ApprovedBy = leave.IsApproved != null && (bool)leave.IsApproved ? UpsertedBy : null,
                         CreatedBy = UpsertedBy,
@@ -127,9 +127,9 @@ public class LeaveService : ILeaveService
                         LeaveId = leave.LeaveId
                     };
                     if(date == leave.FromDate)
-                        attendance.Status = leave.FromDateLeaveDuration == 1 ? EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent) : EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent);
+                        attendance.StatusId = leave.FromDateLeaveDuration == 1 ? (int)AttendanceStatusEnum.Absent : (int)AttendanceStatusEnum.HalfPresent;
                     if(date == leave.ToDate)
-                        attendance.Status = leave.ToDateLeaveDuration == 1 ? EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent) : EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent);
+                        attendance.StatusId = leave.ToDateLeaveDuration == 1 ? (int)AttendanceStatusEnum.Absent : (int)AttendanceStatusEnum.HalfPresent;
 
                     await _attendanceRepository.AddAsync(attendance);
                 }

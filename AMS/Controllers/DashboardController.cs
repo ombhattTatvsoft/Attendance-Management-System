@@ -34,6 +34,8 @@ public class DashboardController : Controller
         ViewData["selected"] = "dashboard";
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);
+        bool hasTeam = team.Count > 0;
+        TempData["hasTeam"] = hasTeam ? "true" : "false";
         UserMonthlyAttendanceVM? monthlyData = await _attendanceService.GetUserMonthlyAttendance(DateTime.Now.Month, DateTime.Now.Year, user!.UserId);
         DashboardVM model = new()
         {

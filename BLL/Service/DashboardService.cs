@@ -30,7 +30,7 @@ public class DashboardService : IDashboardService
             AdminDashboard model = new();
             model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=EnumHelper.RoleToDbString(RoleEnum.Admin))).Count;
             var targetDate = DateOnly.FromDateTime(DateTime.Now);
-            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) || x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)) && !x.User.IsDeleted)).Count;
+            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.StatusId==(int)AttendanceStatusEnum.Present || x.StatusId==(int)AttendanceStatusEnum.HalfPresent) && !x.User.IsDeleted)).Count;
             model.AbsentEmployee = model.TotalEmployee - model.PresentEmployee;
             model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.SeniorManager))).Count;
             model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Manager))).Count;
@@ -50,10 +50,10 @@ public class DashboardService : IDashboardService
         {
             DaysByAttendance model = new()
             {
-                FullAbsentDays = monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status == null || x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)))
-                    + monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Now.Date && x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)),
-                HalfDays = monthlyData.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)),
-                PresentDays = monthlyData.AttendanceRecords.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)),
+                FullAbsentDays = monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.StatusId == 0 || x.StatusId == (int)AttendanceStatusEnum.Absent))
+                    + monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Now.Date && x.StatusId == (int)AttendanceStatusEnum.Absent),
+                HalfDays = monthlyData.AttendanceRecords.Count(x => x.StatusId == (int)AttendanceStatusEnum.HalfPresent),
+                PresentDays = monthlyData.AttendanceRecords.Count(x => x.StatusId == (int)AttendanceStatusEnum.Present),
                 TotalDays = monthlyData.AttendanceRecords.Count(x => !(bool)x.IsHoliday && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)),
                 Holidays = monthlyData.AttendanceRecords.Count(x => x.IsHoliday == true && x.Day != DayOfWeek.Saturday.ToString() && x.Day != DayOfWeek.Sunday.ToString())
             };

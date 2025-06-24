@@ -62,7 +62,7 @@
                                 class="fa-regular fa-trash-can"></i></a>
                         @if (role == EnumHelper.RoleToDbString(RoleEnum.Admin))
                         {
-                            <a class="links @(leave.IsDeleted ? "not-clickable text-secondary" : "")" id="editTeamLeave"
+                            <a class="links @(leave.IsDeleted || leave.FromDate<DateOnly.FromDateTime(DateTime.Now) ? "not-clickable text-secondary" : "")" id="editTeamLeave"
                                 data-id="@leave.LeaveId"><i class="fa-solid fa-pen"></i></a>
                         }
                     </div>

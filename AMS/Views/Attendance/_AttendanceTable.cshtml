@@ -10,11 +10,11 @@
 <div class="d-sm-flex justify-content-between align-items-center">
     <h6 class="user-title">@(new DateTime(2025, Model.Month, 1).ToString("MMM"))-@Model.Year</h6>
     @{
-        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent)).Count()/2.0);
+        double halfPresentDays=(Model.AttendanceRecords.Where(x=>x.StatusId==(int)AttendanceStatusEnum.HalfPresent).Count()/2.0);
         int totalDays=Model.AttendanceRecords.Where(x=>!(bool)x.IsHoliday && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue)).Count();
-        double presentDays=Model.AttendanceRecords.Where(x=>x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)).Count()+halfPresentDays;
-        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.Status==null || x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent))).Count() + halfPresentDays
-        +Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)).Count();
+        double presentDays=Model.AttendanceRecords.Where(x=>x.StatusId==(int)AttendanceStatusEnum.Present).Count()+halfPresentDays;
+        double absentDays=Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)<DateTime.Now.Date && Model.UserCreatedAt!.Value.Date<=x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.StatusId==0 || x.StatusId==(int)AttendanceStatusEnum.Absent)).Count() + halfPresentDays
+        +Model.AttendanceRecords.Where(x=>x.Date.ToDateTime(TimeOnly.MinValue)>=DateTime.Now.Date && x.StatusId==(int)AttendanceStatusEnum.Absent).Count();
     }
     <h6>Present <span class="badge bg-success">@presentDays</span> Absent <span class="badge bg-danger">@absentDays</span> Total <span class="badge bg-secondary">@totalDays</span> days</h6>
 </div>
@@ -61,33 +61,33 @@
                                     <span>H</span>
                                 </div>
                             }
-                            @if(data.Status==null && !blockDay && DateTime.Now.Date>data.Date.ToDateTime(TimeOnly.MinValue) && !satOrSun){
-                                data.Status=EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent);
+                            @if(data.StatusId==0 && !blockDay && DateTime.Now.Date>data.Date.ToDateTime(TimeOnly.MinValue) && !satOrSun){
+                                data.StatusId=(int)AttendanceStatusEnum.Absent;
                                 data.IsApproved=false;
                             }
                             @{
-                                bool PresentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) && data.IsApproved!=null && (bool)data.IsApproved,Present=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present) && (data.IsApproved==null || !(bool)data.IsApproved);
-                                bool AbsentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)  && data.IsApproved!=null && (bool)data.IsApproved,Absent=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Absent)  && (data.IsApproved==null || !(bool)data.IsApproved);
-                                bool HalfPresentApproved=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent) && data.IsApproved!=null && (bool)data.IsApproved,HalfPresent=data.Status==EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent) && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool PresentApproved=data.StatusId==(int)AttendanceStatusEnum.Present && data.IsApproved!=null && (bool)data.IsApproved,Present=data.StatusId==(int)AttendanceStatusEnum.Present && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool AbsentApproved=data.StatusId==(int)AttendanceStatusEnum.Absent  && data.IsApproved!=null && (bool)data.IsApproved,Absent=data.StatusId==(int)AttendanceStatusEnum.Absent  && (data.IsApproved==null || !(bool)data.IsApproved);
+                                bool HalfPresentApproved=data.StatusId==(int)AttendanceStatusEnum.HalfPresent && data.IsApproved!=null && (bool)data.IsApproved,HalfPresent=data.StatusId==(int)AttendanceStatusEnum.HalfPresent && (data.IsApproved==null || !(bool)data.IsApproved);
                             }
                             @if(clickable){
                                 <div class="h-100 d-flex justify-content-center align-items-center">
-                                    <select class="h-100 w-100 text-center @(data.Status==null?"today-not-filled":"") 
+                                    <select class="h-100 w-100 text-center @(data.StatusId==0?"today-not-filled":"") 
                                     @(PresentApproved?"present-day-approved approved":"")
                                     @(Present?"present-day":"")
                                     @(AbsentApproved?"absent-day-approved approved":"")
                                     @(Absent?"absent-day":"")
                                     @(HalfPresentApproved?"halfpresent-day-approved approved":"")
                                     @(HalfPresent?"halfpresent-day":"")" 
-                                    style="border:none;" asp-for="AttendanceRecords[Model.AttendanceRecords.IndexOf(data)].Status">
+                                    style="border:none;" asp-for="AttendanceRecords[Model.AttendanceRecords.IndexOf(data)].StatusId">
                                         <option class="" value="" hidden></option>
-                                        <option class="present-day" value="Present">P</option>
-                                        <option class="absent-day" value="Absent">A</option>
-                                        <option class="halfpresent-day" value="Half Present">HP</option>
+                                        <option class="present-day" value="1">P</option>
+                                        <option class="absent-day" value="2">A</option>
+                                        <option class="halfpresent-day" value="3">HP</option>
                                     </select>
                                 </div>
                             }
-                            else if(data.Status!=null){
+                            else if(data.StatusId!=0){
                                 <div class="h-100 d-flex justify-content-center align-items-center 
                                 @(PresentApproved?"present-day-approved":"")
                                 @(Present?"present-day":"")
@@ -95,7 +95,7 @@
                                 @(Absent?"absent-day":"")
                                 @(HalfPresentApproved?"halfpresent-day-approved":"")
                                 @(HalfPresent?"halfpresent-day":"")">
-                                    <span>@string.Concat(data.Status.Split(" ").Select(x=>x[0]))</span>
+                                    <span>@string.Concat(Enum.GetName(typeof(AttendanceStatusEnum),data.StatusId).Split(" ").Select(x=>x[0]))</span>
                                 </div>
                             }   
                     </div>

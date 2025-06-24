@@ -41,8 +41,8 @@ public class ReportAnalyticsService : IReportAnalyticsService
                 ReportAnalyticsVM report = new()
                 {
                     User = user,
-                    PresentCount = attendances.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.Present)),
-                    HalfPresentCount = attendances.Count(x => x.Status == EnumHelper.AttendanceToDbString(AttendanceStatusEnum.HalfPresent))
+                    PresentCount = attendances.Count(x => x.StatusId == (int)AttendanceStatusEnum.Present),
+                    HalfPresentCount = attendances.Count(x => x.StatusId == (int)AttendanceStatusEnum.HalfPresent)
                 };
                 List<Holiday> holidays = await _holidayRepository.GetAllAsync(x => x.HolidayDate >= newStartDate && x.HolidayDate <= newEndDate && !x.IsDeleted);
                 int holidayCount = 0, satCount = 0, sunCount = 0;

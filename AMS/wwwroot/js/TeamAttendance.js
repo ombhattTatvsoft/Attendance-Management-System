@@ -1,4 +1,5 @@
 const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 var currentElement;
 var newAttendance = [];
 $(document).ready(function () {
@@ -13,6 +14,7 @@ $(document).ready(function () {
         })
     });
     $("#teamMonth").val(currentMonth);
+    $("#teamYear").val(currentYear);
     if (teamUsers.length > 0) {
         getTeamAttendanceTable();
     }
@@ -70,10 +72,13 @@ function getTeamAttendanceTable() {
             if ($("#myMonth").val() == currentMonth)
                 $("#approvedTitle").removeClass('d-none');
         }
+        $("#userSearch").trigger('keyup');
     });
 }
 function resetTeamAttendanceTable() {
     $("#teamMonth").val(currentMonth);
+    $("#teamYear").val(currentYear);
+    $("#userSearch").val('');
     getTeamAttendanceTable();
 }
 function showDropdown(ele) {
@@ -88,14 +93,14 @@ function saveTeamAttendance() {
         newAttendance.push({
             UserId: $(this).closest('td').data('userid'),
             Date: $(this).closest('td').data('date'),
-            Status: $(this).val()
+            StatusId: $(this).val()
         });
     });
     $(newUpdated).each(function () {
         newData = {
             UserId: $(this).closest('td').data('userid'),
             Date: $(this).closest('td').data('date'),
-            Status: $(this).closest('td').data('status')
+            StatusId: $(this).closest('td').data('status')
         }
         if(!newAttendance.some(record => record.UserId === newData.UserId && record.Date === newData.Date))
             newAttendance.push(newData);
@@ -108,7 +113,7 @@ function saveTeamAttendance() {
             AttendanceRecords: newAttendance.map(record => ({
                 UserId: record.UserId,
                 Date: record.Date,
-                Status: record.Status
+                StatusId: record.StatusId
             }))
         }
         $.ajax({

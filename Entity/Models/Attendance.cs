@@ -15,7 +15,7 @@ public partial class Attendance
 
     public TimeOnly? OutTime { get; set; }
 
-    public string Status { get; set; } = null!;
+    public int StatusId { get; set; }
 
     public bool? IsApproved { get; set; }
 
