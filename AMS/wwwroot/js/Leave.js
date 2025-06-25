@@ -87,7 +87,7 @@ $(document).ready(function () {
 function refetchLeaves(team) {
     $("#startDate").val("");
     $("#endDate").val("");
-    $("#startDate,#endDate").removeAttr('min');
+    $("#startDate,#endDate").removeAttr('min').removeAttr('max');
     $("#leaveStatus").val('All');
     getLeaves(team);
 }
