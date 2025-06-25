@@ -11,14 +11,14 @@ namespace AMS.Controllers;
 [Authorize(Roles = "Admin")]
 public class UserController : Controller
 {
-    private readonly IAuthService _AuthService;
+    private readonly IAuthService _authService;
 
     private readonly IUserService _userService;
 
     private readonly IDepartmentService _departmentService;
-    public UserController(IAuthService AuthService, IUserService userService, IDepartmentService departmentService)
+    public UserController(IAuthService authService, IUserService userService, IDepartmentService departmentService)
     {
-        _AuthService = AuthService;
+        _authService = authService;
         _userService = userService;
         _departmentService = departmentService;
     }
@@ -55,10 +55,10 @@ public class UserController : Controller
                 TempData["success"] = response.Message;
                 if (model.UserId == 0)
                 {
-                    string? link = _AuthService.PrepareLink((User)response.Data!, HttpContext, true);
+                    string? link = _authService.PrepareLink((User)response.Data!, HttpContext, true);
                     string subject = EmailBodyHelper.UpsertUserSubject;
                     string body = EmailBodyHelper.UpsertUserBody(link!);
-                    Response emailResponse = _AuthService.SendEmail(model.Email, body, subject);
+                    Response emailResponse = _authService.SendEmail(model.Email, body, subject);
                     TempData[emailResponse.IsSuccess ? "success" : "failed"] = emailResponse.Message;
                 }
                 return RedirectToAction("Index");

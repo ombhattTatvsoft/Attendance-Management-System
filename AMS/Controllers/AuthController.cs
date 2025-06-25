@@ -90,10 +90,7 @@ public class AuthController : Controller
                 string body = EmailBodyHelper.ForgotPasswordBody(link!);
 
                 Response response = _service.SendEmail(userFound.Email, body, subject);
-                if (response.IsSuccess)
-                    TempData["success"] = response.Message;
-                else
-                    TempData["failed"] = response.Message;
+                TempData[response.IsSuccess ? "success" : "failed"] = response.Message;
             }
             else
             {

@@ -79,6 +79,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            },
            OnMessageReceived = context =>
            {
+               context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+               context.Response.Headers["Pragma"] = "no-cache";
+               context.Response.Headers["Expires"] = "-1";
                if (context.Request.Cookies.ContainsKey("JwtAMSToken"))
                {
                    context.Token = context.Request.Cookies["JwtAMSToken"];

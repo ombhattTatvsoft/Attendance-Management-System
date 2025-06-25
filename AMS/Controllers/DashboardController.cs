@@ -18,11 +18,11 @@ public class DashboardController : Controller
 
     private readonly IAttendanceService _attendanceService;
 
-    private readonly IAuthService _AuthService;
+    private readonly IAuthService _authService;
 
-    public DashboardController(IUserService userService, IDashboardService service, IAttendanceService attendanceService, IAuthService AuthService)
+    public DashboardController(IUserService userService, IDashboardService service, IAttendanceService attendanceService, IAuthService authService)
     {
-        _AuthService = AuthService;
+        _authService = authService;
         _userService = userService;
         _attendanceService = attendanceService;
         _service = service;
@@ -83,7 +83,7 @@ public class DashboardController : Controller
             else
             {
                 string email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
-                User? user = await _AuthService.AuthenticateUserAsync(email, model.CurrentPassword);
+                User? user = await _authService.AuthenticateUserAsync(email, model.CurrentPassword);
                 if (user != null)
                 {
                     await _userService.UpdatePasswordAsync(user, model.NewPassword);

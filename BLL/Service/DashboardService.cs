@@ -28,13 +28,14 @@ public class DashboardService : IDashboardService
         try
         {
             AdminDashboard model = new();
-            model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=EnumHelper.RoleToDbString(RoleEnum.Admin))).Count;
+            List<User> users = await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName != EnumHelper.RoleToDbString(RoleEnum.Admin),x=>x.Role);
+            model.TotalEmployee =users.Count;
             var targetDate = DateOnly.FromDateTime(DateTime.Now);
             model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.StatusId==(int)AttendanceStatusEnum.Present || x.StatusId==(int)AttendanceStatusEnum.HalfPresent) && !x.User.IsDeleted)).Count;
             model.AbsentEmployee = model.TotalEmployee - model.PresentEmployee;
-            model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.SeniorManager))).Count;
-            model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Manager))).Count;
-            model.Employees = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Employee))).Count;
+            model.SeniorManagers = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.SeniorManager));
+            model.Managers = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Manager));;
+            model.Employees = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Employee));;
             return model;
         }
         catch (Exception ex)

@@ -32,7 +32,7 @@ public class LeaveController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Team()
+    public IActionResult Team()
     {
         ViewData["selected"] = "leaveTeam";
         if (TempData.Peek("hasTeam").ToString() == "false")
