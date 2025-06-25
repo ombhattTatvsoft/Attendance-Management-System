@@ -82,7 +82,7 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.StatusName).HasColumnName("status_name");
         });
-        
+
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.DepartmentId).HasName("departments_pkey");
@@ -238,6 +238,9 @@ public partial class AMSContext : DbContext
                 .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("first_login");
+            entity.Property(e => e.RememberTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("remember_time");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.Name)

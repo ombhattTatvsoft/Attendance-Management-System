@@ -23,6 +23,7 @@ function fetchGraph() {
 }
 
 function drawChart(dataArray) {
+    console.log(dataArray);
     // Create the data table.
     data = new google.visualization.DataTable();
     data.addColumn('string', 'Status');

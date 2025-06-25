@@ -105,9 +105,6 @@ function getLeaves(team) {
         success: function (response) {
             $("#leaveTableContainer").html(response);
             createDataTable("leaveTable");
-            if (team) {
-                $('.notTeamBtn').hide();
-            }
         }
     });
 }

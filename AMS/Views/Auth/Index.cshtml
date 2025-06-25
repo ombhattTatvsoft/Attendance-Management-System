@@ -19,15 +19,21 @@
                     <label>Email</label>
                 </div>
                 <div class="form-floating mb-3 position-relative">
-                    <input asp-for="Password" type="password" class="form-control" id="userPassword" placeholder=""> 
+                    <input asp-for="Password" type="password" class="form-control" id="userPassword" placeholder="">
                     <span asp-validation-for="Password" class="text-danger"></span>
                     <label>Password</label>
                     <i class="position-absolute passwordEyeIcon fa-regular fa-eye-slash" id="eyeicon4"
                         style="cursor: pointer;" onclick="togglePassword('userPassword','eyeicon4')"></i>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <a class="links" asp-controller="Auth" asp-action="ForgotPassword">Forgot Password</a>
-                    <button type="submit" class="btn sitebgcolor">Login</button>
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex px-1">
+                        <input type="checkbox" asp-for="Rememberme" class="form-check-input" id="">
+                        <label class="form-check-label ms-2" for="exampleCheck1">Remember me</label>
+                    </div>
+                    <a class="links" asp-controller="Auth" asp-action="ForgotPassword">Forgot Password?</a>
+                </div>
+                <div class="my-2">
+                    <button class="w-100 btn sitebgcolor" type="submit">Login</button>
                 </div>
             </form>
         </div>

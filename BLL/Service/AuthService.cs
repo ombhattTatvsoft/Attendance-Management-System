@@ -65,7 +65,7 @@ public class AuthService : IAuthService
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: DateTime.UtcNow.AddMinutes(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -77,20 +77,25 @@ public class AuthService : IAuthService
         }
     }
 
-    public void CreateCookie(User user, HttpContext httpContext, string token)
+    public void CreateCookie(User user, HttpContext httpContext, string token,bool rememberMe)
     {
         try
         {
+            DateTime rememberTime = DateTime.Now.AddDays(rememberMe ? 30 : 1);
             CookieOptions options = new()
             {
                 Domain = "localhost", // Set the domain for the cookie
-                Expires = DateTime.Now.AddDays(7), // Set expiration date to 7 days from now
+                Expires = rememberTime, // Set expiration date
                 Path = "/", // Cookie is available within the entire application
                 Secure = false, // Ensure the cookie is only sent over HTTPS
                 HttpOnly = true, // Prevent client-side scripts from accessing the cookie
                 IsEssential = true // Indicates the cookie is essential for the application to function
             };
             httpContext.Response.Cookies.Append("JwtAMSToken", token, options);
+
+            user.RememberTime = rememberTime;
+            _userRepository.Update(user);
+            _userRepository.SaveAsync();
         }
         catch (Exception e)
         {

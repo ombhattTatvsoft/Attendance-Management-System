@@ -104,7 +104,11 @@ public class LeaveService : ILeaveService
             }
             else
             {
-                leave.ApprovedBy=model.IsApproved!=null && (bool)model.IsApproved?UpsertedBy:null;
+                if (leave.IsApproved != null && leave.UserId == UpsertedBy)
+                {
+                    leave.IsApproved = null;
+                }
+                leave.ApprovedBy=leave.IsApproved!=null && (bool)leave.IsApproved?UpsertedBy:null;
                 leave.UpdatedAt = DateTime.Now;
                 _repository.Update(leave);
             }

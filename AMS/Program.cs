@@ -1,4 +1,5 @@
 using System.Text;
+using AMS.MiddleWare;
 using BLL;
 using BLL.IService;
 using BLL.Service;
@@ -49,8 +50,8 @@ builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
 // add automapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-   .AddJwtBearer(options =>
+builder.Services.AddAuthentication("Bearer")
+   .AddJwtBearer("Bearer",options =>
    {
        options.RequireHttpsMetadata = false;
        options.SaveToken = true;
@@ -82,10 +83,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
                context.Response.Headers["Pragma"] = "no-cache";
                context.Response.Headers["Expires"] = "-1";
-               if (context.Request.Cookies.ContainsKey("JwtAMSToken"))
-               {
-                   context.Token = context.Request.Cookies["JwtAMSToken"];
-               }
                return Task.CompletedTask;
            }
        };
@@ -108,6 +105,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseMiddleware<JwtRefreshMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
