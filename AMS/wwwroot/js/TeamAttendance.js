@@ -1,8 +1,20 @@
 const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 var currentElement;
 var newAttendance = [];
 $(document).ready(function () {
+    $('#userSearch').on('keyup', function () {
+        var value = $(this).val().toLowerCase();
+        $("#teamAttendanceBody tr").hide();
+        $("#teamAttendanceBody tr .user-name").each(function(){
+            var userName = $(this).text().toLowerCase();
+            if (userName.indexOf(value) > -1) {
+                $(this).closest('tr').show().next('tr').show();
+            }
+        })
+    });
     $("#teamMonth").val(currentMonth);
+    $("#teamYear").val(currentYear);
     if (teamUsers.length > 0) {
         getTeamAttendanceTable();
     }
@@ -14,7 +26,7 @@ $(document).ready(function () {
 function getTeamAttendanceTable() {
     $("#teamAttendanceHeaderRow").empty();
     $("#teamAttendanceBody").empty();
-
+    var flag=0;
     teamUsers.forEach((element, index) => {
         $.ajax({
             type: "GET",
@@ -40,28 +52,36 @@ function getTeamAttendanceTable() {
                     let userName = element.name;
                     let summaryHtml = wrapper.find("h6").eq(1).html();
 
-                    let attendanceRow = `<tr><td><strong>${userName}</strong></td>${userRow}</tr>`;
+                    let attendanceRow = `<tr><td class="text-nowrap user-name"><strong>${userName}</strong></td>${userRow}</tr>`;
                     let summaryRow = `<tr><td></td><td colspan="${wrapper.find('thead > tr > th').length}">${summaryHtml}</td></tr>`;
                     $("#teamAttendanceBody").append(attendanceRow).append(summaryRow);
-                    if (!wrapper.find('td').hasClass('clickable')) {
-                        $("#saveTeamAttendanceBtn").addClass('disabled');
-                        if ($("#myMonth").val() == currentMonth)
-                            $("#approvedTitle").removeClass('d-none');
-                    } else {
-                        $("#saveTeamAttendanceBtn").removeClass('disabled');
-                        $("#approvedTitle").addClass('d-none');
+                    if(flag==0){
+                        if (wrapper.find('td').hasClass('clickable')) {
+                            flag=1;
+                        }
                     }
                 }
             }
         });
+        if(flag==1){
+            $("#saveTeamAttendanceBtn").removeClass('disabled');
+            $("#approvedTitle").addClass('d-none');
+        }
+        else{
+            $("#saveTeamAttendanceBtn").addClass('disabled');
+            if ($("#myMonth").val() == currentMonth)
+                $("#approvedTitle").removeClass('d-none');
+        }
+        $("#userSearch").trigger('keyup');
     });
 }
 function resetTeamAttendanceTable() {
     $("#teamMonth").val(currentMonth);
+    $("#teamYear").val(currentYear);
+    $("#userSearch").val('');
     getTeamAttendanceTable();
 }
 function showDropdown(ele) {
-    console.log($(ele));
     $(ele).attr('data-status', $(ele).find('select').val());
     currentElement = ele;
 }
@@ -73,18 +93,18 @@ function saveTeamAttendance() {
         newAttendance.push({
             UserId: $(this).closest('td').data('userid'),
             Date: $(this).closest('td').data('date'),
-            Status: $(this).val()
+            StatusId: $(this).val()
         });
     });
     $(newUpdated).each(function () {
         newData = {
             UserId: $(this).closest('td').data('userid'),
             Date: $(this).closest('td').data('date'),
-            Status: $(this).closest('td').data('status')
+            StatusId: $(this).closest('td').data('status')
         }
-        newAttendance.push(newData);
+        if(!newAttendance.some(record => record.UserId === newData.UserId && record.Date === newData.Date))
+            newAttendance.push(newData);
     });
-    console.log(newAttendance);
     if (newAttendance.length > 0) {
         var formData = {
             UserId: currentUserId,
@@ -93,7 +113,7 @@ function saveTeamAttendance() {
             AttendanceRecords: newAttendance.map(record => ({
                 UserId: record.UserId,
                 Date: record.Date,
-                Status: record.Status
+                StatusId: record.StatusId
             }))
         }
         $.ajax({
@@ -105,6 +125,7 @@ function saveTeamAttendance() {
                 if (response.isSuccess) {
                     toastr.success(response.message)
                     getTeamAttendanceTable();
+                    $("#userSearch").trigger('keyup');
                 }
                 else
                     toastr.error(response.message)

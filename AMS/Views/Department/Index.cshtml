@@ -24,15 +24,14 @@
               <tr>
                 <td>@department.DepartmentName</td>
                 <td class="text-center">
-                    @department.Users.Count
+                  @department.Users.Count
                 </td>
                 <td class="text-center">
                   <div class="d-flex gap-4 justify-content-center align-items-center">
                     <a class="links" id="editDepartment" data-id="@department.DepartmentId"><i
                         class="fa-solid fa-pen"></i></a>
                     <a class="links" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                      onclick="giveid('department',@department.DepartmentId)"><i
-                        class="fa-regular fa-trash-can"></i></a>
+                      onclick="giveid('department',@department.DepartmentId)"><i class="fa-regular fa-trash-can"></i></a>
                   </div>
                 </td>
               </tr>
@@ -53,16 +52,20 @@
   </div>
 </div>
 
+
+
 @section Scripts {
-  <script src="~/js/Department.js"></script>
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
   <script>
     createDataTable('departmentTable');
-  </script>
-
-  <script>
     function giveid(title, id) {
       document.getElementById("deleteTitle").innerText = title;
       document.getElementById("deleteConfirm").href = "/Department/DeleteDepartment?id=" + id;
     }
   </script>
+  <script src="~/js/Department.js"></script>
 }

@@ -11,14 +11,14 @@ namespace AMS.Controllers;
 [Authorize(Roles = "Admin")]
 public class UserController : Controller
 {
-    private readonly IAuthService _AuthService;
+    private readonly IAuthService _authService;
 
     private readonly IUserService _userService;
-    
+
     private readonly IDepartmentService _departmentService;
-    public UserController(IAuthService AuthService, IUserService userService, IDepartmentService departmentService)
+    public UserController(IAuthService authService, IUserService userService, IDepartmentService departmentService)
     {
-        _AuthService = AuthService;
+        _authService = authService;
         _userService = userService;
         _departmentService = departmentService;
     }
@@ -35,17 +35,8 @@ public class UserController : Controller
     public async Task<IActionResult> UpsertUser(int? id)
     {
         ViewData["selected"] = "user";
-        UpsertUserVM model = new();
-        if (id == null)
-        {
-            model.Departments = await _departmentService.GetAllDepartmentsAsync();
-            return View(model);
-        }
-        else
-        {
-            model = await _userService.GetUserAsync((int)id);
-            model.Departments = await _departmentService.GetAllDepartmentsAsync();
-        }
+        UpsertUserVM model = id != null ? await _userService.GetUserAsync((int)id) : new();
+        model.Departments = await _departmentService.GetAllDepartmentsAsync();
         return View(model);
     }
 
@@ -64,20 +55,18 @@ public class UserController : Controller
                 TempData["success"] = response.Message;
                 if (model.UserId == 0)
                 {
-                    string? link = _AuthService.PrepareLink((User)response.Data!, HttpContext,true);
+                    string? link = _authService.PrepareLink((User)response.Data!, HttpContext, true);
                     string subject = EmailBodyHelper.UpsertUserSubject;
                     string body = EmailBodyHelper.UpsertUserBody(link!);
-                    Response emailResponse = _AuthService.SendEmail(model.Email, body, subject);
-                    if (emailResponse.IsSuccess)
-                        TempData["success"] = emailResponse.Message;
-                    else
-                        TempData["failed"] = emailResponse.Message;
+                    Response emailResponse = _authService.SendEmail(model.Email, body, subject);
+                    TempData[emailResponse.IsSuccess ? "success" : "failed"] = emailResponse.Message;
                 }
                 return RedirectToAction("Index");
             }
             else
             {
                 TempData["failed"] = response.Message;
+                model.Departments = await _departmentService.GetAllDepartmentsAsync();
                 return View(model);
             }
         }
@@ -102,14 +91,7 @@ public class UserController : Controller
     public async Task<IActionResult> DeleteUser(int id)
     {
         Response response = await _userService.DeleteUserAsync(id);
-        if (response.IsSuccess)
-        {
-            TempData["success"] = response.Message;
-        }
-        else
-        {
-            TempData["failed"] = response.Message;
-        }
+        TempData[response.IsSuccess ? "success" : "failed"] = response.Message;
         return RedirectToAction("Index");
     }
 }

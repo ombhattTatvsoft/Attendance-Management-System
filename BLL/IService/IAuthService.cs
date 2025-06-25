@@ -8,7 +8,7 @@ public interface IAuthService
 {
     Task<User?> AuthenticateUserAsync(string email,string password);
     string? CreateJwtToken(User user);
-    void CreateCookie(User user, HttpContext httpContext, string token);
+    void CreateCookie(User user, HttpContext httpContext, string token,bool rememberMe);
     string? PrepareLink(User userFound, HttpContext httpContext,bool? firstLogin=false);
     Response SendEmail(string email, string body, string subject);
     Task<Response> CheckResetLinkAsync(string id);

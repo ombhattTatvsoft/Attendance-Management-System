@@ -6,6 +6,7 @@ $(document).ready(function () {
             type: 'GET',
             success: function (response) {
                 $("#DepartmentForm").html(response);
+                $.validator.unobtrusive.parse($("#DepartmentForm"));
                 $("#DepartmentModal").modal('show');
             },
         });

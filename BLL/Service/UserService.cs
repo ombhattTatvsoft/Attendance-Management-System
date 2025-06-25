@@ -144,13 +144,12 @@ public class UserService : IUserService
         try
         {
             User? user = await _userRepository.GetAsync(x => x.UserId == id && !x.IsDeleted) ?? throw new Exception("User not found");
-            UpsertUserVM model = _mapper.Map<UpsertUserVM>(user);
-            return model;
+            return _mapper.Map<UpsertUserVM>(user);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving user with ID {UserId}", id);
-            throw new Exception("An error occurred while retrieving the user", ex);
+            return new UpsertUserVM();
         }
     }
 
@@ -183,7 +182,7 @@ public class UserService : IUserService
     {
         try
         {
-            return await _userRepository.GetAsync(x => x.UserId == int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value), x => x.InverseManager, x => x.Role);
+            return await _userRepository.GetAsync(x => x.UserId == int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!), x => x.InverseManager, x => x.Role);
         }
         catch (Exception ex)
         {
@@ -196,7 +195,7 @@ public class UserService : IUserService
     {
         try
         {
-            if (user.Role.RoleName == RoleHelper.ToDbString(RoleEnum.Admin))
+            if (user.Role.RoleName == EnumHelper.RoleToDbString(RoleEnum.Admin))
             {
                 return await _userRepository.GetAllAsync(x => x.UserId != user.UserId && !x.IsDeleted, x => x.Role);
             }

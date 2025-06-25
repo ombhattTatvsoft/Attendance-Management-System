@@ -17,6 +17,8 @@ public partial class AMSContext : DbContext
 
     public virtual DbSet<Attendance> Attendances { get; set; }
 
+    public virtual DbSet<AttendanceStatus> AttendanceStatuses { get; set; }
+
     public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<Holiday> Holidays { get; set; }
@@ -50,7 +52,7 @@ public partial class AMSContext : DbContext
             entity.Property(e => e.InTime).HasColumnName("in_time");
             entity.Property(e => e.IsApproved).HasColumnName("is_approved");
             entity.Property(e => e.OutTime).HasColumnName("out_time");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
@@ -67,6 +69,18 @@ public partial class AMSContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("attendances_userid_fkey");
+        });
+
+        modelBuilder.Entity<AttendanceStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("attendance_status_pkey");
+
+            entity.ToTable("attendance_status");
+
+            entity.HasIndex(e => e.StatusName, "attendance_status_status_name_key").IsUnique();
+
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.StatusName).HasColumnName("status_name");
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -224,6 +238,9 @@ public partial class AMSContext : DbContext
                 .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("first_login");
+            entity.Property(e => e.RememberTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("remember_time");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.Name)

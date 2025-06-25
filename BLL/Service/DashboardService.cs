@@ -28,13 +28,14 @@ public class DashboardService : IDashboardService
         try
         {
             AdminDashboard model = new();
-            model.TotalEmployee =(await _userRepository.GetAllAsync(x=>!x.IsDeleted && x.Role.RoleName!=RoleHelper.ToDbString(RoleEnum.Admin))).Count;
+            List<User> users = await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName != EnumHelper.RoleToDbString(RoleEnum.Admin),x=>x.Role);
+            model.TotalEmployee =users.Count;
             var targetDate = DateOnly.FromDateTime(DateTime.Now);
-            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.Status=="Present" || x.Status=="Half Present") && !x.User.IsDeleted)).Count;
+            model.PresentEmployee = (await _attendanceRepository.GetAllAsync(x => x.Date == targetDate && (x.StatusId==(int)AttendanceStatusEnum.Present || x.StatusId==(int)AttendanceStatusEnum.HalfPresent) && !x.User.IsDeleted)).Count;
             model.AbsentEmployee = model.TotalEmployee - model.PresentEmployee;
-            model.SeniorManagers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.SeniorManager))).Count;
-            model.Managers = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.Manager))).Count;
-            model.Employees = (await _userRepository.GetAllAsync(x => !x.IsDeleted && x.Role.RoleName==RoleHelper.ToDbString(RoleEnum.Employee))).Count;
+            model.SeniorManagers = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.SeniorManager));
+            model.Managers = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Manager));;
+            model.Employees = users.Count(x=>x.Role.RoleName==EnumHelper.RoleToDbString(RoleEnum.Employee));;
             return model;
         }
         catch (Exception ex)
@@ -44,4 +45,25 @@ public class DashboardService : IDashboardService
         }
     }
 
+    public async Task<DaysByAttendance> GetDaysByAttendanceAsync(UserMonthlyAttendanceVM monthlyData)
+    {
+        try
+        {
+            DaysByAttendance model = new()
+            {
+                FullAbsentDays = monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) < DateTime.Now.Date && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue) && !(bool)x.IsHoliday && (x.StatusId == 0 || x.StatusId == (int)AttendanceStatusEnum.Absent))
+                    + monthlyData.AttendanceRecords.Count(x => x.Date.ToDateTime(TimeOnly.MinValue) >= DateTime.Now.Date && x.StatusId == (int)AttendanceStatusEnum.Absent),
+                HalfDays = monthlyData.AttendanceRecords.Count(x => x.StatusId == (int)AttendanceStatusEnum.HalfPresent),
+                PresentDays = monthlyData.AttendanceRecords.Count(x => x.StatusId == (int)AttendanceStatusEnum.Present),
+                TotalDays = monthlyData.AttendanceRecords.Count(x => !(bool)x.IsHoliday && monthlyData.UserCreatedAt!.Value.Date <= x.Date.ToDateTime(TimeOnly.MinValue)),
+                Holidays = monthlyData.AttendanceRecords.Count(x => x.IsHoliday == true && x.Day != DayOfWeek.Saturday.ToString() && x.Day != DayOfWeek.Sunday.ToString())
+            };
+            return model;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while getting days by attendance data.");
+            return new DaysByAttendance();
+        }
+    }
 }

@@ -36,6 +36,7 @@ public partial class User
     public bool FirstLogin { get; set; }
 
     public int? DepartmentId { get; set; }
+    public DateTime? RememberTime{ get; set; }
 
     public virtual ICollection<Attendance> AttendanceApprovedByNavigations { get; } = new List<Attendance>();
 

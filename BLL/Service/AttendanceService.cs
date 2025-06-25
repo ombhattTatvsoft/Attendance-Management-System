@@ -60,7 +60,7 @@ public class AttendanceService : IAttendanceService
                     Date = date,
                     Day = date.DayOfWeek.ToString(),
                     IsHoliday = holidayDates.Contains(date) || date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday,
-                    Status = attendances.Where(x => x.Date == date).Select(x => x.Status).FirstOrDefault(),
+                    StatusId = attendances.Where(x => x.Date == date).Select(x => x.StatusId).FirstOrDefault(),
                     IsApproved = attendances.Where(x => x.Date == date).Select(x => x.IsApproved).FirstOrDefault()
                 }).ToList()
             };

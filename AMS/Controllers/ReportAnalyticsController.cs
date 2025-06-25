@@ -20,7 +20,7 @@ public class ReportAnalyticsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         ViewData["selected"] = "reportAnalytics";
         return View();
@@ -31,7 +31,7 @@ public class ReportAnalyticsController : Controller
     {
         User? user = await _userService.GetCurrentUserAsync();
         List<User> team = await _userService.GetMyTeam(user!);
-        if (user.Role.RoleName != RoleHelper.ToDbString(RoleEnum.Admin))
+        if (user!.Role.RoleName != EnumHelper.RoleToDbString(RoleEnum.Admin))
         {
             team.Add(user);
         }

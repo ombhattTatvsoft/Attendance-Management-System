@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
+using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -44,10 +46,7 @@ public class LeaveService : ILeaveService
         try
         {
             Leave? leave = await _repository.GetAsync(x => x.LeaveId == id,x=>x.User);
-            if (leave == null)
-                return new LeaveVM();
-            LeaveVM model = _mapper.Map<LeaveVM>(leave);
-            return model;
+            return leave == null ? new LeaveVM() : _mapper.Map<LeaveVM>(leave);
         }
         catch (Exception ex)
         {
@@ -87,6 +86,7 @@ public class LeaveService : ILeaveService
     {
         try
         {
+            
             Leave? leave = (model.LeaveId == 0) ? new Leave() : await _repository.GetAsync(x => x.LeaveId == model.LeaveId && !x.IsDeleted);
             if (model.LeaveId != 0 && leave == null)
                 return new Response(false, "Leave not found");
@@ -104,7 +104,11 @@ public class LeaveService : ILeaveService
             }
             else
             {
-                leave.ApprovedBy=model.IsApproved!=null && (bool)model.IsApproved?UpsertedBy:null;
+                if (leave.IsApproved != null && leave.UserId == UpsertedBy)
+                {
+                    leave.IsApproved = null;
+                }
+                leave.ApprovedBy=leave.IsApproved!=null && (bool)leave.IsApproved?UpsertedBy:null;
                 leave.UpdatedAt = DateTime.Now;
                 _repository.Update(leave);
             }
@@ -119,7 +123,7 @@ public class LeaveService : ILeaveService
                     {
                         UserId = leave.UserId,
                         Date = date,
-                        Status = "Absent",
+                        StatusId = (int)AttendanceStatusEnum.Absent,
                         IsApproved = leave.IsApproved,
                         ApprovedBy = leave.IsApproved != null && (bool)leave.IsApproved ? UpsertedBy : null,
                         CreatedBy = UpsertedBy,
@@ -127,9 +131,9 @@ public class LeaveService : ILeaveService
                         LeaveId = leave.LeaveId
                     };
                     if(date == leave.FromDate)
-                        attendance.Status = leave.FromDateLeaveDuration == 1 ? "Absent" : "Half Present";
+                        attendance.StatusId = leave.FromDateLeaveDuration == 1 ? (int)AttendanceStatusEnum.Absent : (int)AttendanceStatusEnum.HalfPresent;
                     if(date == leave.ToDate)
-                        attendance.Status = leave.ToDateLeaveDuration == 1 ? "Absent" : "Half Present";
+                        attendance.StatusId = leave.ToDateLeaveDuration == 1 ? (int)AttendanceStatusEnum.Absent : (int)AttendanceStatusEnum.HalfPresent;
 
                     await _attendanceRepository.AddAsync(attendance);
                 }

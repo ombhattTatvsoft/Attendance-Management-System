@@ -55,30 +55,16 @@ public class HolidayController : Controller
         if (ModelState.IsValid)
         {
             Response response = await _service.SaveHolidayAsync(model);
-            if (response.IsSuccess)
-            {
-                return Json(new { success = true, message = response.Message });
-            }
-            else
-            {
-                return Json(new { success = false, message = response.Message });
-            }
+            return Json(new { success = response.IsSuccess, message = response.Message });
         }
         return Json(new { success = false, message = "Invalid data." });
     }
-    
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<JsonResult> DeleteHoliday(int id)
     {
         Response response = await _service.DeleteHolidayAsync(id);
-        if (response.IsSuccess)
-        {
-            return Json(new { success = true, message = response.Message });
-        }
-        else
-        {
-            return Json(new { success = false, message = response.Message });
-        }
+        return Json(new { success = response.IsSuccess, message = response.Message });
     }
 }

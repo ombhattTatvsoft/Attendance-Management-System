@@ -18,6 +18,7 @@ $(document).ready(function () {
             success: function (response) {
                 $("#LeaveForm").html(response);
                 $("#teamLeaveForm").html(response);
+                $.validator.unobtrusive.parse($("#LeaveForm,#teamLeaveForm"));
                 $("#LeaveModal").modal('show');
                 $("#fromDate,#toDate").prop('min', today);
                 if (isView) {
@@ -26,6 +27,7 @@ $(document).ready(function () {
                     $('.viewable').removeClass('d-none');
                 }
                 if (teamEdit) {
+                    $('#upsertBtn').text('Save');
                     $('input,textarea').prop('readonly', true);
                     $('select').prop('disabled', true);
                     $('.viewable').removeClass('d-none');
@@ -41,6 +43,12 @@ $(document).ready(function () {
         $("#fromDate").prop('max', $('#toDate').val());
     });
     $(document).on('change', '#fromDate,#toDate,#fromDateType,#toDateType', function () {
+        if($("#fromDate").val() == $("#toDate").val()) {
+            if($(this).attr('id') === 'toDateType')
+                $("#fromDateType").val($("#toDateType").val());
+            else
+            $("#toDateType").val($("#fromDateType").val());
+        }
         if ($('#fromDate').val() && $('#toDate').val()) {
             $.ajax({
                 url: '/Leave/CountLeaveDays',
@@ -79,8 +87,7 @@ $(document).ready(function () {
 function refetchLeaves(team) {
     $("#startDate").val("");
     $("#endDate").val("");
-    $("#startDate,#endDate").removeAttr('min');
-    $("#startDate,#endDate").prop('max', today);
+    $("#startDate,#endDate").removeAttr('min').removeAttr('max');
     $("#leaveStatus").val('All');
     getLeaves(team);
 }
@@ -98,9 +105,6 @@ function getLeaves(team) {
         success: function (response) {
             $("#leaveTableContainer").html(response);
             createDataTable("leaveTable");
-            if (team) {
-                $('.notTeamBtn').hide();
-            }
         }
     });
 }

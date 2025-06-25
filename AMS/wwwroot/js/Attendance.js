@@ -46,9 +46,10 @@ function saveMyAttendance(){
         newAttendance.push({
             UserId:$(this).data('userid'),
             Date:$(this).data('date'),
-            Status:$(this).data('status')
+            StatusId:$(this).data('status')
         });
     });
+    console.log(newAttendance);
     if(newAttendance.length>0){
         var formData={
             UserId:newAttendance[0].UserId,
@@ -57,9 +58,10 @@ function saveMyAttendance(){
             AttendanceRecords: newAttendance.map(record => ({
                 UserId: record.UserId,
                 Date: record.Date,
-                Status: record.Status
+                StatusId: record.StatusId
             }))
         }
+        console.log(formData);
         $.ajax({
             type: "POST",
             url: "/Attendance/SaveAttendances",
