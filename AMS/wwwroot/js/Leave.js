@@ -43,6 +43,12 @@ $(document).ready(function () {
         $("#fromDate").prop('max', $('#toDate').val());
     });
     $(document).on('change', '#fromDate,#toDate,#fromDateType,#toDateType', function () {
+        if($("#fromDate").val() == $("#toDate").val()) {
+            if($(this).attr('id') === 'toDateType')
+                $("#fromDateType").val($("#toDateType").val());
+            else
+            $("#toDateType").val($("#fromDateType").val());
+        }
         if ($('#fromDate').val() && $('#toDate').val()) {
             $.ajax({
                 url: '/Leave/CountLeaveDays',
