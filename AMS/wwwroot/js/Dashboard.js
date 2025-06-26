@@ -29,14 +29,12 @@ function drawChart(dataArray) {
     data.addColumn('string', 'Status');
     data.addColumn('number', 'Count');
     // Add the data from the array
-    if (dataArray.remainingDays > 0) {
-        data.addRows([
-            ['Present', dataArray.presentDays],
-            ['Absent', dataArray.fullAbsentDays],
-            ['Half Days', dataArray.halfDays],
-            ['Remaining Days', dataArray.remainingDays]
-        ]);
-    }
+    data.addRows([
+        ['Present', dataArray.presentDays],
+        ['Absent', dataArray.fullAbsentDays],
+        ['Half Days', dataArray.halfDays],
+        ['Remaining Days', dataArray.remainingDays]
+    ]);
 
     // Set chart options
     var options = {

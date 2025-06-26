@@ -18,12 +18,15 @@ public class DashboardController : Controller
 
     private readonly IAttendanceService _attendanceService;
 
+    private readonly IDepartmentService _departmentService;
+
     private readonly IAuthService _authService;
 
-    public DashboardController(IUserService userService, IDashboardService service, IAttendanceService attendanceService, IAuthService authService)
+    public DashboardController(IUserService userService, IDashboardService service, IAttendanceService attendanceService, IDepartmentService departmentService, IAuthService authService)
     {
         _authService = authService;
         _userService = userService;
+        _departmentService = departmentService;
         _attendanceService = attendanceService;
         _service = service;
     }
@@ -46,18 +49,18 @@ public class DashboardController : Controller
         return View(model);
     }
 
-        [HttpGet]
+    [HttpGet]
     public async Task<IActionResult> GetChartData(int month, int year, int userId)
     {
         ViewData["selected"] = "dashboard";
         UserMonthlyAttendanceVM? model = await _attendanceService.GetUserMonthlyAttendance(month, year, userId);
         DaysByAttendance daysByAttendance = await _service.GetDaysByAttendanceAsync(model!);
-        var data= new
+        var data = new
         {
             presentDays = daysByAttendance.PresentDays,
             fullAbsentDays = daysByAttendance.FullAbsentDays,
             halfDays = daysByAttendance.HalfDays,
-            remainingDays = daysByAttendance.TotalDays-(daysByAttendance.PresentDays + daysByAttendance.FullAbsentDays + daysByAttendance.HalfDays)
+            remainingDays = daysByAttendance.TotalDays - (daysByAttendance.PresentDays + daysByAttendance.FullAbsentDays + daysByAttendance.HalfDays)
         };
         return Json(data);
     }
@@ -68,11 +71,11 @@ public class DashboardController : Controller
         ViewData["selected"] = "dashboard";
         return View();
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
     {
-        ViewData["selected"] = "Dashboard";
+        ViewData["selected"] = "dashboard";
         if (ModelState.IsValid)
         {
             if (model.CurrentPassword == model.NewPassword)
@@ -102,8 +105,33 @@ public class DashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> GetUserData()
     {
-        string email = HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
-        User? user = await _userService.FindUserByEmailAsync(email);
+        User? user = await _userService.GetCurrentUserAsync();
         return PartialView("_UserData", user);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MyProfile()
+    {
+        UpsertUserVM user = await _service.GetMyProfile();
+        user.Departments = await _departmentService.GetAllDepartmentsAsync();
+        return View(user);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> MyProfile(UpsertUserVM model)
+    {
+        if (model.RoleId == 2)
+        {
+            ModelState.Remove("ManagerId");
+        }
+        model.Departments = await _departmentService.GetAllDepartmentsAsync();
+        if (ModelState.IsValid)
+        {
+            Response response = await _userService.SaveUserAsync(model);
+            TempData[response.IsSuccess ? "success" : "failed"] = response.Message;
+            if (response.IsSuccess)
+                return RedirectToAction("MyProfile");
+        }
+        return View(model);
     }
 }

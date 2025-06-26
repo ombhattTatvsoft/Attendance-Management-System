@@ -176,3 +176,10 @@
   color: rgb(13, 191, 250);
   background-color: white;
 }
+
+/* Profile Page CSS */
+
+.profiledivimg {
+  height: 100px;
+  width: 100px;
+}

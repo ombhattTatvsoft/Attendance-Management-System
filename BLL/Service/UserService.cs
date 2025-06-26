@@ -210,4 +210,18 @@ public class UserService : IUserService
             return new List<User>();
         }
     }
+
+    public async Task<User?> GetUserById(int userId)
+    {
+        try
+        {
+            return await _userRepository.GetAsync(x => x.UserId == userId && !x.IsDeleted,x=>x.Role);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving user {UserId}", userId);
+            return new User();
+        }
+    }
+
 }

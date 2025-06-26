@@ -30,12 +30,12 @@ namespace AMS.MiddleWare
                     {
                         var _service=serviceProvider.GetRequiredService<IUserService>();
                         var _authService=serviceProvider.GetRequiredService<IAuthService>();
-                        string email=token.Claims.First(c=>c.Type==ClaimTypes.Email).Value.ToString();
-                        User? user= await _service.FindUserByEmailAsync(email);
+                        int userId = int.Parse(token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+                        User? user= await _service.GetUserById(userId);
                         if (user!=null && user.RememberTime>=DateTime.Now)
                         {
                             string? newToken = _authService.CreateJwtToken(user);
-                            _authService.CreateCookie(user,context,newToken!,true);
+                            _authService.CreateCookie(user,context,newToken!,true,true);
                             context.Request.Headers["Authorization"] = $"Bearer {newToken}";
                         }
                     }

@@ -1,9 +1,12 @@
+using System.Security.Claims;
+using AutoMapper;
 using BLL.Helpers;
 using BLL.IService;
 using DAL.IRepository;
 using Entity.Enums;
 using Entity.Models;
 using Entity.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace BLL.Service;
@@ -16,11 +19,20 @@ public class DashboardService : IDashboardService
     
     private readonly IAttendanceRepository _attendanceRepository;
 
-    public DashboardService(ILogger<DashboardService> logger, IUserRepository userRepository, IAttendanceRepository attendanceRepository)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    private readonly IMapper _mapper;
+
+    public int UpsertedBy { get; set; }
+
+    public DashboardService(ILogger<DashboardService> logger, IUserRepository userRepository, IAttendanceRepository attendanceRepository,IMapper mapper,IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
+        _httpContextAccessor = httpContextAccessor;
         _userRepository = userRepository;
         _attendanceRepository = attendanceRepository;
+        _mapper = mapper;
+        UpsertedBy = int.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     }
 
     public async Task<AdminDashboard?> GetAdminDashboardDataAsync()
@@ -66,4 +78,22 @@ public class DashboardService : IDashboardService
             return new DaysByAttendance();
         }
     }
+
+    public async Task<UpsertUserVM> GetMyProfile()
+    {
+        try
+        {
+            User? user = await _userRepository.GetAsync(x => !x.IsDeleted && x.UserId == UpsertedBy,x=>x.Manager);
+            UpsertUserVM model = _mapper.Map<UpsertUserVM>(user);
+            model.ManagerName = user.Manager?.Name;
+            return model;
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError(ex, "Error occurred while getting profile with User ID {Id}.", UpsertedBy);
+            return new UpsertUserVM();
+        }
+    }
+
 }

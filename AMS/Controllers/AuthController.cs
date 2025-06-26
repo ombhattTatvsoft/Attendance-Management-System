@@ -49,7 +49,7 @@ public class AuthController : Controller
                 TempData["failed"] = "Login Failed, Please Try Again!";
                 return RedirectToAction("Index");
             }
-            _service.CreateCookie(userFound, HttpContext, token,user.Rememberme);
+            _service.CreateCookie(userFound, HttpContext, token,user.Rememberme,false);
             TempData["success"] = "Login Successful";
             return RedirectToAction("Index", "Dashboard");
         }

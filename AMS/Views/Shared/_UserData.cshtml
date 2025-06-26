@@ -1,22 +1,24 @@
 @model Entity.Models.User;
-<div class="d-flex align-items-center justify-content-center gap-2" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-    @* <span class="text-white fs-5">@Model.Name</span> *@
-    <img src="~/images/Default_pfp.svg.png" class="img-fluid rounded-circle" 
-    alt="" style="height: 50px;width: 50px;">
+<div class="rounded-circle dropdown">
+    <img src="~/images/Default_pfp.svg.png" class="img-fluid rounded-circle" id="dropdownMenuButton1"
+        data-bs-toggle="dropdown" aria-expanded="false" alt="" style="height: 50px;width: 50px;">
+    <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="dropdownMenuButton1">
+        <li>
+            <a class="dropdown-item disabled">
+                <span class="text-dark">@Model.Name (@Model.Role.RoleName)</span>
+            </a>
+        </li>
+        <hr class="my-1">
+        <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="MyProfile">
+                <img src="~/images/Default_pfp.svg.png" alt="" style="height: 20px;width: 20px;">
+                <span>My Profile</span></a></li>
+        <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="ChangePassword">
+                <i class="fa-solid fa-spinner" style="width: 20px;"></i>
+                <span>Change Password</span></a></li>
+        <li>
+            <a class="links dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#logout">
+                <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i>
+                <span>Logout</span></a>
+        </li>
+    </ul>
 </div>
-<ul class="dropdown-menu dropdown-menu-end me-1 mt-1" aria-labelledby="dropdownMenuButton1">
-    <li>
-        <a class="dropdown-item disabled">
-            <span class="text-dark">@Model.Name (@Model.Role.RoleName)</span>
-        </a>
-    </li>
-    <hr class="my-1">
-    <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="ChangePassword">
-            <i class="fa-solid fa-spinner" style="width: 20px;"></i>
-            <span>Change Password</span></a></li>
-    <li>
-        <a class="links dropdown-item text-dark" data-bs-toggle="modal" data-bs-target="#logout">
-            <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i>
-            <span>Logout</span></a>
-    </li>
-</ul>

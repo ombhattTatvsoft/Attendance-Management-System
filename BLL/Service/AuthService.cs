@@ -77,7 +77,7 @@ public class AuthService : IAuthService
         }
     }
 
-    public void CreateCookie(User user, HttpContext httpContext, string token,bool rememberMe)
+    public void CreateCookie(User user, HttpContext httpContext, string token, bool rememberMe, bool refresh = false)
     {
         try
         {
@@ -93,9 +93,12 @@ public class AuthService : IAuthService
             };
             httpContext.Response.Cookies.Append("JwtAMSToken", token, options);
 
-            user.RememberTime = rememberTime;
-            _userRepository.Update(user);
-            _userRepository.SaveAsync();
+            if (!refresh)
+            {
+                user.RememberTime = rememberTime;
+                _userRepository.Update(user);
+                _userRepository.SaveAsync();
+            }
         }
         catch (Exception e)
         {

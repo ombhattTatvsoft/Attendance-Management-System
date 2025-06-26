@@ -22,5 +22,9 @@ public class UpsertUserVM
     public int ManagerId { get; set; }
     public int DepartmentId { get; set; }
     public List<Department> Departments { get; set; } = new List<Department>();
+
+    // for profile page
+    public DateTime? CreatedAt { get; set; }
     
+    public string? ManagerName { get; set; }
 }
