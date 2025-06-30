@@ -81,7 +81,7 @@ public class AuthService : IAuthService
     {
         try
         {
-            DateTime rememberTime = DateTime.Now.AddDays(rememberMe ? 30 : 1);
+            DateTime rememberTime = DateTime.Now.AddDays(rememberMe ? 30 : 7);
             CookieOptions options = new()
             {
                 Domain = "localhost", // Set the domain for the cookie
@@ -93,7 +93,7 @@ public class AuthService : IAuthService
             };
             httpContext.Response.Cookies.Append("JwtAMSToken", token, options);
 
-            if (!refresh)
+            if (refresh)
             {
                 user.RememberTime = rememberTime;
                 _userRepository.Update(user);

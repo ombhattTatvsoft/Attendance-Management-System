@@ -23,12 +23,12 @@ function fetchGraph() {
 }
 
 function drawChart(dataArray) {
-    console.log(dataArray);
     // Create the data table.
     data = new google.visualization.DataTable();
     data.addColumn('string', 'Status');
     data.addColumn('number', 'Count');
     // Add the data from the array
+    if(dataArray.totalDays)
     data.addRows([
         ['Present', dataArray.presentDays],
         ['Absent', dataArray.fullAbsentDays],

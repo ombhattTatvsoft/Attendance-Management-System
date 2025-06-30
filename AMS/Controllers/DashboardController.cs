@@ -60,7 +60,8 @@ public class DashboardController : Controller
             presentDays = daysByAttendance.PresentDays,
             fullAbsentDays = daysByAttendance.FullAbsentDays,
             halfDays = daysByAttendance.HalfDays,
-            remainingDays = daysByAttendance.TotalDays - (daysByAttendance.PresentDays + daysByAttendance.FullAbsentDays + daysByAttendance.HalfDays)
+            remainingDays = daysByAttendance.TotalDays - (daysByAttendance.PresentDays + daysByAttendance.FullAbsentDays + daysByAttendance.HalfDays),
+            totalDays = daysByAttendance.TotalDays
         };
         return Json(data);
     }
